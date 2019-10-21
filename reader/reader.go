@@ -17,17 +17,26 @@ type DatamapLine struct {
 	Cellref string
 }
 
+type fileError struct {
+	file string
+	msg  string
+}
+
+func (e *fileError) Error() string {
+	return fmt.Sprintf("%s", e.msg)
+}
+
 //Keylens returns the length of a key
 func Keylens(dml DatamapLine) (int, int) {
 	return len(dml.Key), len(dml.Sheet)
 }
 
 //ReadDML returns a pointer to a slice of DatamapLine structs
-func ReadDML(path string) *[]DatamapLine {
+func ReadDML(path string) (*[]DatamapLine, error) {
 	var s []DatamapLine
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		fmt.Printf("Error! Cannot open file %s", err)
+		return &s, &fileError{path, "Cannot open."}
 	}
 	r := csv.NewReader(strings.NewReader(string(data)))
 	for {
@@ -49,7 +58,7 @@ func ReadDML(path string) *[]DatamapLine {
 		// fmt.Printf("Key length: %d\n", klen)
 		// fmt.Printf("Sheet length: %d\n\n", slen)
 	}
-	return &s
+	return &s, nil
 }
 
 //ReadXLSX reads an XLSX file
