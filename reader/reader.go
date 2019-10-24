@@ -51,7 +51,10 @@ func ReadDML(path string) (*[]DatamapLine, error) {
 			// this must be the header
 			continue
 		}
-		dml := DatamapLine{Key: record[0], Sheet: record[1], Cellref: record[2]}
+		dml := DatamapLine{
+			Key:     strings.Trim(record[0], " "),
+			Sheet:   strings.Trim(record[1], " "),
+			Cellref: strings.Trim(record[2], " ")}
 		s = append(s, dml)
 		// fmt.Printf("Key: %s; sheet: %s cellref: %s\n", dml.Key, dml.Sheet, dml.Cellref)
 		// klen, slen := Keylens(dml)
