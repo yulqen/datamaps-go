@@ -22,3 +22,18 @@ func TestReadDML(t *testing.T) {
 		t.Errorf("dmlData[0].Sheet = %s; want Introduction", dmlData[0].Key)
 	}
 }
+
+func TestNoFileReturnsError(t *testing.T) {
+	_, err := ReadDML("/home/bobbins.csv")
+	// if we get no error, something has gone wrong
+	if err == nil {
+		t.Errorf("Should have thrown error %s", err)
+	}
+}
+
+func TestBadDMLLine(t *testing.T) {
+	_, err := ReadDML("/home/lemon/code/python/bcompiler-engine/tests/resources/datamap_empty_cols.csv")
+	if err != nil {
+		t.Errorf("This will trigger")
+	}
+}

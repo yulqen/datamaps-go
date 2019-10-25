@@ -2,6 +2,7 @@ package reader
 
 import (
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -36,7 +37,7 @@ func ReadDML(path string) (*[]DatamapLine, error) {
 	var s []DatamapLine
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		return &s, &fileError{path, "Cannot open."}
+		return &s, errors.New("Cannot find file")
 	}
 	r := csv.NewReader(strings.NewReader(string(data)))
 	for {
@@ -45,7 +46,7 @@ func ReadDML(path string) (*[]DatamapLine, error) {
 			break
 		}
 		if err != nil {
-			fmt.Printf("Cannot read line %s, ", err)
+			return &s, errors.New("Cannot read line %s")
 		}
 		if record[0] == "cell_key" {
 			// this must be the header
@@ -56,10 +57,6 @@ func ReadDML(path string) (*[]DatamapLine, error) {
 			Sheet:   strings.Trim(record[1], " "),
 			Cellref: strings.Trim(record[2], " ")}
 		s = append(s, dml)
-		// fmt.Printf("Key: %s; sheet: %s cellref: %s\n", dml.Key, dml.Sheet, dml.Cellref)
-		// klen, slen := Keylens(dml)
-		// fmt.Printf("Key length: %d\n", klen)
-		// fmt.Printf("Sheet length: %d\n\n", slen)
 	}
 	return &s, nil
 }
