@@ -6,20 +6,19 @@ import (
 
 func TestReadDML(t *testing.T) {
 	d, _ := ReadDML("/home/lemon/Documents/datamaps/input/datamap.csv")
-	dmlData := *d
 	// Test Key values
-	if dmlData[0].Key != "Project/Programme Name" {
-		t.Errorf("dmlData[0].Key = %s; want Project/Programme Name", dmlData[0].Key)
+	if d[0].Key != "Project/Programme Name" {
+		t.Errorf("d[0].Key = %s; want Project/Programme Name", d[0].Key)
 	}
-	if dmlData[1].Key != "Department" {
-		t.Errorf("dmlData[1].Key = %s; want Department (without a space)", dmlData[1].Key)
+	if d[1].Key != "Department" {
+		t.Errorf("d[1].Key = %s; want Department (without a space)", d[1].Key)
 	}
-	if dmlData[2].Key != "Delivery Body" {
-		t.Errorf("dmlData[2].Key = %s; want Delivery Body (without a space)", dmlData[2].Key)
+	if d[2].Key != "Delivery Body" {
+		t.Errorf("d[2].Key = %s; want Delivery Body (without a space)", d[2].Key)
 	}
 	// Test Sheet values
-	if dmlData[0].Sheet != "Introduction" {
-		t.Errorf("dmlData[0].Sheet = %s; want Introduction", dmlData[0].Key)
+	if d[0].Sheet != "Introduction" {
+		t.Errorf("d[0].Sheet = %s; want Introduction", d[0].Key)
 	}
 }
 

@@ -32,12 +32,12 @@ func Keylens(dml DatamapLine) (int, int) {
 	return len(dml.Key), len(dml.Sheet)
 }
 
-//ReadDML returns a pointer to a slice of DatamapLine structs
-func ReadDML(path string) (*[]DatamapLine, error) {
+//ReadDML returns a slice of DatamapLine structs
+func ReadDML(path string) ([]DatamapLine, error) {
 	var s []DatamapLine
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		return &s, errors.New("Cannot find file")
+		return s, errors.New("Cannot find file")
 	}
 	r := csv.NewReader(strings.NewReader(string(data)))
 	for {
@@ -46,7 +46,7 @@ func ReadDML(path string) (*[]DatamapLine, error) {
 			break
 		}
 		if err != nil {
-			return &s, errors.New("Cannot read line %s")
+			return s, errors.New("Cannot read line %s")
 		}
 		if record[0] == "cell_key" {
 			// this must be the header
@@ -58,7 +58,7 @@ func ReadDML(path string) (*[]DatamapLine, error) {
 			Cellref: strings.Trim(record[2], " ")}
 		s = append(s, dml)
 	}
-	return &s, nil
+	return s, nil
 }
 
 //ReadXLSX reads an XLSX file
