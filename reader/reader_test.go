@@ -5,7 +5,7 @@ import (
 )
 
 func TestReadDML(t *testing.T) {
-	d, _ := ReadDML("/home/lemon/Documents/datamaps/input/datamap.csv")
+	d, _ := ReadDML("testdata/datamap.csv")
 	// Test Key values
 	if d[0].Key != "Project/Programme Name" {
 		t.Errorf("d[0].Key = %s; want Project/Programme Name", d[0].Key)
