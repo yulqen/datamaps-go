@@ -75,28 +75,34 @@ var lowerAlpha [2]string = [2]string{"A", "B"}
 // two alphabet lengths
 const ablen int = 52
 
-func alphas() []string {
-	acount := 0
-	lets := make([]string, ablen)
-	for i, _ := range lets {
-		if i == 0 {
-			lets[i] = "A"
-			continue
-		}
-		if i%26 != 0 {
-			lets[i] = string('A' + byte(i))
-		} else {
-			acount++
-			lets[i] = string(64+acount) + string('A'+byte(i))
+//alphSingle generates all the letters of the alphabet
+func alphaSingle() []string {
+	letters := make([]string, 26)
+	for idx := range letters {
+		letters[idx] = string('A' + byte(idx))
+	}
+	return letters
+}
+
+//alphas generates the alpha column compont of Excel cell references
+//Combines n alphabets to do this.
+func alphas(n int) []string {
+	single := alphaSingle()
+	slen := len(single)
+	tmp := make([]string, len(single))
+	copy(tmp, single)
+	for cycle := 0; cycle < n; cycle++ {
+		for y := 0; y < slen; y++ {
+			single = append(single, single[(cycle+2)-2]+tmp[y])
 		}
 	}
-	return lets
+	return single
 }
 
 //ReadXLSX reads an XLSX file
 func ReadXLSX(excelFileName string) []ExtractedCell {
 	var out []ExtractedCell
-	alphs := alphas()
+	alphs := alphas(2)
 	for _, l := range alphs {
 		fmt.Printf("Letter: %s", string(l))
 	}

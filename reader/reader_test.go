@@ -42,8 +42,21 @@ func TestReadXLSX(t *testing.T) {
 	_ = ReadXLSX("testdata/test_template.xlsx") // TODO: remove temp blank
 }
 
+func TestAlphaSingle(t *testing.T) {
+	as := alphaSingle()
+	if as[0] != "A" {
+		t.Errorf("Expected A, got %v", as[0])
+	}
+	if as[1] != "B" {
+		t.Errorf("Expected B, got %v", as[1])
+	}
+	if as[25] != "Z" {
+		t.Errorf("Expected Z, got %v", as[25])
+	}
+}
+
 func TestAlphas(t *testing.T) {
-	as := alphas()
+	as := alphas(2)
 	if as[0] != "A" {
 		t.Errorf("Expected A, got %v", as[0])
 	}
@@ -52,6 +65,9 @@ func TestAlphas(t *testing.T) {
 	}
 	if as[26] != "AA" {
 		t.Errorf("Expected AA, got %v", as[26])
+	}
+	if as[52] != "BA" {
+		t.Errorf("Expected BA, got %v", as[52])
 	}
 
 }
