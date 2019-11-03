@@ -23,6 +23,7 @@ func TestReadDML(t *testing.T) {
 }
 
 func TestNoFileReturnsError(t *testing.T) {
+	// this file does not exist
 	_, err := ReadDML("/home/bobbins.csv")
 	// if we get no error, something has gone wrong
 	if err == nil {
@@ -32,7 +33,25 @@ func TestNoFileReturnsError(t *testing.T) {
 
 func TestBadDMLLine(t *testing.T) {
 	_, err := ReadDML("/home/lemon/code/python/bcompiler-engine/tests/resources/datamap_empty_cols.csv")
-	if err != nil {
-		t.Errorf("This will trigger")
+	if err == nil {
+		t.Errorf("No error so test failed.")
 	}
+}
+
+func TestReadXLSX(t *testing.T) {
+	_ = ReadXLSX("testdata/test_template.xlsx") // TODO: remove temp blank
+}
+
+func TestAlphas(t *testing.T) {
+	as := alphas()
+	if as[0] != "A" {
+		t.Errorf("Expected A, got %v", as[0])
+	}
+	if as[25] != "Z" {
+		t.Errorf("Expected Z, got %v", as[25])
+	}
+	if as[26] != "AA" {
+		t.Errorf("Expected AA, got %v", as[26])
+	}
+
 }
