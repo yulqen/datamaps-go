@@ -40,7 +40,16 @@ func TestBadDMLLine(t *testing.T) {
 }
 
 func TestReadXLSX(t *testing.T) {
-	_ = ReadXLSX("testdata/test_template.xlsx") // TODO: remove temp blank
+	data := ReadXLSX("testdata/test_template.xlsx")
+	if data[0].colL != "A" {
+		t.Errorf("Expected data[0].colL to be A, got %v", data[0].colL)
+	}
+	if data[0].value != "Date:" {
+		t.Errorf("Expected data[0].value to be Date:, got %v", data[0].value)
+	}
+	if data[0].rowLidx != 2 {
+		t.Errorf("Expected data[0].rowLidx to be 2, got %v", data[0].rowLidx)
+	}
 }
 
 func TestAlphaStream(t *testing.T) {
