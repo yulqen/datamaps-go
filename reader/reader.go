@@ -73,8 +73,6 @@ type ExtractedCell struct {
 	value   string
 }
 
-var lowerAlpha [2]string = [2]string{"A", "B"}
-
 // two alphabet lengths
 const ablen int = 52
 
