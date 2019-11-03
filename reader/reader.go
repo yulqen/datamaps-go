@@ -73,9 +73,6 @@ type ExtractedCell struct {
 	value   string
 }
 
-// two alphabet lengths
-const ablen int = 52
-
 //alphSingle generates all the letters of the alphabet
 func alphaSingle() []string {
 	letters := make([]string, 26)
