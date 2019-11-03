@@ -68,7 +68,7 @@ func ReadDML(path string) ([]DatamapLine, error) {
 //ExtractedCell is Data pulled from a cell
 type ExtractedCell struct {
 	cell    *xlsx.Cell
-	colLidx string
+	colL    string
 	rowLidx int
 	value   string
 }
@@ -107,10 +107,6 @@ func alphas(n int) []string {
 //ReadXLSX reads an XLSX file
 func ReadXLSX(excelFileName string) []ExtractedCell {
 	var out []ExtractedCell
-	alphs := alphas(2)
-	for _, l := range alphs {
-		fmt.Printf("Letter: %s", string(l))
-	}
 	xlFile, err := xlsx.OpenFile(excelFileName)
 	if err != nil {
 		fmt.Printf("Cannot open %s", excelFileName)
@@ -120,13 +116,13 @@ func ReadXLSX(excelFileName string) []ExtractedCell {
 			for colLidx, cell := range row.Cells {
 				ex := ExtractedCell{
 					cell:    cell,
-					colLidx: string(alphs[colLidx]),
+					colL:    alphaStream[colLidx],
 					rowLidx: rowLidx + 1,
 					value:   cell.Value}
 				out = append(out, ex)
 				text := cell.String()
 				log.Printf("Sheet: %s Row: %d Col: %q Value: %s\n",
-					sheet.Name, rowLidx, alphs[colLidx], text)
+					sheet.Name, ex.rowLidx, alphaStream[colLidx], text)
 			}
 		}
 	}
