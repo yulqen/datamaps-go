@@ -12,8 +12,10 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
-const maxCols = 16384
-const maxAlphabets = (maxCols / 26) - 1
+const (
+	maxCols      = 16384
+	maxAlphabets = (maxCols / 26) - 1
+)
 
 //DatamapLine - a line from the datamap.
 type DatamapLine struct {
