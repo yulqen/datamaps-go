@@ -12,6 +12,9 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
+const maxCols = 16384
+const maxAlphabets = (maxCols / 26) - 1
+
 //DatamapLine - a line from the datamap.
 type DatamapLine struct {
 	Key     string
@@ -84,10 +87,10 @@ func alphaSingle() []string {
 	return letters
 }
 
-var alphaStream = alphas(10)
+var alphaStream = alphas(maxAlphabets)
 
 //alphas generates the alpha column compont of Excel cell references
-//Combines n alphabets to do this.
+//Adds n alphabets to the first (A..Z) alphabet.
 func alphas(n int) []string {
 	single := alphaSingle()
 	slen := len(single)
