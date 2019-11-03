@@ -42,6 +42,12 @@ func TestReadXLSX(t *testing.T) {
 	_ = ReadXLSX("testdata/test_template.xlsx") // TODO: remove temp blank
 }
 
+func TestAlphaStream(t *testing.T) {
+	if alphaStream[26] != "AA" {
+		t.Errorf("Expected AA, got %v", alphaStream[26])
+	}
+}
+
 func TestAlphaSingle(t *testing.T) {
 	as := alphaSingle()
 	if as[0] != "A" {

@@ -84,6 +84,8 @@ func alphaSingle() []string {
 	return letters
 }
 
+var alphaStream = alphas(10)
+
 //alphas generates the alpha column compont of Excel cell references
 //Combines n alphabets to do this.
 func alphas(n int) []string {
