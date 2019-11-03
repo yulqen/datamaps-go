@@ -17,6 +17,8 @@ const (
 	maxAlphabets = (maxCols / 26) - 1
 )
 
+var alphaStream = alphas(maxAlphabets)
+
 //DatamapLine - a line from the datamap.
 type DatamapLine struct {
 	Key     string
@@ -24,13 +26,12 @@ type DatamapLine struct {
 	Cellref string
 }
 
-type fileError struct {
-	file string
-	msg  string
-}
-
-func (e *fileError) Error() string {
-	return fmt.Sprintf("%s", e.msg)
+//ExtractedCell is Data pulled from a cell
+type ExtractedCell struct {
+	cell    *xlsx.Cell
+	colL    string
+	rowLidx int
+	value   string
 }
 
 //Keylens returns the length of a key
@@ -67,14 +68,6 @@ func ReadDML(path string) ([]DatamapLine, error) {
 	return s, nil
 }
 
-//ExtractedCell is Data pulled from a cell
-type ExtractedCell struct {
-	cell    *xlsx.Cell
-	colL    string
-	rowLidx int
-	value   string
-}
-
 //alphSingle generates all the letters of the alphabet
 func alphaSingle() []string {
 	letters := make([]string, 26)
@@ -83,8 +76,6 @@ func alphaSingle() []string {
 	}
 	return letters
 }
-
-var alphaStream = alphas(maxAlphabets)
 
 //alphas generates the alpha column compont of Excel cell references
 //Adds n alphabets to the first (A..Z) alphabet.
