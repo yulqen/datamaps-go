@@ -17,7 +17,7 @@ const (
 	maxAlphabets = (maxCols / 26) - 1
 )
 
-var alphaStream = alphas(maxAlphabets)
+var colstream = cols(maxAlphabets)
 
 //DatamapLine - a line from the datamap.
 type DatamapLine struct {
@@ -68,8 +68,8 @@ func ReadDML(path string) ([]DatamapLine, error) {
 	return s, nil
 }
 
-//alphSingle generates all the letters of the alphabet
-func alphaSingle() []string {
+//alphabet generates all the letters of the alphabet
+func alphabet() []string {
 	letters := make([]string, 26)
 	for idx := range letters {
 		letters[idx] = string('A' + byte(idx))
@@ -77,40 +77,40 @@ func alphaSingle() []string {
 	return letters
 }
 
-//alphas generates the alpha column compont of Excel cell references
+//cols generates the alpha column compont of Excel cell references
 //Adds n alphabets to the first (A..Z) alphabet.
-func alphas(n int) []string {
-	single := alphaSingle()
-	slen := len(single)
-	tmp := make([]string, len(single))
-	copy(tmp, single)
+func cols(n int) []string {
+	out := alphabet()
+	alen := len(out)
+	tmp := make([]string, alen)
+	copy(tmp, out)
 	for cycle := 0; cycle < n; cycle++ {
-		for y := 0; y < slen; y++ {
-			single = append(single, single[(cycle+2)-2]+tmp[y])
+		for y := 0; y < alen; y++ {
+			out = append(out, out[(cycle+2)-2]+tmp[y])
 		}
 	}
-	return single
+	return out
 }
 
 //ReadXLSX reads an XLSX file
-func ReadXLSX(excelFileName string) []ExtractedCell {
+func ReadXLSX(fn string) []ExtractedCell {
 	var out []ExtractedCell
-	xlFile, err := xlsx.OpenFile(excelFileName)
+	f, err := xlsx.OpenFile(fn)
 	if err != nil {
-		fmt.Printf("Cannot open %s", excelFileName)
+		fmt.Printf("Cannot open %s", fn)
 	}
-	for _, sheet := range xlFile.Sheets {
+	for _, sheet := range f.Sheets {
 		for rowLidx, row := range sheet.Rows {
 			for colLidx, cell := range row.Cells {
 				ex := ExtractedCell{
 					cell:    cell,
-					colL:    alphaStream[colLidx],
+					colL:    colstream[colLidx],
 					rowLidx: rowLidx + 1,
 					value:   cell.Value}
 				out = append(out, ex)
 				text := cell.String()
 				log.Printf("Sheet: %s Row: %d Col: %q Value: %s\n",
-					sheet.Name, ex.rowLidx, alphaStream[colLidx], text)
+					sheet.Name, ex.rowLidx, colstream[colLidx], text)
 			}
 		}
 	}

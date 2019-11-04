@@ -53,42 +53,42 @@ func TestReadXLSX(t *testing.T) {
 }
 
 func TestAlphaStream(t *testing.T) {
-	if alphaStream[26] != "AA" {
-		t.Errorf("Expected AA, got %v", alphaStream[26])
+	if colstream[26] != "AA" {
+		t.Errorf("Expected AA, got %v", colstream[26])
 	}
-	if len(alphaStream) > maxCols {
+	if len(colstream) > maxCols {
 		t.Errorf(`Number of columns in alphastream exceeds Excel maximum.
-		alphastream contains %d, maxCols is %d`, len(alphaStream), maxCols)
+		alphastream contains %d, maxCols is %d`, len(colstream), maxCols)
 	}
-	log.Printf("Length of alphastream: %d", len(alphaStream))
+	log.Printf("Length of alphastream: %d", len(colstream))
 }
 
 func TestAlphaSingle(t *testing.T) {
-	as := alphaSingle()
-	if as[0] != "A" {
-		t.Errorf("Expected A, got %v", as[0])
+	ab := alphabet()
+	if ab[0] != "A" {
+		t.Errorf("Expected A, got %v", ab[0])
 	}
-	if as[1] != "B" {
-		t.Errorf("Expected B, got %v", as[1])
+	if ab[1] != "B" {
+		t.Errorf("Expected B, got %v", ab[1])
 	}
-	if as[25] != "Z" {
-		t.Errorf("Expected Z, got %v", as[25])
+	if ab[25] != "Z" {
+		t.Errorf("Expected Z, got %v", ab[25])
 	}
 }
 
 func TestAlphas(t *testing.T) {
-	as := alphas(2)
-	if as[0] != "A" {
-		t.Errorf("Expected A, got %v", as[0])
+	ecs := cols(2)
+	if ecs[0] != "A" {
+		t.Errorf("Expected A, got %v", ecs[0])
 	}
-	if as[25] != "Z" {
-		t.Errorf("Expected Z, got %v", as[25])
+	if ecs[25] != "Z" {
+		t.Errorf("Expected Z, got %v", ecs[25])
 	}
-	if as[26] != "AA" {
-		t.Errorf("Expected AA, got %v", as[26])
+	if ecs[26] != "AA" {
+		t.Errorf("Expected AA, got %v", ecs[26])
 	}
-	if as[52] != "BA" {
-		t.Errorf("Expected BA, got %v", as[52])
+	if ecs[52] != "BA" {
+		t.Errorf("Expected BA, got %v", ecs[52])
 	}
 
 }
