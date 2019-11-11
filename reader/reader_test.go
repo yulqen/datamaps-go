@@ -1,7 +1,6 @@
 package reader
 
 import (
-	"fmt"
 	"log"
 	"testing"
 )
@@ -93,11 +92,9 @@ func TestAlphas(t *testing.T) {
 	}
 }
 
-func TestDMLSliceToMap(t *testing.T) {
+func TestGetSheetsFromDM(t *testing.T) {
 	slice, _ := ReadDML("testdata/datamap.csv")
-	t.Logf("Line %v", slice[0])
 	sheetNo := getSheets(slice)
-	fmt.Print(sheetNo)
 	if sheetNo != 14 {
 		t.Errorf("Expected 14 sheets in slice, got %d",
 			sheetNo)
