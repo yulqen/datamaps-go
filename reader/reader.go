@@ -39,6 +39,8 @@ func Keylens(dml DatamapLine) (int, int) {
 	return len(dml.Key), len(dml.Sheet)
 }
 
+// sheetInSlice is a helper which returns true
+// if a string is in a slice of strings
 func sheetInSlice(list []string, key string) bool {
 	for _, x := range list {
 		if x == key {
