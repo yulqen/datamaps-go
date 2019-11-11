@@ -39,6 +39,28 @@ func Keylens(dml DatamapLine) (int, int) {
 	return len(dml.Key), len(dml.Sheet)
 }
 
+func sheetInSlice(list []string, key string) bool {
+	for _, x := range list {
+		if x == key {
+			return true
+		}
+	}
+	return false
+}
+
+// getSheets returns the number of Sheet field entries
+// in a slice of DatamapLine structs
+func getSheets(dmls []DatamapLine) int {
+	var sheetNames []string
+	for _, dml := range dmls {
+		if sheetInSlice(sheetNames, dml.Sheet) == false {
+			sheetNames = append(sheetNames, dml.Sheet)
+		}
+	}
+	fmt.Printf("sheetNames is %v", sheetNames)
+	return len(sheetNames)
+}
+
 //ReadDML returns a slice of DatamapLine structs
 func ReadDML(path string) ([]DatamapLine, error) {
 	var s []DatamapLine
