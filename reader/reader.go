@@ -50,9 +50,9 @@ func sheetInSlice(list []string, key string) bool {
 	return false
 }
 
-// getSheets returns the number of Sheet field entries
+// getSheetNames returns the number of Sheet field entries
 // in a slice of DatamapLine structs
-func getSheets(dmls []DatamapLine) int {
+func getSheetNames(dmls []DatamapLine) []string {
 	var sheetNames []string
 	for _, dml := range dmls {
 		if sheetInSlice(sheetNames, dml.Sheet) == false {
@@ -60,7 +60,7 @@ func getSheets(dmls []DatamapLine) int {
 		}
 	}
 	fmt.Printf("sheetNames is %v", sheetNames)
-	return len(sheetNames)
+	return sheetNames
 }
 
 //ReadDML returns a slice of DatamapLine structs

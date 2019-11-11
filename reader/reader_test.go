@@ -94,9 +94,18 @@ func TestAlphas(t *testing.T) {
 
 func TestGetSheetsFromDM(t *testing.T) {
 	slice, _ := ReadDML("testdata/datamap.csv")
-	sheetNo := getSheets(slice)
-	if sheetNo != 14 {
+	sheetNames := getSheetNames(slice)
+	if len(sheetNames) != 14 {
 		t.Errorf("Expected 14 sheets in slice, got %d",
-			sheetNo)
+			len(sheetNames))
 	}
+}
+
+func TestSheetDataInMap(t *testing.T) {
+	// want to see data from a file in this form:
+	//		Struct:
+	//			filename: test_template.xlsx
+	//			data: map[sheetName]sheetData
+	//  we want to test ^^^^^^^^^^^^^
+
 }
