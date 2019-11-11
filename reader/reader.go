@@ -116,6 +116,47 @@ func cols(n int) []string {
 	return out
 }
 
+// cellrefVal is a map of the cellref to the cell data
+// as provided by the xlsx package
+type cellrefVal map[string]ExtractedCell
+
+func ReadXLSToMap(dm string, tm string) map[string][]cellrefVal {
+	var out map[string][]cellrefVal
+
+	// open the files
+	excelData, err := xlsx.OpenFile(tm)
+	if err != nil {
+		fmt.Printf("Cannot open %v", excelData)
+	}
+
+	dmlData, err := ReadDML(dm)
+	if err != nil {
+		fmt.Errorf("Cannot read datamap file %v", dm)
+	}
+
+	// get the data
+	for _, sheet := range excelData.Sheets {
+		sheetNames := getSheetNames(dmlData)
+		sheetData := make(map[string][]cellrefVal, len(sheetNames))
+		var cellDataList []map[string]ExtractedCell
+		for rowLidx, row := range sheet.Rows {
+			for colLidx, cell := range row.Cells {
+				cellData := make(map[string]ExtractedCell)
+				ex := ExtractedCell{
+					cell:    cell,
+					colL:    colstream[colLidx],
+					rowLidx: rowLidx + 1,
+					value:   cell.Value}
+				cellref := fmt.Sprintf("%s%d", ex.colL, ex.rowLidx)
+				cellData[cellref] = ex
+				cellDataList = append(cellDataList, cellData)
+				sheetData[sheet.Name] = append(sheetData[sheet.Name], cellData)
+			}
+		}
+	}
+	return out
+}
+
 //ReadXLSX reads an XLSX file
 func ReadXLSX(fn string) []ExtractedCell {
 	var out []ExtractedCell

@@ -101,11 +101,7 @@ func TestGetSheetsFromDM(t *testing.T) {
 	}
 }
 
-func TestSheetDataInMap(t *testing.T) {
-	// want to see data from a file in this form:
-	//		Struct:
-	//			filename: test_template.xlsx
-	//			data: map[sheetName]sheetData
-	//  we want to test ^^^^^^^^^^^^^
-
+func TestReadXLSXToMap(t *testing.T) {
+	d := ReadXLSToMap("testdata/datamap.csv", "testdata/test_template.xlsx")
+	_ = d
 }
