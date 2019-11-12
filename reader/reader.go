@@ -122,6 +122,12 @@ func cols(n int) []string {
 // Paths to a datamap and the spreadsheet file required.
 func ReadXLS(dm string, ssheet string) FileData {
 
+	// TODO - to implement filtering by Datamap,
+	// pull the data first, then go through each
+	// item in the dmlData slice to check for sheet/cellref
+	// matches, and then return them. Duplicate this func
+	// to do so
+
 	// open the files
 	excelData, err := xlsx.OpenFile(ssheet)
 	if err != nil {
