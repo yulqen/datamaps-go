@@ -103,5 +103,7 @@ func TestGetSheetsFromDM(t *testing.T) {
 
 func TestReadXLSXToMap(t *testing.T) {
 	d := ReadXLSToMap("testdata/datamap.csv", "testdata/test_template.xlsx")
-	_ = d
+	if d["Summary"]["A2"].value != "Date:" {
+		t.Errorf("Expected A2 in Summary sheet to be 'Date:' - instead it is %s", d["Summary"]["A2"].value)
+	}
 }
