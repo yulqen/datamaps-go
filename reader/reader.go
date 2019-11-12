@@ -22,6 +22,8 @@ type (
 	SheetData map[string]ExtractedCell
 	// Data from the file.
 	FileData map[string]SheetData
+	// Data from the file, filtered by a Datamap.
+	ExtractedData map[string]map[string]xlsx.Cell
 )
 
 var colstream = cols(maxAlphabets)
@@ -117,7 +119,7 @@ func cols(n int) []string {
 	return out
 }
 
-//ReadXLSToMap returns the file's data as a map,
+//ReadXLSX returns the file's data as a map,
 // keyed on sheet name. All values are returned as strings.
 // Paths to a datamap and the spreadsheet file required.
 func ReadXLSX(dm string, ssheet string) FileData {
@@ -154,6 +156,33 @@ func ReadXLSX(dm string, ssheet string) FileData {
 				data[cellref] = ex
 			}
 			output[sheet.Name] = data
+		}
+	}
+	return output
+}
+
+//Extract returns the file's data as a map,
+// keyed on sheet name. All values are returned as strings.
+// Paths to a datamap and the spreadsheet file required.
+func Extract(dm string, ssheet string) ExtractedData {
+	data := ReadXLSX(dm, ssheet)
+	dmlData, err := ReadDML(dm)
+	if err != nil {
+		log.Fatal(err)
+	}
+	sheetNames := getSheetNames(dmlData)
+	output := make(ExtractedData, len(sheetNames))
+
+	for _, i := range dmlData {
+		sheet := i.Sheet
+		cellref := i.Cellref
+		if val, ok := data[sheet][cellref]; ok {
+			// TODO check what is happening here...
+			// ddg "golang assingment to entry in nil map"
+			// first SO entry, but I don't think I totally understand
+			inner := make(map[string]xlsx.Cell)
+			inner[cellref] = *val.Cell
+			output[sheet] = inner
 		}
 	}
 	return output

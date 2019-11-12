@@ -98,3 +98,10 @@ func TestReadXLSX(t *testing.T) {
 		t.Errorf("Expected J22 in Another Sheet sheet to be 18 - instead it is %s", d["Another Sheet"]["J22"].Value)
 	}
 }
+
+func TestExtract(t *testing.T) {
+	d := Extract("testdata/datamap.csv", "testdata/test_template.xlsx")
+	if d["Introduction"]["C9"].Value != "Test Department" {
+		t.Errorf("Expected C9 in Introduction sheet to be Test Department - instead it is %s", d["Introduction"]["C9"].Value)
+	}
+}
