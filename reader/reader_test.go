@@ -106,4 +106,8 @@ func TestReadXLSXToMap(t *testing.T) {
 	if d["Summary"]["A2"].value != "Date:" {
 		t.Errorf("Expected A2 in Summary sheet to be 'Date:' - instead it is %s", d["Summary"]["A2"].value)
 	}
+	// TODO we actually want this to return an integer - do we?
+	if d["Another Sheet"]["F5"].value != "4.2" {
+		t.Errorf("Expected F5 in Another Sheet sheet to be 4.2 - instead it is %s", d["Another Sheet"]["F5"].value)
+	}
 }
