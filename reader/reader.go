@@ -120,7 +120,7 @@ func cols(n int) []string {
 //ReadXLSToMap returns the file's data as a map,
 // keyed on sheet name. All values are returned as strings.
 // Paths to a datamap and the spreadsheet file required.
-func ReadXLSToMap(dm string, ssheet string) FileData {
+func ReadXLS(dm string, ssheet string) FileData {
 
 	// open the files
 	excelData, err := xlsx.OpenFile(ssheet)
@@ -151,26 +151,4 @@ func ReadXLSToMap(dm string, ssheet string) FileData {
 		}
 	}
 	return output
-}
-
-//ReadXLSX reads an XLSX file
-func ReadXLSX(fn string) []ExtractedCell {
-	var out []ExtractedCell
-	f, err := xlsx.OpenFile(fn)
-	if err != nil {
-		fmt.Printf("Cannot open %s", fn)
-	}
-	for _, sheet := range f.Sheets {
-		for rowLidx, row := range sheet.Rows {
-			for colLidx, cell := range row.Cells {
-				ex := ExtractedCell{
-					Cell:    cell,
-					ColL:    colstream[colLidx],
-					RowLidx: rowLidx + 1,
-					Value:   cell.Value}
-				out = append(out, ex)
-			}
-		}
-	}
-	return out
 }
