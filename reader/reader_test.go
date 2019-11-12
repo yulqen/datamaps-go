@@ -1,7 +1,6 @@
 package reader
 
 import (
-	"log"
 	"testing"
 )
 
@@ -60,7 +59,6 @@ func TestAlphaStream(t *testing.T) {
 		t.Errorf(`Number of columns in alphastream exceeds Excel maximum.
 		alphastream contains %d, maxCols is %d`, len(colstream), maxCols)
 	}
-	log.Printf("Length of alphastream: %d", len(colstream))
 }
 
 func TestAlphaSingle(t *testing.T) {

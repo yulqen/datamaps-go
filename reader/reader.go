@@ -41,11 +41,6 @@ type ExtractedCell struct {
 	Value   string
 }
 
-//Keylens returns the length of a key.
-func Keylens(dml DatamapLine) (int, int) {
-	return len(dml.Key), len(dml.Sheet)
-}
-
 //sheetInSlice is a helper which returns true
 // if a string is in a slice of strings.
 func sheetInSlice(list []string, key string) bool {
@@ -66,7 +61,6 @@ func getSheetNames(dmls []DatamapLine) []string {
 			sheetNames = append(sheetNames, dml.Sheet)
 		}
 	}
-	fmt.Printf("sheetNames is %v", sheetNames)
 	return sheetNames
 }
 
@@ -75,7 +69,7 @@ func ReadDML(path string) ([]DatamapLine, error) {
 	var s []DatamapLine
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		return s, errors.New("Cannot find file")
+		return s, fmt.Errorf("Cannot find file: %s", path)
 	}
 	r := csv.NewReader(strings.NewReader(string(data)))
 	for {
@@ -123,23 +117,21 @@ func cols(n int) []string {
 	return out
 }
 
-//ReadXLSToMap returns the file's data a map,
-// keyed on sheet name.
-func ReadXLSToMap(dm string, tm string) FileData {
+//ReadXLSToMap returns the file's data as a map,
+// keyed on sheet name. All values are returned as strings.
+// Paths to a datamap and the spreadsheet file required.
+func ReadXLSToMap(dm string, ssheet string) FileData {
 
 	// open the files
-	excelData, err := xlsx.OpenFile(tm)
+	excelData, err := xlsx.OpenFile(ssheet)
 	if err != nil {
-		log.Fatalf("Cannot open %v", excelData)
+		log.Fatal(err)
 	}
-
 	dmlData, err := ReadDML(dm)
 	if err != nil {
-		log.Fatalf("Cannot read datamap file %v", dm)
+		log.Fatal(err)
 	}
-
 	sheetNames := getSheetNames(dmlData)
-
 	output := make(FileData, len(sheetNames))
 
 	// get the data
@@ -177,9 +169,6 @@ func ReadXLSX(fn string) []ExtractedCell {
 					RowLidx: rowLidx + 1,
 					Value:   cell.Value}
 				out = append(out, ex)
-				text := cell.String()
-				log.Printf("Sheet: %s Row: %d Col: %q Value: %s\n",
-					sheet.Name, ex.RowLidx, colstream[colLidx], text)
 			}
 		}
 	}
