@@ -120,7 +120,7 @@ func cols(n int) []string {
 //ReadXLSToMap returns the file's data as a map,
 // keyed on sheet name. All values are returned as strings.
 // Paths to a datamap and the spreadsheet file required.
-func ReadXLS(dm string, ssheet string) FileData {
+func ReadXLSX(dm string, ssheet string) FileData {
 
 	// TODO - to implement filtering by Datamap,
 	// pull the data first, then go through each
