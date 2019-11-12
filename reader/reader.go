@@ -17,6 +17,13 @@ const (
 	maxAlphabets = (maxCols / 26) - 1
 )
 
+type (
+	// Data from the sheet.
+	SheetData map[string]ExtractedCell
+	// Data from the file.
+	FileData map[string]SheetData
+)
+
 var colstream = cols(maxAlphabets)
 
 //DatamapLine - a line from the datamap.
@@ -26,21 +33,21 @@ type DatamapLine struct {
 	Cellref string
 }
 
-//ExtractedCell is Data pulled from a cell
+//ExtractedCell is data pulled from a cell.
 type ExtractedCell struct {
-	cell    *xlsx.Cell
-	colL    string
-	rowLidx int
-	value   string
+	Cell    *xlsx.Cell
+	ColL    string
+	RowLidx int
+	Value   string
 }
 
-//Keylens returns the length of a key
+//Keylens returns the length of a key.
 func Keylens(dml DatamapLine) (int, int) {
 	return len(dml.Key), len(dml.Sheet)
 }
 
-// sheetInSlice is a helper which returns true
-// if a string is in a slice of strings
+//sheetInSlice is a helper which returns true
+// if a string is in a slice of strings.
 func sheetInSlice(list []string, key string) bool {
 	for _, x := range list {
 		if x == key {
@@ -50,8 +57,8 @@ func sheetInSlice(list []string, key string) bool {
 	return false
 }
 
-// getSheetNames returns the number of Sheet field entries
-// in a slice of DatamapLine structs
+//getSheetNames returns the number of Sheet field entries
+// in a slice of DatamapLine structs.
 func getSheetNames(dmls []DatamapLine) []string {
 	var sheetNames []string
 	for _, dml := range dmls {
@@ -63,7 +70,7 @@ func getSheetNames(dmls []DatamapLine) []string {
 	return sheetNames
 }
 
-//ReadDML returns a slice of DatamapLine structs
+//ReadDML returns a slice of DatamapLine structs.
 func ReadDML(path string) ([]DatamapLine, error) {
 	var s []DatamapLine
 	data, err := ioutil.ReadFile(path)
@@ -92,7 +99,7 @@ func ReadDML(path string) ([]DatamapLine, error) {
 	return s, nil
 }
 
-//alphabet generates all the letters of the alphabet
+//alphabet generates all the letters of the alphabet.
 func alphabet() []string {
 	letters := make([]string, 26)
 	for idx := range letters {
@@ -116,11 +123,8 @@ func cols(n int) []string {
 	return out
 }
 
-type (
-	SheetData map[string]ExtractedCell
-	FileData  map[string]SheetData
-)
-
+//ReadXLSToMap returns the file's data a map,
+// keyed on sheet name.
 func ReadXLSToMap(dm string, tm string) FileData {
 
 	// open the files
@@ -144,11 +148,11 @@ func ReadXLSToMap(dm string, tm string) FileData {
 		for rowLidx, row := range sheet.Rows {
 			for colLidx, cell := range row.Cells {
 				ex := ExtractedCell{
-					cell:    cell,
-					colL:    colstream[colLidx],
-					rowLidx: rowLidx + 1,
-					value:   cell.Value}
-				cellref := fmt.Sprintf("%s%d", ex.colL, ex.rowLidx)
+					Cell:    cell,
+					ColL:    colstream[colLidx],
+					RowLidx: rowLidx + 1,
+					Value:   cell.Value}
+				cellref := fmt.Sprintf("%s%d", ex.ColL, ex.RowLidx)
 				data[cellref] = ex
 			}
 			output[sheet.Name] = data
@@ -168,14 +172,14 @@ func ReadXLSX(fn string) []ExtractedCell {
 		for rowLidx, row := range sheet.Rows {
 			for colLidx, cell := range row.Cells {
 				ex := ExtractedCell{
-					cell:    cell,
-					colL:    colstream[colLidx],
-					rowLidx: rowLidx + 1,
-					value:   cell.Value}
+					Cell:    cell,
+					ColL:    colstream[colLidx],
+					RowLidx: rowLidx + 1,
+					Value:   cell.Value}
 				out = append(out, ex)
 				text := cell.String()
 				log.Printf("Sheet: %s Row: %d Col: %q Value: %s\n",
-					sheet.Name, ex.rowLidx, colstream[colLidx], text)
+					sheet.Name, ex.RowLidx, colstream[colLidx], text)
 			}
 		}
 	}
