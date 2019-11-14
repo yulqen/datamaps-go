@@ -173,14 +173,12 @@ func Extract(dm string, ssheet string) ExtractedData {
 	sheetNames := getSheetNames(dmlData)
 	output := make(ExtractedData, len(sheetNames))
 
+	inner := make(map[string]xlsx.Cell)
+
 	for _, i := range dmlData {
 		sheet := i.Sheet
 		cellref := i.Cellref
 		if val, ok := data[sheet][cellref]; ok {
-			// TODO check what is happening here...
-			// ddg "golang assingment to entry in nil map"
-			// first SO entry, but I don't think I totally understand
-			inner := make(map[string]xlsx.Cell)
 			inner[cellref] = *val.Cell
 			output[sheet] = inner
 		}
