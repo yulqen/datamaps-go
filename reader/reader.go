@@ -37,10 +37,10 @@ type DatamapLine struct {
 
 //ExtractedCell is data pulled from a cell.
 type ExtractedCell struct {
-	Cell    *xlsx.Cell
-	ColL    string
-	RowLidx int
-	Value   string
+	Cell  *xlsx.Cell
+	Col   string
+	Row   int
+	Value string
 }
 
 //sheetInSlice is a helper which returns true
@@ -137,11 +137,11 @@ func ReadXLSX(ssheet string) FileData {
 		for rowLidx, row := range sheet.Rows {
 			for colLidx, cell := range row.Cells {
 				ex := ExtractedCell{
-					Cell:    cell,
-					ColL:    colstream[colLidx],
-					RowLidx: rowLidx + 1,
-					Value:   cell.Value}
-				cellref := fmt.Sprintf("%s%d", ex.ColL, ex.RowLidx)
+					Cell:  cell,
+					Col:   colstream[colLidx],
+					Row:   rowLidx + 1,
+					Value: cell.Value}
+				cellref := fmt.Sprintf("%s%d", ex.Col, ex.Row)
 				xdata[cellref] = ex
 			}
 			o[sheet.Name] = xdata
