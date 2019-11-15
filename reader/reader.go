@@ -122,25 +122,14 @@ func cols(n int) []string {
 //ReadXLSX returns the file's data as a map,
 // keyed on sheet name. All values are returned as strings.
 // Paths to a datamap and the spreadsheet file required.
-func ReadXLSX(dm string, ssheet string) FileData {
-
-	// TODO - to implement filtering by Datamap,
-	// pull the data first, then go through each
-	// item in the dmlData slice to check for sheet/cellref
-	// matches, and then return them. Duplicate this func
-	// to do so
+func ReadXLSX(ssheet string) FileData {
 
 	// open the files
 	excelData, err := xlsx.OpenFile(ssheet)
 	if err != nil {
 		log.Fatal(err)
 	}
-	dmlData, err := ReadDML(dm)
-	if err != nil {
-		log.Fatal(err)
-	}
-	sheetNames := getSheetNames(dmlData)
-	output := make(FileData, len(sheetNames))
+	output := make(FileData, 1)
 
 	// get the data
 	for _, sheet := range excelData.Sheets {
@@ -162,17 +151,17 @@ func ReadXLSX(dm string, ssheet string) FileData {
 }
 
 //Extract returns the file's data as a map,
-// keyed on sheet name. All values are returned as strings.
+// using the datamap as a filter, keyed on sheet name. All values
+// are returned as strings.
 // Paths to a datamap and the spreadsheet file required.
 func Extract(dm string, ssheet string) ExtractedData {
-	data := ReadXLSX(dm, ssheet)
+	data := ReadXLSX(ssheet)
 	dmlData, err := ReadDML(dm)
 	if err != nil {
 		log.Fatal(err)
 	}
 	sheetNames := getSheetNames(dmlData)
 	output := make(ExtractedData, len(sheetNames))
-
 	inner := make(map[string]xlsx.Cell)
 
 	for _, i := range dmlData {

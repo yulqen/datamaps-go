@@ -87,7 +87,7 @@ func TestGetSheetsFromDM(t *testing.T) {
 }
 
 func TestReadXLSX(t *testing.T) {
-	d := ReadXLSX("testdata/datamap.csv", "testdata/test_template.xlsx")
+	d := ReadXLSX("testdata/test_template.xlsx")
 	if d["Summary"]["A2"].Value != "Date:" {
 		t.Errorf("Expected A2 in Summary sheet to be 'Date:' - instead it is %s", d["Summary"]["A2"].Value)
 	}
@@ -102,12 +102,15 @@ func TestReadXLSX(t *testing.T) {
 func TestExtract(t *testing.T) {
 	d := Extract("testdata/datamap.csv", "testdata/test_template.xlsx")
 	if d["Introduction"]["C9"].Value != "Test Department" {
-		t.Errorf("Expected C9 in Introduction sheet to be Test Department - instead it is %s", d["Introduction"]["C9"].Value)
+		t.Errorf("Expected C9 in Introduction sheet to be Test Department "+
+			"- instead it is %s", d["Introduction"]["C9"].Value)
 	}
 	if d["Introduction"]["J9"].Value != "Greedy Parrots" {
-		t.Errorf("Expected J9 in Introduction sheet to be Greedy Parrots - instead it is %s", d["Introduction"]["J9"].Value)
+		t.Errorf("Expected J9 in Introduction sheet to be Greedy Parrots "+
+			"- instead it is %s", d["Introduction"]["J9"].Value)
 	}
 	if d["Introduction"]["A1"].Value != "10" {
-		t.Errorf("Expected A1 in Introduction sheet to be 10 - instead it is %s", d["Introduction"]["A1"].Value)
+		t.Errorf("Expected A1 in Introduction sheet to be 10 - instead "+
+			"it is %s", d["Introduction"]["A1"].Value)
 	}
 }
