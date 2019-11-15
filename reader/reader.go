@@ -125,15 +125,15 @@ func cols(n int) []string {
 func ReadXLSX(ssheet string) FileData {
 
 	// open the files
-	excelData, err := xlsx.OpenFile(ssheet)
+	data, err := xlsx.OpenFile(ssheet)
 	if err != nil {
 		log.Fatal(err)
 	}
-	output := make(FileData, 1)
+	o := make(FileData, 1)
 
 	// get the data
-	for _, sheet := range excelData.Sheets {
-		data := make(SheetData)
+	for _, sheet := range data.Sheets {
+		xdata := make(SheetData)
 		for rowLidx, row := range sheet.Rows {
 			for colLidx, cell := range row.Cells {
 				ex := ExtractedCell{
@@ -142,12 +142,12 @@ func ReadXLSX(ssheet string) FileData {
 					RowLidx: rowLidx + 1,
 					Value:   cell.Value}
 				cellref := fmt.Sprintf("%s%d", ex.ColL, ex.RowLidx)
-				data[cellref] = ex
+				xdata[cellref] = ex
 			}
-			output[sheet.Name] = data
+			o[sheet.Name] = xdata
 		}
 	}
-	return output
+	return o
 }
 
 //Extract returns the file's data as a map,
@@ -155,22 +155,22 @@ func ReadXLSX(ssheet string) FileData {
 // are returned as strings.
 // Paths to a datamap and the spreadsheet file required.
 func Extract(dm string, ssheet string) ExtractedData {
-	data := ReadXLSX(ssheet)
-	dmlData, err := ReadDML(dm)
+	xdata := ReadXLSX(ssheet)
+	ddata, err := ReadDML(dm)
 	if err != nil {
 		log.Fatal(err)
 	}
-	sheetNames := getSheetNames(dmlData)
-	output := make(ExtractedData, len(sheetNames))
+	names := getSheetNames(ddata)
+	outer := make(ExtractedData, len(names))
 	inner := make(map[string]xlsx.Cell)
 
-	for _, i := range dmlData {
+	for _, i := range ddata {
 		sheet := i.Sheet
 		cellref := i.Cellref
-		if val, ok := data[sheet][cellref]; ok {
+		if val, ok := xdata[sheet][cellref]; ok {
 			inner[cellref] = *val.Cell
-			output[sheet] = inner
+			outer[sheet] = inner
 		}
 	}
-	return output
+	return outer
 }
