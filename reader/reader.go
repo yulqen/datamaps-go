@@ -129,11 +129,11 @@ func ReadXLSX(ssheet string) FileData {
 	if err != nil {
 		log.Fatal(err)
 	}
-	o := make(FileData, 1)
+	outer := make(FileData, 1)
 
 	// get the data
 	for _, sheet := range data.Sheets {
-		xdata := make(SheetData)
+		inner := make(SheetData)
 		for rowLidx, row := range sheet.Rows {
 			for colLidx, cell := range row.Cells {
 				ex := ExtractedCell{
@@ -142,12 +142,12 @@ func ReadXLSX(ssheet string) FileData {
 					Row:   rowLidx + 1,
 					Value: cell.Value}
 				cellref := fmt.Sprintf("%s%d", ex.Col, ex.Row)
-				xdata[cellref] = ex
+				inner[cellref] = ex
 			}
-			o[sheet.Name] = xdata
+			outer[sheet.Name] = inner
 		}
 	}
-	return o
+	return outer
 }
 
 //Extract returns the file's data as a map,
