@@ -86,17 +86,21 @@ func TestGetSheetsFromDM(t *testing.T) {
 	}
 }
 
-// TODO: reformat this test func to use the case
 func TestReadXLSX(t *testing.T) {
 	d := ReadXLSX("testdata/test_template.xlsx")
-	if d["Summary"]["A2"].Value != "Date:" {
-		t.Errorf("Expected A2 in Summary sheet to be 'Date:' - instead it is %s", d["Summary"]["A2"].Value)
+	cases := []struct {
+		sheet, cellref, val string
+	}{
+		{"Summary", "A2", "Date:"},
+		{"Another Sheet", "F5", "4.2"},
+		{"Another Sheet", "J22", "18"},
 	}
-	if d["Another Sheet"]["F5"].Value != "4.2" {
-		t.Errorf("Expected F5 in Another Sheet sheet to be 4.2 - instead it is %s", d["Another Sheet"]["F5"].Value)
-	}
-	if d["Another Sheet"]["J22"].Value != "18" {
-		t.Errorf("Expected J22 in Another Sheet sheet to be 18 - instead it is %s", d["Another Sheet"]["J22"].Value)
+	for _, c := range cases {
+		got := d[c.sheet][c.cellref].Value
+		if got != c.val {
+			t.Errorf("Expected %s in %s sheet to be %s "+
+				" - instead it is %s", c.cellref, c.sheet, c.val, d[c.sheet][c.cellref].Value)
+		}
 	}
 }
 
