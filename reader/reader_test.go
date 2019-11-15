@@ -16,7 +16,7 @@ func TestReadDML(t *testing.T) {
 	}
 	for _, c := range cases {
 		if got := d[c.idx].Key; got != c.val {
-			t.Errorf("Expected %s, got %s", c.val, d[c.idx].Key)
+			t.Errorf("The test expected %s, got %s.", c.val, d[c.idx].Key)
 		}
 	}
 }
@@ -39,7 +39,7 @@ func TestBadDMLLine(t *testing.T) {
 
 func TestAlphaStream(t *testing.T) {
 	if colstream[26] != "AA" {
-		t.Errorf("Expected AA, got %v", colstream[26])
+		t.Errorf("The test expected AA, got %v.", colstream[26])
 	}
 	if len(colstream) > maxCols {
 		t.Errorf(`Number of columns in alphastream exceeds Excel maximum.
@@ -50,13 +50,13 @@ func TestAlphaStream(t *testing.T) {
 func TestAlphaSingle(t *testing.T) {
 	ab := alphabet()
 	if ab[0] != "A" {
-		t.Errorf("Expected A, got %v", ab[0])
+		t.Errorf("The test expected A, got %v.", ab[0])
 	}
 	if ab[1] != "B" {
-		t.Errorf("Expected B, got %v", ab[1])
+		t.Errorf("The test expected B, got %v.", ab[1])
 	}
 	if ab[25] != "Z" {
-		t.Errorf("Expected Z, got %v", ab[25])
+		t.Errorf("The test expected Z, got %v.", ab[25])
 	}
 }
 
@@ -79,7 +79,7 @@ func TestAlphas(t *testing.T) {
 			t.Fatalf("Cannot use %d as index to array of %d", c.col, r)
 		}
 		if got := ecs[c.col]; got != c.val {
-			t.Errorf("Expected ecs[%d] to be %s - got %s",
+			t.Errorf("The test expected ecs[%d] to be %s - got %s.",
 				c.col, c.val, ecs[c.col])
 		}
 	}
@@ -89,7 +89,7 @@ func TestGetSheetsFromDM(t *testing.T) {
 	slice, _ := ReadDML("testdata/datamap.csv")
 	sheetNames := getSheetNames(slice)
 	if len(sheetNames) != 14 {
-		t.Errorf("Expected 14 sheets in slice, got %d",
+		t.Errorf("The test expected 14 sheets in slice, got %d.",
 			len(sheetNames))
 	}
 }
@@ -106,8 +106,8 @@ func TestReadXLSX(t *testing.T) {
 	for _, c := range cases {
 		got := d[c.sheet][c.cellref].Value
 		if got != c.val {
-			t.Errorf("Expected %s in %s sheet to be %s "+
-				" - instead it is %s", c.cellref, c.sheet, c.val, d[c.sheet][c.cellref].Value)
+			t.Errorf("The test expected %s in %s sheet to be %s "+
+				" - instead it is %s.", c.cellref, c.sheet, c.val, d[c.sheet][c.cellref].Value)
 		}
 	}
 }
@@ -124,8 +124,8 @@ func TestExtract(t *testing.T) {
 	for _, c := range cases {
 		got := d[c.sheet][c.cellref].Value
 		if got != c.val {
-			t.Errorf("Expected %s in %s sheet to be %s "+
-				"- instead it is %s", c.sheet, c.cellref, c.val,
+			t.Errorf("The test expected %s in %s sheet to be %s "+
+				"- instead it is %s.", c.sheet, c.cellref, c.val,
 				d[c.sheet][c.cellref].Value)
 		}
 	}
