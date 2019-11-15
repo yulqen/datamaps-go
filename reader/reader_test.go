@@ -86,6 +86,7 @@ func TestGetSheetsFromDM(t *testing.T) {
 	}
 }
 
+// TODO: reformat this test func to use the case
 func TestReadXLSX(t *testing.T) {
 	d := ReadXLSX("testdata/test_template.xlsx")
 	if d["Summary"]["A2"].Value != "Date:" {
@@ -101,16 +102,19 @@ func TestReadXLSX(t *testing.T) {
 
 func TestExtract(t *testing.T) {
 	d := Extract("testdata/datamap.csv", "testdata/test_template.xlsx")
-	if d["Introduction"]["C9"].Value != "Test Department" {
-		t.Errorf("Expected C9 in Introduction sheet to be Test Department "+
-			"- instead it is %s", d["Introduction"]["C9"].Value)
+	cases := []struct {
+		sheet, cellref, val string
+	}{
+		{"Introduction", "C9", "Test Department"},
+		{"Introduction", "J9", "Greedy Parrots"},
+		{"Introduction", "A1", "10"},
 	}
-	if d["Introduction"]["J9"].Value != "Greedy Parrots" {
-		t.Errorf("Expected J9 in Introduction sheet to be Greedy Parrots "+
-			"- instead it is %s", d["Introduction"]["J9"].Value)
-	}
-	if d["Introduction"]["A1"].Value != "10" {
-		t.Errorf("Expected A1 in Introduction sheet to be 10 - instead "+
-			"it is %s", d["Introduction"]["A1"].Value)
+	for _, c := range cases {
+		got := d[c.sheet][c.cellref].Value
+		if got != c.val {
+			t.Errorf("Expected %s in %s sheet to be %s "+
+				"- instead it is %s", c.sheet, c.cellref, c.val,
+				d[c.sheet][c.cellref].Value)
+		}
 	}
 }
