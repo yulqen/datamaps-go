@@ -62,18 +62,27 @@ func TestAlphaSingle(t *testing.T) {
 }
 
 func TestAlphas(t *testing.T) {
-	ecs := cols(2)
-	if ecs[0] != "A" {
-		t.Errorf("Expected A, got %v", ecs[0])
+	a := 2 // two alphabets long
+	ecs := cols(a)
+	cases := []struct {
+		col int
+		val string
+	}{
+		{0, "A"},
+		{25, "Z"},
+		{26, "AA"},
+		{52, "BA"},
 	}
-	if ecs[25] != "Z" {
-		t.Errorf("Expected Z, got %v", ecs[25])
-	}
-	if ecs[26] != "AA" {
-		t.Errorf("Expected AA, got %v", ecs[26])
-	}
-	if ecs[52] != "BA" {
-		t.Errorf("Expected BA, got %v", ecs[52])
+	for _, c := range cases {
+		// we're making sure we can pass that index
+		r := 26 * a
+		if c.col > r {
+			t.Fatalf("Cannot use %d as index to array of %d", c.col, r)
+		}
+		if got := ecs[c.col]; got != c.val {
+			t.Errorf("Expected ecs[%d] to be %s - got %s",
+				c.col, c.val, ecs[c.col])
+		}
 	}
 }
 
