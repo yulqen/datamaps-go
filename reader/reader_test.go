@@ -100,6 +100,7 @@ func TestReadXLSX(t *testing.T) {
 		sheet, cellref, val string
 	}{
 		{"Summary", "A2", "Date:"},
+		{"Summary", "IG10", "Botticelli"},
 		{"Another Sheet", "F5", "4.2"},
 		{"Another Sheet", "J22", "18"},
 	}
