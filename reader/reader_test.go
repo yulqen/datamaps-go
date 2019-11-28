@@ -88,7 +88,7 @@ func TestAlphas(t *testing.T) {
 func TestGetSheetsFromDM(t *testing.T) {
 	slice, _ := ReadDML("testdata/datamap.csv")
 	sheetNames := getSheetNames(slice)
-	if len(sheetNames) != 14 {
+	if len(sheetNames) != 15 {
 		t.Errorf("The test expected 14 sheets in slice, got %d.",
 			len(sheetNames))
 	}
