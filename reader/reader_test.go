@@ -104,4 +104,7 @@ func TestExtract(t *testing.T) {
 	if d["Introduction"]["C9"].Value != "Test Department" {
 		t.Errorf("Expected C9 in Introduction sheet to be Test Department - instead it is %s", d["Introduction"]["C9"].Value)
 	}
+	if d["Another Sheet"]["E26"].Value != "Integer:" {
+		t.Errorf("Expected E26 in Another Sheet sheet to be Integer: - instead it is %s", d["Another Sheet"]["E26"].Value)
+	}
 }
