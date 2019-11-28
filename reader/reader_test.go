@@ -6,19 +6,18 @@ import (
 
 func TestReadDML(t *testing.T) {
 	d, _ := ReadDML("testdata/datamap.csv")
-	// Test Key values
-	if d[0].Key != "Project/Programme Name" {
-		t.Errorf("d[0].Key = %s; want Project/Programme Name", d[0].Key)
+	cases := []struct {
+		idx int
+		val string
+	}{
+		{0, "Project/Programme Name"},
+		{1, "Department"},
+		{2, "Delivery Body"},
 	}
-	if d[1].Key != "Department" {
-		t.Errorf("d[1].Key = %s; want Department (without a space)", d[1].Key)
-	}
-	if d[2].Key != "Delivery Body" {
-		t.Errorf("d[2].Key = %s; want Delivery Body (without a space)", d[2].Key)
-	}
-	// Test Sheet values
-	if d[0].Sheet != "Introduction" {
-		t.Errorf("d[0].Sheet = %s; want Introduction", d[0].Key)
+	for _, c := range cases {
+		if got := d[c.idx].Key; got != c.val {
+			t.Errorf("The test expected %s, got %s.", c.val, d[c.idx].Key)
+		}
 	}
 }
 
@@ -40,7 +39,7 @@ func TestBadDMLLine(t *testing.T) {
 
 func TestAlphaStream(t *testing.T) {
 	if colstream[26] != "AA" {
-		t.Errorf("Expected AA, got %v", colstream[26])
+		t.Errorf("The test expected AA, got %v.", colstream[26])
 	}
 	if len(colstream) > maxCols {
 		t.Errorf(`Number of columns in alphastream exceeds Excel maximum.
@@ -51,29 +50,38 @@ func TestAlphaStream(t *testing.T) {
 func TestAlphaSingle(t *testing.T) {
 	ab := alphabet()
 	if ab[0] != "A" {
-		t.Errorf("Expected A, got %v", ab[0])
+		t.Errorf("The test expected A, got %v.", ab[0])
 	}
 	if ab[1] != "B" {
-		t.Errorf("Expected B, got %v", ab[1])
+		t.Errorf("The test expected B, got %v.", ab[1])
 	}
 	if ab[25] != "Z" {
-		t.Errorf("Expected Z, got %v", ab[25])
+		t.Errorf("The test expected Z, got %v.", ab[25])
 	}
 }
 
 func TestAlphas(t *testing.T) {
-	ecs := cols(2)
-	if ecs[0] != "A" {
-		t.Errorf("Expected A, got %v", ecs[0])
+	a := 2 // two alphabets long
+	ecs := cols(a)
+	cases := []struct {
+		col int
+		val string
+	}{
+		{0, "A"},
+		{25, "Z"},
+		{26, "AA"},
+		{52, "BA"},
 	}
-	if ecs[25] != "Z" {
-		t.Errorf("Expected Z, got %v", ecs[25])
-	}
-	if ecs[26] != "AA" {
-		t.Errorf("Expected AA, got %v", ecs[26])
-	}
-	if ecs[52] != "BA" {
-		t.Errorf("Expected BA, got %v", ecs[52])
+	for _, c := range cases {
+		// we're making sure we can pass that index
+		r := 26 * a
+		if c.col > r {
+			t.Fatalf("Cannot use %d as index to array of %d", c.col, r)
+		}
+		if got := ecs[c.col]; got != c.val {
+			t.Errorf("The test expected ecs[%d] to be %s - got %s.",
+				c.col, c.val, ecs[c.col])
+		}
 	}
 }
 
@@ -81,28 +89,46 @@ func TestGetSheetsFromDM(t *testing.T) {
 	slice, _ := ReadDML("testdata/datamap.csv")
 	sheetNames := getSheetNames(slice)
 	if len(sheetNames) != 14 {
-		t.Errorf("Expected 14 sheets in slice, got %d",
+		t.Errorf("The test expected 14 sheets in slice, got %d.",
 			len(sheetNames))
 	}
 }
 
 func TestReadXLSX(t *testing.T) {
-	d := ReadXLSX("testdata/datamap.csv", "testdata/test_template.xlsx")
-	if d["Summary"]["A2"].Value != "Date:" {
-		t.Errorf("Expected A2 in Summary sheet to be 'Date:' - instead it is %s", d["Summary"]["A2"].Value)
+	d := ReadXLSX("testdata/test_template.xlsx")
+	cases := []struct {
+		sheet, cellref, val string
+	}{
+		{"Summary", "A2", "Date:"},
+		{"Summary", "IG10", "botticelli"},
+		{"Another Sheet", "F5", "4.2"},
+		{"Another Sheet", "J22", "18"},
 	}
-	if d["Another Sheet"]["F5"].Value != "4.2" {
-		t.Errorf("Expected F5 in Another Sheet sheet to be 4.2 - instead it is %s", d["Another Sheet"]["F5"].Value)
-	}
-	if d["Another Sheet"]["J22"].Value != "18" {
-		t.Errorf("Expected J22 in Another Sheet sheet to be 18 - instead it is %s", d["Another Sheet"]["J22"].Value)
+	for _, c := range cases {
+		got := d[c.sheet][c.cellref].Value
+		if got != c.val {
+			t.Errorf("The test expected %s in %s sheet to be %s "+
+				" - instead it is %s.", c.cellref, c.sheet, c.val, d[c.sheet][c.cellref].Value)
+		}
 	}
 }
 
 func TestExtract(t *testing.T) {
 	d := Extract("testdata/datamap.csv", "testdata/test_template.xlsx")
-	if d["Introduction"]["C9"].Value != "Test Department" {
-		t.Errorf("Expected C9 in Introduction sheet to be Test Department - instead it is %s", d["Introduction"]["C9"].Value)
+	cases := []struct {
+		sheet, cellref, val string
+	}{
+		{"Introduction", "C9", "Test Department"},
+		{"Introduction", "J9", "Greedy Parrots"},
+		{"Introduction", "A1", "10"},
+	}
+	for _, c := range cases {
+		got := d[c.sheet][c.cellref].Value
+		if got != c.val {
+			t.Errorf("The test expected %s in %s sheet to be %s "+
+				"- instead it is %s.", c.sheet, c.cellref, c.val,
+				d[c.sheet][c.cellref].Value)
+		}
 	}
 	if d["Another Sheet"]["E26"].Value != "Integer:" {
 		t.Errorf("Expected E26 in Another Sheet sheet to be Integer: - instead it is %s", d["Another Sheet"]["E26"].Value)

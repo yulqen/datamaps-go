@@ -37,10 +37,10 @@ type DatamapLine struct {
 
 //ExtractedCell is data pulled from a cell.
 type ExtractedCell struct {
-	Cell    *xlsx.Cell
-	ColL    string
-	RowLidx int
-	Value   string
+	Cell  *xlsx.Cell
+	Col   string
+	Row   int
+	Value string
 }
 
 //sheetInSlice is a helper which returns true
@@ -122,68 +122,55 @@ func cols(n int) []string {
 //ReadXLSX returns the file's data as a map,
 // keyed on sheet name. All values are returned as strings.
 // Paths to a datamap and the spreadsheet file required.
-func ReadXLSX(dm string, ssheet string) FileData {
-
-	// TODO - to implement filtering by Datamap,
-	// pull the data first, then go through each
-	// item in the dmlData slice to check for sheet/cellref
-	// matches, and then return them. Duplicate this func
-	// to do so
+func ReadXLSX(ssheet string) FileData {
 
 	// open the files
-	excelData, err := xlsx.OpenFile(ssheet)
+	data, err := xlsx.OpenFile(ssheet)
 	if err != nil {
 		log.Fatal(err)
 	}
-	dmlData, err := ReadDML(dm)
-	if err != nil {
-		log.Fatal(err)
-	}
-	sheetNames := getSheetNames(dmlData)
-	output := make(FileData, len(sheetNames))
+	outer := make(FileData, 1)
 
 	// get the data
-	for _, sheet := range excelData.Sheets {
-		data := make(SheetData)
+	for _, sheet := range data.Sheets {
+		inner := make(SheetData)
 		for rowLidx, row := range sheet.Rows {
 			for colLidx, cell := range row.Cells {
 				ex := ExtractedCell{
-					Cell:    cell,
-					ColL:    colstream[colLidx],
-					RowLidx: rowLidx + 1,
-					Value:   cell.Value}
-				cellref := fmt.Sprintf("%s%d", ex.ColL, ex.RowLidx)
-				data[cellref] = ex
+					Cell:  cell,
+					Col:   colstream[colLidx],
+					Row:   rowLidx + 1,
+					Value: cell.Value}
+				cellref := fmt.Sprintf("%s%d", ex.Col, ex.Row)
+				inner[cellref] = ex
 			}
-			output[sheet.Name] = data
+			outer[sheet.Name] = inner
 		}
 	}
-	return output
+	return outer
 }
 
 //Extract returns the file's data as a map,
-// keyed on sheet name. All values are returned as strings.
+// using the datamap as a filter, keyed on sheet name. All values
+// are returned as strings.
 // Paths to a datamap and the spreadsheet file required.
 func Extract(dm string, ssheet string) ExtractedData {
-	data := ReadXLSX(dm, ssheet)
-	dmlData, err := ReadDML(dm)
+	xdata := ReadXLSX(ssheet)
+	ddata, err := ReadDML(dm)
 	if err != nil {
 		log.Fatal(err)
 	}
-	sheetNames := getSheetNames(dmlData)
-	output := make(ExtractedData, len(sheetNames))
+	names := getSheetNames(ddata)
+	outer := make(ExtractedData, len(names))
+	inner := make(map[string]xlsx.Cell)
 
-	for _, i := range dmlData {
+	for _, i := range ddata {
 		sheet := i.Sheet
 		cellref := i.Cellref
-		if val, ok := data[sheet][cellref]; ok {
-			// TODO check what is happening here...
-			// ddg "golang assingment to entry in nil map"
-			// first SO entry, but I don't think I totally understand
-			inner := make(map[string]xlsx.Cell)
+		if val, ok := xdata[sheet][cellref]; ok {
 			inner[cellref] = *val.Cell
-			output[sheet] = inner
+			outer[sheet] = inner
 		}
 	}
-	return output
+	return outer
 }
