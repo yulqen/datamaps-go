@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -137,8 +138,18 @@ func TestExtract(t *testing.T) {
 
 func TestGetTargetFiles(t *testing.T) {
 	path := "/home/lemon/go/src/github.com/hammerheadlemon/datamaps-go/reader/testdata/"
-	_, err := GetTargetFiles(path)
+	files, err := GetTargetFiles(path)
 	if err != nil {
 		t.Error(err)
+	}
+	found := false
+	for _, f := range files {
+		if strings.Contains(f, "test_template.xlsx") {
+			found = true
+			break
+		}
+	}
+	if found == false {
+		t.Errorf("test_template.xlsx not found - and it is there!")
 	}
 }

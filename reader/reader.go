@@ -178,6 +178,9 @@ func Extract(dm string, ssheet string) ExtractedData {
 
 //GetTargetFiles finds all xlsx and xlsm files in directory.
 func GetTargetFiles(path string) ([]string, error) {
+	if lastchar := path[len(path)-1:]; lastchar != string(filepath.Separator) {
+		return nil, fmt.Errorf("path must end in a %s character", string(filepath.Separator))
+	}
 	fullpath := strings.Join([]string{path, "*.xlsx"}, "")
 	output, err := filepath.Glob(fullpath)
 	if err != nil {
