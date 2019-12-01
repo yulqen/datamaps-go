@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"path/filepath"
 	"strings"
 
 	"github.com/tealeg/xlsx"
@@ -173,4 +174,17 @@ func Extract(dm string, ssheet string) ExtractedData {
 		}
 	}
 	return outer
+}
+
+//GetTargetFiles finds all xlsx and xlsm files in directory.
+func GetTargetFiles(path string) ([]string, error) {
+	fullpath := strings.Join([]string{path, "*.xlsx"}, "")
+	output, err := filepath.Glob(fullpath)
+	if err != nil {
+		return nil, err
+	}
+	if output == nil {
+		return nil, fmt.Errorf("cannot find any xlsx files in %s\n", path)
+	}
+	return output, nil
 }

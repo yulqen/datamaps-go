@@ -134,3 +134,11 @@ func TestExtract(t *testing.T) {
 		t.Errorf("Expected E26 in Another Sheet sheet to be Integer: - instead it is %s", d["Another Sheet"]["E26"].Value)
 	}
 }
+
+func TestGetTargetFiles(t *testing.T) {
+	path := "/home/lemon/go/src/github.com/hammerheadlemon/datamaps-go/reader/testdata/"
+	_, err := GetTargetFiles(path)
+	if err != nil {
+		t.Error(err)
+	}
+}
