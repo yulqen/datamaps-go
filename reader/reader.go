@@ -10,12 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/hammerheadlemon/coords"
 	"github.com/tealeg/xlsx"
-)
-
-const (
-	maxCols      = 16384
-	maxAlphabets = (maxCols / 26) - 1
 )
 
 type (
@@ -26,8 +22,6 @@ type (
 	// Data from the file, filtered by a Datamap.
 	ExtractedData map[string]map[string]xlsx.Cell
 )
-
-var colstream = cols(maxAlphabets)
 
 //DatamapLine - a line from the datamap.
 type DatamapLine struct {
@@ -96,30 +90,6 @@ func ReadDML(path string) ([]DatamapLine, error) {
 	return s, nil
 }
 
-//alphabet generates all the letters of the alphabet.
-func alphabet() []string {
-	letters := make([]string, 26)
-	for idx := range letters {
-		letters[idx] = string('A' + byte(idx))
-	}
-	return letters
-}
-
-//cols generates the alpha column compont of Excel cell references
-//Adds n alphabets to the first (A..Z) alphabet.
-func cols(n int) []string {
-	out := alphabet()
-	alen := len(out)
-	tmp := make([]string, alen)
-	copy(tmp, out)
-	for cycle := 0; cycle < n; cycle++ {
-		for y := 0; y < alen; y++ {
-			out = append(out, out[(cycle+2)-2]+tmp[y])
-		}
-	}
-	return out
-}
-
 //ReadXLSX returns the file's data as a map,
 // keyed on sheet name. All values are returned as strings.
 // Paths to a datamap and the spreadsheet file required.
@@ -139,7 +109,7 @@ func ReadXLSX(ssheet string) FileData {
 			for colLidx, cell := range row.Cells {
 				ex := ExtractedCell{
 					Cell:  cell,
-					Col:   colstream[colLidx],
+					Col:   coords.Colstream[colLidx],
 					Row:   rowLidx + 1,
 					Value: cell.Value}
 				cellref := fmt.Sprintf("%s%d", ex.Col, ex.Row)
