@@ -107,9 +107,13 @@ func ReadXLSX(ssheet string) FileData {
 		inner := make(SheetData)
 		for rowLidx, row := range sheet.Rows {
 			for colLidx, cell := range row.Cells {
+				colStr, err := coords.ColIndexToAlpha(colLidx)
+				if err != nil {
+					log.Fatal(err)
+				}
 				ex := ExtractedCell{
 					Cell:  cell,
-					Col:   coords.Colstream[colLidx],
+					Col:   colStr,
 					Row:   rowLidx + 1,
 					Value: cell.Value}
 				cellref := fmt.Sprintf("%s%d", ex.Col, ex.Row)
