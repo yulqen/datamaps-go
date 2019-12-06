@@ -15,11 +15,11 @@ import (
 )
 
 type (
-	// Data from the sheet.
+	// SheetData is the data from the sheet
 	SheetData map[string]ExtractedCell
-	// Data from the file.
+	// FileData is the data from the file.
 	FileData map[string]SheetData
-	// Data from the file, filtered by a Datamap.
+	// ExtractedData is the Extraced data from the file, filtered by a Datamap.
 	ExtractedData map[string]map[string]xlsx.Cell
 )
 
@@ -161,7 +161,7 @@ func GetTargetFiles(path string) ([]string, error) {
 		return nil, err
 	}
 	if output == nil {
-		return nil, fmt.Errorf("cannot find any xlsx files in %s\n", path)
+		return nil, fmt.Errorf("cannot find any xlsx files in %s", path)
 	}
 	return output, nil
 }
