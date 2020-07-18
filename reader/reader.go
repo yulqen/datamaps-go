@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hammerheadlemon/coords"
 	"github.com/tealeg/xlsx"
+	"github.com/yulqen/coords"
 )
 
 type (
