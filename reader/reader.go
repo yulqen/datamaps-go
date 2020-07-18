@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"database/sql"
 	"encoding/csv"
 	"errors"
 	"fmt"
@@ -9,6 +10,8 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
+
+	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/tealeg/xlsx"
 	"github.com/yulqen/coords"
@@ -36,6 +39,22 @@ type ExtractedCell struct {
 	Col   string
 	Row   int
 	Value string
+}
+
+func SetupDB(path string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", path)
+	if err != nil {
+		return db, errors.New("Cannot open that damn database file")
+	}
+	stmt := `drop table if exists datamap;
+			 create table datamap(id integer no null primary key, name text);
+			`
+	_, err = db.Exec(stmt)
+	if err != nil {
+		log.Printf("%q: %s\n", err, stmt)
+	}
+
+	return db, nil
 }
 
 //sheetInSlice is a helper which returns true
