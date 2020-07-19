@@ -42,7 +42,7 @@ func setUp() (string, error) {
 // Entry point
 
 func main() {
-	dir, err := setUp()
+	_, err := setUp()
 	if err != nil {
 		log.Fatal(err)
 	}
