@@ -3,7 +3,7 @@ package db
 import (
 	"testing"
 
-	"github.com/yulqen/datamaps-go/reader"
+	"github.com/yulqen/datamaps-go/pkg/reader"
 )
 
 func TestOpenSQLiteFile(t *testing.T) {
