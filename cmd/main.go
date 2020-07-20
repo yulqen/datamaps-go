@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/yulqen/datamaps-go/pkg/db"
 	"github.com/yulqen/datamaps-go/pkg/reader"
 )
 
@@ -79,11 +80,15 @@ func main() {
 		fmt.Println("  name:", *nameFlg)
 		fmt.Println("  overwrite:", *overwriteFlg)
 		fmt.Println("  initial:", *initialFlg)
+
 		data, err := reader.ReadDML(*importFlg)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(data[3].Key)
+		err = db.DatamapToDB(data, *nameFlg, *importFlg)
+		if err != nil {
+			log.Fatal(err)
+		}
 	case "setup":
 		setupCmd.Parse(os.Args[2:])
 		_, err := setUp()

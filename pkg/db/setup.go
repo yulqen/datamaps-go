@@ -49,7 +49,12 @@ func SetupDB(path string) (*sql.DB, error) {
 }
 
 //DatamapToDB takes a slice of DatamapLine and writes it to a sqlite3 db file.
-func DatamapToDB(data []reader.DatamapLine, db *sql.DB, dm_name string) error {
+func DatamapToDB(data []reader.DatamapLine, dm_name string, dm_path string) error {
+	log.Printf("Importing Datamap")
+	db, err := SetupDB("/home/lemon/.config/datamaps-go/datamaps.db")
+	if err != nil {
+		return err
+	}
 	tx, err := db.Begin()
 	if err != nil {
 		return err
