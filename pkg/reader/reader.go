@@ -1,3 +1,6 @@
+/*
+reader reads datamap files and populated spreadsheets
+*/
 package reader
 
 import (

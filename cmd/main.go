@@ -4,12 +4,11 @@ datamaps-go is a simple tool to extract from and send data to spreadsheets.
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
-
-	"github.com/urfave/cli/v2"
 )
 
 func setUp() (string, error) {
@@ -44,54 +43,75 @@ func setUp() (string, error) {
 
 // Entry point
 
-func main() {
-	app := &cli.App{
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:    "datamap, dm",
-				Aliases: []string{"dm"},
-				Value:   "/home/lemon/Documents/datamaps/input/datamap.csv",
-				Usage:   "Path to a datamap file",
-			},
-			&cli.StringFlag{
-				Name:    "master, m",
-				Aliases: []string{"m"},
-				Value:   "/home/lemon/Documents/datamaps/input/master.xlsx",
-				Usage:   "Path to a master file",
-			},
-		},
-		Commands: []*cli.Command{
-			{
-				Name:    "import",
-				Aliases: []string{"i"},
-				Usage:   "Import a bunch of populated templates",
-				Action: func(c *cli.Context) error {
-					return nil
-				},
-			},
-			{
-				Name:    "export",
-				Aliases: []string{"e"},
-				Usage:   "Export a master to populate blank templates",
-				Action: func(c *cli.Context) error {
-					return nil
-				},
-			},
-		},
-		Name:  "datamaps",
-		Usage: "Import and export data to and from spreadsheets",
-		Action: func(c *cli.Context) error {
-			fmt.Println("DATAMAPS")
-			return nil
-		},
-	}
+var setup bool
 
-	err := app.Run(os.Args)
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = setUp()
-	if err != nil {
-		log.Fatal(err)
+func main() {
+
+	// Example for go docs about how to set up short and long flags.
+	const setupUsage = "Initialise configuration and database files"
+
+	flag.BoolVar(&setup, "setup", false, setupUsage)
+	flag.BoolVar(&setup, "s", false, setupUsage)
+	flag.Parse()
+	if setup == true {
+		_, err := setUp()
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		fmt.Println("No command given.")
+		flag.PrintDefaults()
 	}
 }
+
+// func main() {
+// 	app := &cli.App{
+// 		Flags: []cli.Flag{
+// 			&cli.StringFlag{
+// 				Name:    "datamap, dm",
+// 				Aliases: []string{"dm"},
+// 				Value:   "/home/lemon/Documents/datamaps/input/datamap.csv",
+// 				Usage:   "Path to a datamap file",
+// 			},
+// 			&cli.StringFlag{
+// 				Name:    "master, m",
+// 				Aliases: []string{"m"},
+// 				Value:   "/home/lemon/Documents/datamaps/input/master.xlsx",
+// 				Usage:   "Path to a master file",
+// 			},
+// 		},
+// 		Commands: []*cli.Command{
+// 			{
+// 				Name:    "import",
+// 				Aliases: []string{"i"},
+// 				Usage:   "Import a bunch of populated templates",
+// 				Action: func(c *cli.Context) error {
+// 					return nil
+// 				},
+// 			},
+// 			{
+// 				Name:    "export",
+// 				Aliases: []string{"e"},
+// 				Usage:   "Export a master to populate blank templates",
+// 				Action: func(c *cli.Context) error {
+// 					return nil
+// 				},
+// 			},
+// 		},
+// 		Name:  "datamaps",
+// 		Usage: "Import and export data to and from spreadsheets",
+// 		Action: func(c *cli.Context) error {
+// 			fmt.Println("DATAMAPS")
+// 			return nil
+// 		},
+// 	}
+
+// 	err := app.Run(os.Args)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	_, err = setUp()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// }
