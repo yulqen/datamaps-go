@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -37,12 +38,14 @@ func SetupDB(path string) (*sql.DB, error) {
 	pragma := "PRAGMA foreign_keys = ON;"
 	_, err = db.Exec(pragma)
 	if err != nil {
-		log.Printf("%q: %s\n", err, pragma)
+		// log.Printf("%q: %s\n", err, pragma)
+		return nil, err
 	}
 
 	_, err = db.Exec(stmt_base)
 	if err != nil {
-		log.Printf("%q: %s\n", err, stmt_base)
+		// log.Printf("%q: %s\n", err, stmt_base)
+		return nil, err
 	}
 
 	return db, nil
@@ -50,7 +53,7 @@ func SetupDB(path string) (*sql.DB, error) {
 
 //DatamapToDB takes a slice of DatamapLine and writes it to a sqlite3 db file.
 func DatamapToDB(data []reader.DatamapLine, dm_name string, dm_path string) error {
-	log.Printf("Importing Datamap")
+	fmt.Printf("Importing datamap file %s and naming it %s.\n", dm_path, dm_name)
 	db, err := SetupDB("/home/lemon/.config/datamaps-go/datamaps.db")
 	if err != nil {
 		return err

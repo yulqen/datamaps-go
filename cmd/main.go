@@ -14,14 +14,19 @@ import (
 	"github.com/yulqen/datamaps-go/pkg/reader"
 )
 
+const (
+	config_dir_name = "datamaps-go"
+	db_name         = "datamaps.db"
+)
+
 func setUp() (string, error) {
 	dir, err := os.UserConfigDir()
 	if err != nil {
 		return "", err
 	}
 	// check if config folder exists
-	config_path := filepath.Join(dir, "datamaps-go")
-	db_path := filepath.Join(config_path, "datamaps.db")
+	config_path := filepath.Join(dir, config_dir_name)
+	db_path := filepath.Join(config_path, db_name)
 	if _, err := os.Stat(config_path); os.IsNotExist(err) {
 		log.Println("Config directory does not exist.")
 		log.Printf("Creating config directory %s\n", config_path)
@@ -81,10 +86,22 @@ func main() {
 		fmt.Println("  overwrite:", *overwriteFlg)
 		fmt.Println("  initial:", *initialFlg)
 
+		dir, err := os.UserConfigDir()
+		if err != nil {
+			os.Exit(1)
+		}
+		// check if config folder exists
+		config_path := filepath.Join(dir, config_dir_name)
+
+		if _, err := os.Stat(config_path); os.IsNotExist(err) {
+			fmt.Println("Config directory and database does not exist. Run datamaps setup to fix.")
+			os.Exit(1)
+		}
 		data, err := reader.ReadDML(*importFlg)
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		err = db.DatamapToDB(data, *nameFlg, *importFlg)
 		if err != nil {
 			log.Fatal(err)
