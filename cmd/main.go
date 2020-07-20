@@ -41,28 +41,58 @@ func setUp() (string, error) {
 	return dir, nil
 }
 
-// Entry point
+// from datamaps-c
 
-var setup bool
+// { 0,0,0,0, "Datamap options: (when calling 'datamaps datamap')." },
+// {"import", DM_IMPORT, "PATH", 0, "PATH to datamap file to import."},
+// {"name", DM_NAME, "NAME", 0, "The name you want to give to the imported datamap."},
+// {"overwrite", DM_OVERWRITE, 0, 0, "Start fresh with this datamap (erases existing datamap data)."},
+// {"initial", DM_INITIAL, 0, 0, "This option must be used where no datamap table yet exists."},
+
+// Checkout https://gobyexample.com/command-line-subcommands
 
 func main() {
+	datamapCmd := flag.NewFlagSet("datamap", flag.ExitOnError)
+	importFlg := datamapCmd.String("import", "/home/lemon/Documents/datamaps/input/datamap.csv", "Path to datamap")
+	nameFlg := datamapCmd.String("name", "Unnamed datamap", "The name you want to give to the imported datamap.")
+	overwriteFlg := datamapCmd.Bool("overwrite", false, "Start fresh with this datamap (erases existing datamap data).")
 
-	// Example for go docs about how to set up short and long flags.
-	const setupUsage = "Initialise configuration and database files"
+	if len(os.Args) < 2 {
+		fmt.Println("expected 'datamap' subcommand")
+		os.Exit(1)
+	}
 
-	flag.BoolVar(&setup, "setup", false, setupUsage)
-	flag.BoolVar(&setup, "s", false, setupUsage)
-	flag.Parse()
-	if setup == true {
-		_, err := setUp()
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		fmt.Println("No command given.")
-		flag.PrintDefaults()
+	switch os.Args[1] {
+
+	case "datamap":
+		datamapCmd.Parse(os.Args[2:])
+		fmt.Println("subcommand 'datamap'")
+		fmt.Println("  import:", *importFlg)
+		fmt.Println("  name:", *nameFlg)
+		fmt.Println("  overwrite:", *overwriteFlg)
+	default:
+		fmt.Println("expected 'datamap' subcommand")
+		os.Exit(1)
 	}
 }
+
+// var setup bool
+
+// // Example for go docs about how to set up short and long flags.
+// const setupUsage = "Initialise configuration and database files"
+
+// flag.BoolVar(&setup, "setup", false, setupUsage)
+// flag.BoolVar(&setup, "s", false, setupUsage)
+// flag.Parse()
+// if setup == true {
+// 	_, err := setUp()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// } else {
+// 	fmt.Println("No command given.")
+// 	flag.PrintDefaults()
+// }
 
 // func main() {
 // 	app := &cli.App{
