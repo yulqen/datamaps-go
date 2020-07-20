@@ -2,3 +2,4 @@
 .idea/*
 reader/testdata/test.db
 go.sum
+cmd/datamaps
