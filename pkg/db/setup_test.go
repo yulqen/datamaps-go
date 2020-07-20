@@ -59,10 +59,9 @@ func TestDatamapGoesIntoDB(t *testing.T) {
 	if err != nil {
 		t.Fatal("Expected to be able to set up the database.")
 	}
-
-	d, _ := reader.ReadDML("testdata/datamap.csv")
-	for _, x := range d {
-		t.Log(x.Key)
+	d, _ := reader.ReadDML("./testdata/datamap.csv")
+	err = DatamapToDB(d, db, "First Datamap")
+	if err != nil {
+		t.Errorf("Unable to write datamap to database file because %v.", err)
 	}
-
 }

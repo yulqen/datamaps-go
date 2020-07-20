@@ -9,6 +9,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/yulqen/datamaps-go/pkg/reader"
 )
 
 func setUp() (string, error) {
@@ -64,7 +66,7 @@ func main() {
 	initialFlg := datamapCmd.Bool("initial", false, "This option must be used where no datamap table yet exists.")
 
 	if len(os.Args) < 2 {
-		fmt.Println("expected 'datamap' or 'setup' subcommand")
+		fmt.Println("Expected 'datamap' or 'setup' subcommand")
 		os.Exit(1)
 	}
 
@@ -77,6 +79,11 @@ func main() {
 		fmt.Println("  name:", *nameFlg)
 		fmt.Println("  overwrite:", *overwriteFlg)
 		fmt.Println("  initial:", *initialFlg)
+		data, err := reader.ReadDML(*importFlg)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(data[3].Key)
 	case "setup":
 		setupCmd.Parse(os.Args[2:])
 		_, err := setUp()

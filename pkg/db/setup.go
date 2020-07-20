@@ -5,8 +5,10 @@ import (
 	"errors"
 	"log"
 	"os"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/yulqen/datamaps-go/pkg/reader"
 )
 
 func SetupDB(path string) (*sql.DB, error) {
@@ -44,4 +46,41 @@ func SetupDB(path string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+//DatamapToDB takes a slice of DatamapLine and writes it to a sqlite3 db file.
+func DatamapToDB(data []reader.DatamapLine, db *sql.DB, dm_name string) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	pragma := "PRAGMA foreign_keys = ON;"
+	_, err = db.Exec(pragma)
+	if err != nil {
+		log.Printf("%q: %s\n", err, pragma)
+		return err
+	}
+	stmt_dm, err := tx.Prepare("INSERT INTO datamap (name, date_created) VALUES(?,?)")
+	if err != nil {
+		return err
+	}
+	_, err = stmt_dm.Exec(dm_name, time.Now())
+
+	stmt_dml, err := tx.Prepare("INSERT INTO datamap_line (dm_id, key, sheet, cellref) VALUES(?,?,?,?);")
+	if err != nil {
+		return err
+	}
+	defer stmt_dm.Close()
+	defer stmt_dml.Close()
+	for _, dml := range data {
+		_, err = stmt_dml.Exec(1, dml.Key, dml.Sheet, dml.Cellref)
+		if err != nil {
+			return err
+		}
+	}
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	return nil
 }
