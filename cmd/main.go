@@ -52,13 +52,19 @@ func setUp() (string, error) {
 // Checkout https://gobyexample.com/command-line-subcommands
 
 func main() {
+	// setup command
+	setupCmd := flag.NewFlagSet("setup", flag.ExitOnError)
+	setupCmd.Usage = func() { fmt.Println("No, you fucking idiot!") }
+
+	// datamap command and its flags
 	datamapCmd := flag.NewFlagSet("datamap", flag.ExitOnError)
 	importFlg := datamapCmd.String("import", "/home/lemon/Documents/datamaps/input/datamap.csv", "Path to datamap")
 	nameFlg := datamapCmd.String("name", "Unnamed datamap", "The name you want to give to the imported datamap.")
 	overwriteFlg := datamapCmd.Bool("overwrite", false, "Start fresh with this datamap (erases existing datamap data).")
+	initialFlg := datamapCmd.Bool("initial", false, "This option must be used where no datamap table yet exists.")
 
 	if len(os.Args) < 2 {
-		fmt.Println("expected 'datamap' subcommand")
+		fmt.Println("expected 'datamap' or 'setup' subcommand")
 		os.Exit(1)
 	}
 
@@ -70,8 +76,16 @@ func main() {
 		fmt.Println("  import:", *importFlg)
 		fmt.Println("  name:", *nameFlg)
 		fmt.Println("  overwrite:", *overwriteFlg)
+		fmt.Println("  initial:", *initialFlg)
+	case "setup":
+		setupCmd.Parse(os.Args[2:])
+		_, err := setUp()
+		if err != nil {
+			log.Fatal(err)
+		}
+
 	default:
-		fmt.Println("expected 'datamap' subcommand")
+		fmt.Println("Do not recognised that command. Expected 'datamap' subcommand.")
 		os.Exit(1)
 	}
 }
