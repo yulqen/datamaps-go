@@ -51,19 +51,24 @@ func SetupDB(path string) (*sql.DB, error) {
 	return db, nil
 }
 
+// TODO - how do we avoid passing in all these params!??!
 //DatamapToDB takes a slice of DatamapLine and writes it to a sqlite3 db file.
-func DatamapToDB(data []reader.DatamapLine, dm_name string, dm_path string) error {
+func DatamapToDB(d_path string, data []reader.DatamapLine, dm_name string, dm_path string) error {
 	fmt.Printf("Importing datamap file %s and naming it %s.\n", dm_path, dm_name)
-	db, err := SetupDB("/home/lemon/.config/datamaps-go/datamaps.db")
+	// db, err := SetupDB("/home/lemon/.config/datamaps-go/datamaps.db")
+	// if err != nil {
+	// 	return err
+	// }
+	d, err := sql.Open("sqlite3", d_path)
 	if err != nil {
-		return err
+		return errors.New("Cannot open that damn database file")
 	}
-	tx, err := db.Begin()
+	tx, err := d.Begin()
 	if err != nil {
 		return err
 	}
 	pragma := "PRAGMA foreign_keys = ON;"
-	_, err = db.Exec(pragma)
+	_, err = d.Exec(pragma)
 	if err != nil {
 		log.Printf("%q: %s\n", err, pragma)
 		return err
