@@ -34,7 +34,12 @@ func TestDatamapGoesIntoDB(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = DatamapToDB("./testdata/test.db", d, "First Datamap", "./testdata/test.db")
+	opts := Opts{
+		DBPath: "./testdata/test.db",
+		Name:   "First Datamap",
+		DMData: d,
+	}
+	err = DatamapToDB(opts)
 	if err != nil {
 		t.Errorf("Unable to write datamap to database file because %v.", err)
 	}

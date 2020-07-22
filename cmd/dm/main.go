@@ -73,6 +73,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	opts := reader.Opts{
+		DBPath:     "",
+		ImportPath: *importFlg,
+		Name:       *nameFlg,
+		Overwrite:  *overwriteFlg,
+		Initial:    *initialFlg,
+		DMData:     nil,
+	}
+
 	switch os.Args[1] {
 
 	case "server":
@@ -109,13 +118,14 @@ func main() {
 			os.Exit(1)
 		}
 		// Here we actually read the data from the file
-		data, err := reader.ReadDML(*importFlg)
+		data, err := reader.ReadDML(opts.ImportPath)
 		if err != nil {
 			log.Fatal(err)
 		}
+		opts.DMData = data
 
-		db_path := filepath.Join(config_path, db_name)
-		err = reader.DatamapToDB(db_path, data, *nameFlg, *importFlg)
+		opts.DBPath = filepath.Join(config_path, db_name)
+		err = reader.DatamapToDB(opts)
 		if err != nil {
 			log.Fatal(err)
 		}

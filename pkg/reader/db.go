@@ -11,6 +11,12 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type Opts struct {
+	DBPath, ImportPath, Name string
+	Overwrite, Initial       bool
+	DMData                   []DatamapLine
+}
+
 func SetupDB(path string) (*sql.DB, error) {
 	stmt_base := `DROP TABLE IF EXISTS datamap;
 				  CREATE TABLE datamap(id INTEGER PRIMARY KEY, name TEXT, date_created TEXT);
@@ -52,13 +58,14 @@ func SetupDB(path string) (*sql.DB, error) {
 
 // TODO - how do we avoid passing in all these params!??!
 //DatamapToDB takes a slice of DatamapLine and writes it to a sqlite3 db file.
-func DatamapToDB(d_path string, data []DatamapLine, dm_name string, dm_path string) error {
-	fmt.Printf("Importing datamap file %s and naming it %s.\n", dm_path, dm_name)
+//func DatamapToDB(d_path string, data []DatamapLine, dm_name string, dm_path string) error {
+func DatamapToDB(opts Opts) error {
+	fmt.Printf("Importing datamap file %s and naming it %s.\n", opts.ImportPath, opts.Name)
 	// db, err := SetupDB("/home/lemon/.config/datamaps-go/datamaps.db")
 	// if err != nil {
 	// 	return err
 	// }
-	d, err := sql.Open("sqlite3", d_path)
+	d, err := sql.Open("sqlite3", opts.DBPath)
 	if err != nil {
 		return errors.New("Cannot open that damn database file")
 	}
@@ -76,7 +83,7 @@ func DatamapToDB(d_path string, data []DatamapLine, dm_name string, dm_path stri
 	if err != nil {
 		return err
 	}
-	_, err = stmt_dm.Exec(dm_name, time.Now())
+	_, err = stmt_dm.Exec(opts.Name, time.Now())
 
 	stmt_dml, err := tx.Prepare("INSERT INTO datamap_line (dm_id, key, sheet, cellref) VALUES(?,?,?,?);")
 	if err != nil {
@@ -84,7 +91,7 @@ func DatamapToDB(d_path string, data []DatamapLine, dm_name string, dm_path stri
 	}
 	defer stmt_dm.Close()
 	defer stmt_dml.Close()
-	for _, dml := range data {
+	for _, dml := range opts.DMData {
 		_, err = stmt_dml.Exec(1, dml.Key, dml.Sheet, dml.Cellref)
 		if err != nil {
 			return err
