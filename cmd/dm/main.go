@@ -11,7 +11,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/yulqen/datamaps-go/pkg/db"
 	"github.com/yulqen/datamaps-go/pkg/reader"
 )
 
@@ -44,7 +43,7 @@ func setUp() (string, error) {
 			return "", err
 		}
 		log.Printf("Creating database file at %s\n", db_path)
-		_, err := db.SetupDB(db_path)
+		_, err := reader.SetupDB(db_path)
 		if err != nil {
 			return "", err
 		}
@@ -116,7 +115,7 @@ func main() {
 		}
 
 		db_path := filepath.Join(config_path, db_name)
-		err = db.DatamapToDB(db_path, data, *nameFlg, *importFlg)
+		err = reader.DatamapToDB(db_path, data, *nameFlg, *importFlg)
 		if err != nil {
 			log.Fatal(err)
 		}

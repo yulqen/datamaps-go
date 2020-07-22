@@ -1,9 +1,7 @@
-package db
+package reader
 
 import (
 	"testing"
-
-	"github.com/yulqen/datamaps-go/pkg/reader"
 )
 
 func TestOpenSQLiteFile(t *testing.T) {
@@ -32,11 +30,11 @@ func TestOpenSQLiteFile(t *testing.T) {
 }
 
 func TestDatamapGoesIntoDB(t *testing.T) {
-	d, err := reader.ReadDML("./testdata/datamap.csv")
+	d, err := ReadDML("./testdata/datamap.csv")
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = DatamapToDB(d, "First Datamap", "./testdata/test.db")
+	err = DatamapToDB("./testdata/test.db", d, "First Datamap", "./testdata/test.db")
 	if err != nil {
 		t.Errorf("Unable to write datamap to database file because %v.", err)
 	}

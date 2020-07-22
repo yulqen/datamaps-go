@@ -1,4 +1,4 @@
-package db
+package reader
 
 import (
 	"database/sql"
@@ -9,7 +9,6 @@ import (
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/yulqen/datamaps-go/pkg/reader"
 )
 
 func SetupDB(path string) (*sql.DB, error) {
@@ -53,7 +52,7 @@ func SetupDB(path string) (*sql.DB, error) {
 
 // TODO - how do we avoid passing in all these params!??!
 //DatamapToDB takes a slice of DatamapLine and writes it to a sqlite3 db file.
-func DatamapToDB(d_path string, data []reader.DatamapLine, dm_name string, dm_path string) error {
+func DatamapToDB(d_path string, data []DatamapLine, dm_name string, dm_path string) error {
 	fmt.Printf("Importing datamap file %s and naming it %s.\n", dm_path, dm_name)
 	// db, err := SetupDB("/home/lemon/.config/datamaps-go/datamaps.db")
 	// if err != nil {

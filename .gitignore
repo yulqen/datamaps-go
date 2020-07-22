@@ -3,3 +3,4 @@
 reader/testdata/test.db
 go.sum
 dm
+main
