@@ -63,15 +63,42 @@ func defaultOptions() *Options {
 	}
 }
 
-func ParseOptions() *Options {
-	opts := defaultOptions()
+func nextString(args []string, i *int, message string) string {
+	if len(args) > *i+1 {
+		*i++
+	} else {
+		log.Fatal(message)
+	}
+	return args[*i]
+}
 
-	switch os.Args[1] {
+func processOptions(opts *Options, allArgs []string) {
+	switch allArgs[0] {
 	case "server":
 		opts.Command = "server"
 	case "datamap":
 		opts.Command = "datamap"
+	case "setup":
+		opts.Command = "setup"
+	default:
+		log.Fatal("No relevant command provided.")
 	}
+	restArgs := allArgs[1:]
+	for i := 0; i < len(allArgs[1:]); i++ {
+		arg := restArgs[i]
+		switch arg {
+		case "-i", "--import":
+			opts.DMPath = nextString(restArgs, &i, "import path required")
+		case "-n", "--name":
+			opts.DMName = nextString(restArgs, &i, "datamap name required")
+		}
+
+	}
+}
+
+func ParseOptions() *Options {
+	opts := defaultOptions()
+	processOptions(opts, os.Args[1:])
 
 	// setup command
 	setupCmd := flag.NewFlagSet("setup", flag.ExitOnError)
