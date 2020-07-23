@@ -69,6 +69,8 @@ func ParseOptions() *Options {
 	switch os.Args[1] {
 	case "server":
 		opts.Command = "server"
+	case "datamap":
+		opts.Command = "datamap"
 	}
 
 	// setup command
