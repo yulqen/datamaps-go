@@ -1,6 +1,5 @@
-/*
-reader reads datamap files and populated spreadsheets
-*/
+// Pack datmamaps handles datamap files and populated spreadsheets.
+
 package datamaps
 
 import (
@@ -13,6 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	// Required for the sqlite3 driver
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/tealeg/xlsx"

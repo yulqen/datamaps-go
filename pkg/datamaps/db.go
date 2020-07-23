@@ -8,11 +8,13 @@ import (
 	"os"
 	"time"
 
+	// Needed for the sqlite3 driver
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// SetupDB creates the intitial database
 func SetupDB(path string) (*sql.DB, error) {
-	stmt_base := `DROP TABLE IF EXISTS datamap;
+	stmtBase := `DROP TABLE IF EXISTS datamap;
 				  CREATE TABLE datamap(id INTEGER PRIMARY KEY, name TEXT, date_created TEXT);
 				  DROP TABLE IF EXISTS datamap_line;
 
@@ -41,7 +43,7 @@ func SetupDB(path string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	_, err = db.Exec(stmt_base)
+	_, err = db.Exec(stmtBase)
 	if err != nil {
 		// log.Printf("%q: %s\n", err, stmt_base)
 		return nil, err
@@ -50,9 +52,8 @@ func SetupDB(path string) (*sql.DB, error) {
 	return db, nil
 }
 
-// TODO - how do we avoid passing in all these params!??!
-//DatamapToDB takes a slice of DatamapLine and writes it to a sqlite3 db file.
-//func DatafmapToDB(d_path string, data []DatamapLine, dm_name string, dm_path string) error {
+// DatamapToDB takes a slice of DatamapLine and writes it to a sqlite3 db file.
+// func DatafmapToDB(d_path string, data []DatamapLine, dm_name string, dm_path string) error {
 func DatamapToDB(opts *Options) error {
 	fmt.Printf("Importing datamap file %s and naming it %s.\n", opts.DMPath, opts.DMName)
 
@@ -75,20 +76,20 @@ func DatamapToDB(opts *Options) error {
 		log.Printf("%q: %s\n", err, pragma)
 		return err
 	}
-	stmt_dm, err := tx.Prepare("INSERT INTO datamap (name, date_created) VALUES(?,?)")
+	stmtDm, err := tx.Prepare("INSERT INTO datamap (name, date_created) VALUES(?,?)")
 	if err != nil {
 		return err
 	}
-	_, err = stmt_dm.Exec(opts.DMName, time.Now())
+	_, err = stmtDm.Exec(opts.DMName, time.Now())
 
-	stmt_dml, err := tx.Prepare("INSERT INTO datamap_line (dm_id, key, sheet, cellref) VALUES(?,?,?,?);")
+	stmtDml, err := tx.Prepare("INSERT INTO datamap_line (dm_id, key, sheet, cellref) VALUES(?,?,?,?);")
 	if err != nil {
 		return err
 	}
-	defer stmt_dm.Close()
-	defer stmt_dml.Close()
+	defer stmtDm.Close()
+	defer stmtDml.Close()
 	for _, dml := range data {
-		_, err = stmt_dml.Exec(1, dml.Key, dml.Sheet, dml.Cellref)
+		_, err = stmtDml.Exec(1, dml.Key, dml.Sheet, dml.Cellref)
 		if err != nil {
 			return err
 		}
