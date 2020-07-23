@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	config_dir_name = "datamaps-go"
-	db_name         = "datamaps.db"
+	configDirName = "datamaps-go"
+	dbName        = "datamaps.db"
 )
 
 func getUserConfigDir() (string, error) {
@@ -16,8 +16,8 @@ func getUserConfigDir() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	config_path := filepath.Join(dir, config_dir_name)
-	return config_path, nil
+	configPath := filepath.Join(dir, configDirName)
+	return configPath, nil
 }
 
 func defaultDMPath() (string, error) {
@@ -28,9 +28,7 @@ func defaultDMPath() (string, error) {
 	return filepath.Join(dir, "Documents", "datamaps"), nil
 }
 
-// TODO - need a func to replace Options.Command with the one we pass
-// Needs to use flag.NewFlagSet so we can Parse on it in main.
-
+// Options for the whole CLI application
 type Options struct {
 	Command     string
 	DBPath      string
@@ -38,7 +36,6 @@ type Options struct {
 	DMName      string
 	DMOverwrite bool
 	DMInitial   bool
-	DMData      []DatamapLine
 }
 
 func defaultOptions() *Options {
@@ -57,7 +54,6 @@ func defaultOptions() *Options {
 		DMName:      "Unnamed Datamap",
 		DMOverwrite: false,
 		DMInitial:   false,
-		DMData:      make([]DatamapLine, 0),
 	}
 }
 
@@ -98,6 +94,7 @@ func processOptions(opts *Options, allArgs []string) {
 	}
 }
 
+//ParseOptions for CLI.
 func ParseOptions() *Options {
 	opts := defaultOptions()
 	processOptions(opts, os.Args[1:])

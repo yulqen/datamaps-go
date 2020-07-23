@@ -30,16 +30,11 @@ func TestOpenSQLiteFile(t *testing.T) {
 }
 
 func TestDatamapGoesIntoDB(t *testing.T) {
-	d, err := ReadDML("./testdata/datamap.csv")
-	if err != nil {
-		t.Fatal(err)
-	}
 	opts := Options{
 		DBPath: "./testdata/test.db",
 		DMName: "First Datamap",
-		DMData: d,
 	}
-	err = DatamapToDB(opts)
+	err := DatamapToDB(&opts)
 	if err != nil {
 		t.Errorf("Unable to write datamap to database file because %v.", err)
 	}

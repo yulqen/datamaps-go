@@ -55,10 +55,12 @@ func SetupDB(path string) (*sql.DB, error) {
 //func DatafmapToDB(d_path string, data []DatamapLine, dm_name string, dm_path string) error {
 func DatamapToDB(opts *Options) error {
 	fmt.Printf("Importing datamap file %s and naming it %s.\n", opts.DMPath, opts.DMName)
-	// db, err := SetupDB("/home/lemon/.config/datamaps-go/datamaps.db")
-	// if err != nil {
-	// 	return err
-	// }
+
+	data, err := ReadDML(opts.DMPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	d, err := sql.Open("sqlite3", opts.DBPath)
 	if err != nil {
 		return errors.New("Cannot open that damn database file")
@@ -85,7 +87,7 @@ func DatamapToDB(opts *Options) error {
 	}
 	defer stmt_dm.Close()
 	defer stmt_dml.Close()
-	for _, dml := range opts.DMData {
+	for _, dml := range data {
 		_, err = stmt_dml.Exec(1, dml.Key, dml.Sheet, dml.Cellref)
 		if err != nil {
 			return err
