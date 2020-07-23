@@ -52,7 +52,26 @@ func setUp() (string, error) {
 
 func main() {
 
-	_ = datamaps.ParseOptions()
+	opts := datamaps.ParseOptions()
+
+	switch opts.Command {
+	case "datamap":
+		data, err := datamaps.ReadDML(opts.DMPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		opts.DMData = data
+
+		err = datamaps.DatamapToDB(opts)
+		if err != nil {
+			log.Fatal(err)
+		}
+	case "setup":
+		_, err := setUp()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 
 	// switch os.Args[1] {
 

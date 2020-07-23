@@ -1,8 +1,6 @@
 package datamaps
 
 import (
-	"flag"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -63,6 +61,7 @@ func defaultOptions() *Options {
 	}
 }
 
+// nextString get the next string in a slice
 func nextString(args []string, i *int, message string) string {
 	if len(args) > *i+1 {
 		*i++
@@ -91,34 +90,16 @@ func processOptions(opts *Options, allArgs []string) {
 			opts.DMPath = nextString(restArgs, &i, "import path required")
 		case "-n", "--name":
 			opts.DMName = nextString(restArgs, &i, "datamap name required")
+		case "--overwrite":
+			opts.DMOverwrite = true
+		case "--initial":
+			opts.DMInitial = true
 		}
-
 	}
 }
 
 func ParseOptions() *Options {
 	opts := defaultOptions()
 	processOptions(opts, os.Args[1:])
-
-	// setup command
-	setupCmd := flag.NewFlagSet("setup", flag.ExitOnError)
-	setupCmd.Usage = func() { fmt.Println("No, you fucking idiot!") }
-
-	// datamap command and its flags
-	datamapCmd := flag.NewFlagSet("datamap", flag.ExitOnError)
-	_ = datamapCmd.String("import", opts.DMPath, "Path to datamap")
-	_ = datamapCmd.String("name", opts.DMName, "The name you want to give to the imported datamap.")
-	_ = datamapCmd.Bool("overwrite", opts.DMOverwrite, "Start fresh with this datamap (erases existing datamap data).")
-	_ = datamapCmd.Bool("initial", opts.DMInitial, "This option must be used where no datamap table yet exists.")
-
-	// server command and its flags
-	_ = flag.NewFlagSet("server", flag.ExitOnError)
-
-	if len(os.Args) < 2 {
-		fmt.Println("Expected 'datamap' or 'setup' subcommand")
-		os.Exit(1)
-	}
-
 	return opts
-
 }

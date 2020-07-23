@@ -53,7 +53,7 @@ func SetupDB(path string) (*sql.DB, error) {
 // TODO - how do we avoid passing in all these params!??!
 //DatamapToDB takes a slice of DatamapLine and writes it to a sqlite3 db file.
 //func DatafmapToDB(d_path string, data []DatamapLine, dm_name string, dm_path string) error {
-func DatamapToDB(opts Options) error {
+func DatamapToDB(opts *Options) error {
 	fmt.Printf("Importing datamap file %s and naming it %s.\n", opts.DMPath, opts.DMName)
 	// db, err := SetupDB("/home/lemon/.config/datamaps-go/datamaps.db")
 	// if err != nil {
