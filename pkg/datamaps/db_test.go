@@ -30,12 +30,17 @@ func TestOpenSQLiteFile(t *testing.T) {
 }
 
 func TestDatamapGoesIntoDB(t *testing.T) {
+	db, err := SetupDB("./testdata/test.db")
+	defer db.Close()
+	if err != nil {
+		t.Fatal("Expected to be able to set up the database.")
+	}
 	opts := Options{
 		DBPath: "./testdata/test.db",
 		DMName: "First Datamap",
+		DMPath: "./testdata/datamap.csv",
 	}
-	err := DatamapToDB(&opts)
-	if err != nil {
+	if err := DatamapToDB(&opts); err != nil {
 		t.Errorf("Unable to write datamap to database file because %v.", err)
 	}
 }
