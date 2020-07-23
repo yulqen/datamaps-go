@@ -4,9 +4,7 @@ datamaps-go is a simple tool to extract from and send data to spreadsheets.
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
 
@@ -54,64 +52,64 @@ func setUp() (string, error) {
 
 func main() {
 
-	opts := datamaps.ParseOptions()
+	_ = datamaps.ParseOptions()
 
-	switch os.Args[1] {
+	// switch os.Args[1] {
 
-	case "server":
-		opts.Command.Parse(os.Args[2:])
-		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path != "/" {
-				http.NotFound(w, r)
-				return
-			}
-			fmt.Fprintf(w, "Welcome to datamaps!")
-			// or you could write it thus
-			// w.Write([]byte("Hello from Snippetbox"))
-		})
-		log.Println("Starting server on :8080")
-		err := http.ListenAndServe(":8080", nil)
-		log.Fatal(err)
+	// case "server":
+	// 	opts.Command.Parse(os.Args[2:])
+	// 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 		if r.URL.Path != "/" {
+	// 			http.NotFound(w, r)
+	// 			return
+	// 		}
+	// 		fmt.Fprintf(w, "Welcome to datamaps!")
+	// 		// or you could write it thus
+	// 		// w.Write([]byte("Hello from Snippetbox"))
+	// 	})
+	// 	log.Println("Starting server on :8080")
+	// 	err := http.ListenAndServe(":8080", nil)
+	// 	log.Fatal(err)
 
-	case "datamap":
-		datamapCmd.Parse(os.Args[2:])
-		fmt.Println("subcommand 'datamap'")
-		fmt.Println("  import:", *dmPath)
-		fmt.Println("  name:", *dmName)
-		fmt.Println("  overwrite:", *dmOverwrite)
-		fmt.Println("  initial:", *dmInitial)
+	// case "datamap":
+	// 	datamapCmd.Parse(os.Args[2:])
+	// 	fmt.Println("subcommand 'datamap'")
+	// 	fmt.Println("  import:", *dmPath)
+	// 	fmt.Println("  name:", *dmName)
+	// 	fmt.Println("  overwrite:", *dmOverwrite)
+	// 	fmt.Println("  initial:", *dmInitial)
 
-		dir, err := os.UserConfigDir()
-		if err != nil {
-			os.Exit(1)
-		}
-		// check if config folder exists
-		config_path := filepath.Join(dir, config_dir_name)
-		if _, err := os.Stat(config_path); os.IsNotExist(err) {
-			fmt.Println("Config directory and database does not exist. Run datamaps setup to fix.")
-			os.Exit(1)
-		}
-		// Here we actually read the data from the file
-		data, err := datamaps.ReadDML(opts.ImportPath)
-		if err != nil {
-			log.Fatal(err)
-		}
-		opts.DMData = data
+	// 	dir, err := os.UserConfigDir()
+	// 	if err != nil {
+	// 		os.Exit(1)
+	// 	}
+	// 	// check if config folder exists
+	// 	config_path := filepath.Join(dir, config_dir_name)
+	// 	if _, err := os.Stat(config_path); os.IsNotExist(err) {
+	// 		fmt.Println("Config directory and database does not exist. Run datamaps setup to fix.")
+	// 		os.Exit(1)
+	// 	}
+	// 	// Here we actually read the data from the file
+	// 	data, err := datamaps.ReadDML(opts.ImportPath)
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	opts.DMData = data
 
-		opts.DBPath = filepath.Join(config_path, db_name)
-		err = datamaps.DatamapToDB(opts)
-		if err != nil {
-			log.Fatal(err)
-		}
-	case "setup":
-		setupCmd.Parse(os.Args[2:])
-		_, err := setUp()
-		if err != nil {
-			log.Fatal(err)
-		}
+	// 	opts.DBPath = filepath.Join(config_path, db_name)
+	// 	err = datamaps.DatamapToDB(opts)
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// case "setup":
+	// 	setupCmd.Parse(os.Args[2:])
+	// 	_, err := setUp()
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
 
-	default:
-		fmt.Println("Do not recognised that command. Expected 'datamap' subcommand.")
-		os.Exit(1)
-	}
+	// default:
+	// 	fmt.Println("Do not recognised that command. Expected 'datamap' subcommand.")
+	// 	os.Exit(1)
+	// }
 }

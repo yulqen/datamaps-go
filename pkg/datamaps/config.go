@@ -66,19 +66,24 @@ func defaultOptions() *Options {
 func ParseOptions() *Options {
 	opts := defaultOptions()
 
+	switch os.Args[1] {
+	case "server":
+		opts.Command = "server"
+	}
+
 	// setup command
 	setupCmd := flag.NewFlagSet("setup", flag.ExitOnError)
 	setupCmd.Usage = func() { fmt.Println("No, you fucking idiot!") }
 
 	// datamap command and its flags
 	datamapCmd := flag.NewFlagSet("datamap", flag.ExitOnError)
-	dmPath := datamapCmd.String("import", opts.DMPath, "Path to datamap")
-	dmName := datamapCmd.String("name", opts.DMName, "The name you want to give to the imported datamap.")
-	dmOverwrite := datamapCmd.Bool("overwrite", opts.DMOverwrite, "Start fresh with this datamap (erases existing datamap data).")
-	dmInitial := datamapCmd.Bool("initial", opts.DMInitial, "This option must be used where no datamap table yet exists.")
+	_ = datamapCmd.String("import", opts.DMPath, "Path to datamap")
+	_ = datamapCmd.String("name", opts.DMName, "The name you want to give to the imported datamap.")
+	_ = datamapCmd.Bool("overwrite", opts.DMOverwrite, "Start fresh with this datamap (erases existing datamap data).")
+	_ = datamapCmd.Bool("initial", opts.DMInitial, "This option must be used where no datamap table yet exists.")
 
 	// server command and its flags
-	serverCmd := flag.NewFlagSet("server", flag.ExitOnError)
+	_ = flag.NewFlagSet("server", flag.ExitOnError)
 
 	if len(os.Args) < 2 {
 		fmt.Println("Expected 'datamap' or 'setup' subcommand")
