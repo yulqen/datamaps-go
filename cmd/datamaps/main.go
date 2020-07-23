@@ -4,7 +4,6 @@ datamaps-go is a simple tool to extract from and send data to spreadsheets.
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -54,38 +53,13 @@ func setUp() (string, error) {
 }
 
 func main() {
-	// setup command
-	setupCmd := flag.NewFlagSet("setup", flag.ExitOnError)
-	setupCmd.Usage = func() { fmt.Println("No, you fucking idiot!") }
 
-	// datamap command and its flags
-	datamapCmd := flag.NewFlagSet("datamap", flag.ExitOnError)
-	importFlg := datamapCmd.String("import", "/home/lemon/Documents/datamaps/input/datamap.csv", "Path to datamap")
-	nameFlg := datamapCmd.String("name", "Unnamed datamap", "The name you want to give to the imported datamap.")
-	overwriteFlg := datamapCmd.Bool("overwrite", false, "Start fresh with this datamap (erases existing datamap data).")
-	initialFlg := datamapCmd.Bool("initial", false, "This option must be used where no datamap table yet exists.")
-
-	// server command and its flags
-	serverCmd := flag.NewFlagSet("server", flag.ExitOnError)
-
-	if len(os.Args) < 2 {
-		fmt.Println("Expected 'datamap' or 'setup' subcommand")
-		os.Exit(1)
-	}
-
-	opts := datamaps.Options{
-		DBPath:      "",
-		DMPath:      *importFlg,
-		DMName:      *nameFlg,
-		DMOverwrite: *overwriteFlg,
-		DMInitial:   *initialFlg,
-		DMData:      nil,
-	}
+	opts := datamaps.ParseOptions()
 
 	switch os.Args[1] {
 
 	case "server":
-		serverCmd.Parse(os.Args[2:])
+		opts.Command.Parse(os.Args[2:])
 		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path != "/" {
 				http.NotFound(w, r)
@@ -102,10 +76,10 @@ func main() {
 	case "datamap":
 		datamapCmd.Parse(os.Args[2:])
 		fmt.Println("subcommand 'datamap'")
-		fmt.Println("  import:", *importFlg)
-		fmt.Println("  name:", *nameFlg)
-		fmt.Println("  overwrite:", *overwriteFlg)
-		fmt.Println("  initial:", *initialFlg)
+		fmt.Println("  import:", *dmPath)
+		fmt.Println("  name:", *dmName)
+		fmt.Println("  overwrite:", *dmOverwrite)
+		fmt.Println("  initial:", *dmInitial)
 
 		dir, err := os.UserConfigDir()
 		if err != nil {
