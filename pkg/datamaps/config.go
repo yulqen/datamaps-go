@@ -11,6 +11,41 @@ const (
 	dbName        = "datamaps.db"
 )
 
+// SetUp creates the config directory and requisite files
+func SetUp() (string, error) {
+	dir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+	// check if config folder exists
+	configPath := filepath.Join(dir, configDirName)
+	dbPath := filepath.Join(configPath, dbName)
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		log.Println("Config directory does not exist.")
+		log.Printf("Creating config directory %s\n", configPath)
+		if err := os.Mkdir(filepath.Join(dir, "datamaps-go"), 0700); err != nil {
+			return "", err
+		}
+	} else {
+		log.Println("Config directory found.")
+	}
+	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
+		log.Println("Database does not exist.")
+		_, err = os.Create(dbPath)
+		if err != nil {
+			return "", err
+		}
+		log.Printf("Creating database file at %s\n", dbPath)
+		_, err := SetupDB(dbPath)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		log.Println("Database file found.")
+	}
+	return dir, nil
+}
+
 func getUserConfigDir() (string, error) {
 	dir, err := os.UserConfigDir()
 	if err != nil {
