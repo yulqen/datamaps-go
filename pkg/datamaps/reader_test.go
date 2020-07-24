@@ -14,6 +14,7 @@ func TestReadDML(t *testing.T) {
 		{1, "Department"},
 		{2, "Delivery Body"},
 	}
+
 	for _, c := range cases {
 		if got := d[c.idx].Key; got != c.val {
 			t.Errorf("The test expected %s, got %s.", c.val, d[c.idx].Key)
@@ -25,6 +26,7 @@ func TestNoFileReturnsError(t *testing.T) {
 	// this file does not exist
 	_, err := ReadDML("/home/bobbins.csv")
 	// if we get no error, something has gone wrong
+
 	if err == nil {
 		t.Errorf("Should have thrown error %s", err)
 	}
@@ -32,6 +34,7 @@ func TestNoFileReturnsError(t *testing.T) {
 
 func TestBadDMLLine(t *testing.T) {
 	_, err := ReadDML("/home/lemon/code/python/bcompiler-engine/tests/resources/datamap_empty_cols.csv")
+
 	if err == nil {
 		t.Errorf("No error so test failed.")
 	}
@@ -40,6 +43,7 @@ func TestBadDMLLine(t *testing.T) {
 func TestGetSheetsFromDM(t *testing.T) {
 	slice, _ := ReadDML("testdata/datamap.csv")
 	sheetNames := getSheetNames(slice)
+
 	if len(sheetNames) != 15 {
 		t.Errorf("The test expected 14 sheets in slice, got %d.",
 			len(sheetNames))
@@ -56,6 +60,7 @@ func TestReadXLSX(t *testing.T) {
 		{"Another Sheet", "F5", "4.2"},
 		{"Another Sheet", "J22", "18"},
 	}
+
 	for _, c := range cases {
 		got := d[c.sheet][c.cellref].Value
 		if got != c.val {
@@ -75,6 +80,7 @@ func TestExtract(t *testing.T) {
 		{"Introduction", "A1", "10"},
 		{"Introduction", "C22", "VUNT"},
 	}
+
 	for _, c := range cases {
 		got := d[c.sheet][c.cellref].Value
 		if got != c.val {
@@ -83,6 +89,7 @@ func TestExtract(t *testing.T) {
 				d[c.sheet][c.cellref].Value)
 		}
 	}
+
 	if d["Another Sheet"]["E26"].Value != "Integer:" {
 		t.Errorf("Expected E26 in Another Sheet sheet to be Integer: - instead it is %s", d["Another Sheet"]["E26"].Value)
 	}

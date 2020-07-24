@@ -51,7 +51,9 @@ func getUserConfigDir() (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	configPath := filepath.Join(dir, configDirName)
+
 	return configPath, nil
 }
 
@@ -60,10 +62,11 @@ func defaultDMPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return filepath.Join(dir, "Documents", "datamaps"), nil
 }
 
-// Options for the whole CLI application
+// Options for the whole CLI application.
 type Options struct {
 	Command     string
 	DBPath      string
@@ -78,13 +81,16 @@ func defaultOptions() *Options {
 	if err != nil {
 		log.Fatalf("Unable to get user config directory %v", err)
 	}
+
 	dmpath, err := defaultDMPath()
+
 	if err != nil {
 		log.Fatalf("Unable to get default datamaps directory %v", err)
 	}
+
 	return &Options{
 		Command:     "help",
-		DBPath:      filepath.Join(dbpath, "datamaps.db"),
+		DBPath:      filepath.Join(dbpath, dbName),
 		DMPath:      dmpath,
 		DMName:      "Unnamed Datamap",
 		DMOverwrite: false,
@@ -92,13 +98,14 @@ func defaultOptions() *Options {
 	}
 }
 
-// nextString get the next string in a slice
+// nextString get the next string in a slice.
 func nextString(args []string, i *int, message string) string {
 	if len(args) > *i+1 {
 		*i++
 	} else {
 		log.Fatal(message)
 	}
+
 	return args[*i]
 }
 
@@ -113,7 +120,9 @@ func processOptions(opts *Options, allArgs []string) {
 	default:
 		log.Fatal("No relevant command provided.")
 	}
+
 	restArgs := allArgs[1:]
+
 	for i := 0; i < len(allArgs[1:]); i++ {
 		arg := restArgs[i]
 		switch arg {
@@ -133,5 +142,6 @@ func processOptions(opts *Options, allArgs []string) {
 func ParseOptions() *Options {
 	opts := defaultOptions()
 	processOptions(opts, os.Args[1:])
+
 	return opts
 }

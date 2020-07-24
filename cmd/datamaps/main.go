@@ -12,7 +12,6 @@ import (
 )
 
 func main() {
-
 	opts := datamaps.ParseOptions()
 
 	switch opts.Command {
