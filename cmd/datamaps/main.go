@@ -12,6 +12,10 @@ import (
 )
 
 func main() {
+	env := datamaps.DetectConfig()
+	if !env {
+		datamaps.SetUp()
+	}
 	opts := datamaps.ParseOptions()
 
 	switch opts.Command {

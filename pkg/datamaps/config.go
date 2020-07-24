@@ -11,6 +11,15 @@ const (
 	dbName        = "datamaps.db"
 )
 
+// DetectConfig looks for the configuration directory and
+// files, and the database file needed to run the application.
+func DetectConfig() bool {
+	dir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+}
+
 // SetUp creates the config directory and requisite files
 func SetUp() (string, error) {
 	dir, err := os.UserConfigDir()
