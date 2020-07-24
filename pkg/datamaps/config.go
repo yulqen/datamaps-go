@@ -1,6 +1,7 @@
 package datamaps
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -11,13 +12,56 @@ const (
 	dbName        = "datamaps.db"
 )
 
+// mocking funcs in go https://stackoverflow.com/questions/19167970/mock-functions-in-go
+// we only need the func signature to create the type. This is pretty weird, we're want to mock
+// os.UserHomeDir so that we can set it to something like /tmp in our tests. Here we are creating
+// two types: GetUserConfigDir to represent the os.UserConfigDir function, DBPathChecker as a wrapper
+// which which we can assign methods to that holds the value of the func os.UserConfigDir and the
+// method, check(), which does the work, using the passed in func to determine the user $HOME/.config
+// directory.
+// Which is a lot of work for what it is, but it does make this testable and serves as an example
+// of how things could be done in Go.
+
+type GetUserConfigDir func() (string, error)
+
+type DBPathChecker struct {
+	getUserConfigDir GetUserConfigDir
+}
+
+func NewDBPathChecker(h GetUserConfigDir) *DBPathChecker {
+	return &DBPathChecker{getUserConfigDir: h}
+}
+
+func (db *DBPathChecker) check() bool {
+	userConfig, err := db.getUserConfigDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	configPath := filepath.Join(userConfig, "datamaps")
+	dbPath := filepath.Join(configPath, "datamaps.db")
+	fmt.Fprintf(os.Stderr, "dbPath is definitely %s\n", dbPath)
+	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
+		fmt.Fprintf(os.Stderr, "db does not exist\n")
+		return false
+	}
+	return true
+}
+
 // DetectConfig looks for the configuration directory and
 // files, and the database file needed to run the application.
-func DetectConfig() bool {
+func DetectDBFile() bool {
 	dir, err := os.UserConfigDir()
 	if err != nil {
-		return "", err
+		log.Fatal(err)
 	}
+	// check if config folder exists
+	configPath := filepath.Join(dir, configDirName)
+	dbPath := filepath.Join(configPath, dbName)
+	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
+		fmt.Fprintf(os.Stderr, "db does not exist\n")
+		return false
+	}
+	return true
 }
 
 // SetUp creates the config directory and requisite files
