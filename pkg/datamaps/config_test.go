@@ -26,7 +26,7 @@ func TestDBDetect(t *testing.T) {
 	}()
 
 	dbpc := NewDBPathChecker(mockConfigDir)
-	h := dbpc.check()
+	h := dbpc.Check()
 	if !h {
 		t.Error("the db file should be found but isn't")
 	}

@@ -7,15 +7,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/yulqen/datamaps-go/pkg/datamaps"
 )
 
 func main() {
-	// env := datamaps.DetectConfig()
-	// if !env {
-	// 	datamaps.SetUp()
-	// }
+	dbpc := datamaps.NewDBPathChecker(os.UserConfigDir)
+	if !dbpc.Check() {
+		datamaps.SetUp()
+	}
 	opts := datamaps.ParseOptions()
 
 	switch opts.Command {

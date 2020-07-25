@@ -1,7 +1,6 @@
 package datamaps
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -32,14 +31,13 @@ func NewDBPathChecker(h GetUserConfigDir) *DBPathChecker {
 	return &DBPathChecker{getUserConfigDir: h}
 }
 
-func (db *DBPathChecker) check() bool {
+func (db *DBPathChecker) Check() bool {
 	userConfig, err := db.getUserConfigDir()
 	if err != nil {
 		log.Fatal(err)
 	}
 	dbPath := filepath.Join(userConfig, "datamaps.db")
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
-		fmt.Fprintf(os.Stderr, "db does not exist\n")
 		return false
 	}
 	return true
@@ -57,7 +55,7 @@ func SetUp() (string, error) {
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Println("Config directory does not exist.")
 		log.Printf("Creating config directory %s\n", configPath)
-		if err := os.Mkdir(filepath.Join(dir, "datamaps-go"), 0700); err != nil {
+		if err := os.Mkdir(filepath.Join(dir, "datamaps"), 0700); err != nil {
 			return "", err
 		}
 	} else {
