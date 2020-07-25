@@ -1,7 +1,6 @@
 package datamaps
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"testing"
@@ -10,25 +9,25 @@ import (
 // mocking funcs in go https://stackoverflow.com/questions/19167970/mock-functions-in-go
 
 func mockConfigDir() (string, error) {
-	return "/tmp/CONFIG", nil
+	return "/tmp/CONFIG/datamaps/", nil
 }
 
 func TestDBDetect(t *testing.T) {
 
-	if err := os.Mkdir(filepath.Join("/tmp", "CONFIG"), 0700); err != nil {
-		t.Fatal("cannot create temporary directory")
+	cPath := filepath.Join("/tmp", "CONFIG", "datamaps")
+	t.Logf("%s\n", cPath)
+	if err := os.MkdirAll(cPath, 0700); err != nil {
+		t.Fatalf("cannot create temporary directory - %v", err)
 	}
 
-	os.Create(filepath.Join("/tmp", "CONFIG", "datamaps.db"))
+	os.Create(filepath.Join("/tmp", "CONFIG", "datamaps", "datamaps.db"))
 	defer func() {
 		os.RemoveAll(filepath.Join("/tmp", "CONFIG"))
 	}()
 
 	dbpc := NewDBPathChecker(mockConfigDir)
 	h := dbpc.check()
-	log.SetOutput(os.Stderr)
-	t.Logf("h is %v\n", h)
-	if h != true {
-		t.Error("Not there")
+	if !h {
+		t.Error("the db file should be found but isn't")
 	}
 }

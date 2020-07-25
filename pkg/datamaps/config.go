@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	configDirName = "datamaps-go"
+	configDirName = "datamaps"
 	dbName        = "datamaps.db"
 )
 
@@ -37,26 +37,7 @@ func (db *DBPathChecker) check() bool {
 	if err != nil {
 		log.Fatal(err)
 	}
-	configPath := filepath.Join(userConfig, "datamaps")
-	dbPath := filepath.Join(configPath, "datamaps.db")
-	fmt.Fprintf(os.Stderr, "dbPath is definitely %s\n", dbPath)
-	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
-		fmt.Fprintf(os.Stderr, "db does not exist\n")
-		return false
-	}
-	return true
-}
-
-// DetectConfig looks for the configuration directory and
-// files, and the database file needed to run the application.
-func DetectDBFile() bool {
-	dir, err := os.UserConfigDir()
-	if err != nil {
-		log.Fatal(err)
-	}
-	// check if config folder exists
-	configPath := filepath.Join(dir, configDirName)
-	dbPath := filepath.Join(configPath, dbName)
+	dbPath := filepath.Join(userConfig, "datamaps.db")
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
 		fmt.Fprintf(os.Stderr, "db does not exist\n")
 		return false
