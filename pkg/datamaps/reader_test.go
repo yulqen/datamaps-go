@@ -158,7 +158,7 @@ func TestExtractUsingDBDM(t *testing.T) {
 		t.Errorf("Unable to write datamap to database file because %v.", err)
 	}
 
-	d := ExtractDBDM("First Datamap", "testdata/test_template.xlsx", db)
+	d, _ := ExtractDBDM("First Datamap", "testdata/test_template.xlsx", db)
 	cases := []struct {
 		sheet, cellref, val string
 	}{

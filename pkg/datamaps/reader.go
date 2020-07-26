@@ -181,12 +181,14 @@ func DMLFromDB(name string, db *sql.DB) ([]DatamapLine, error) {
 	return out, nil
 }
 
-func ExtractDBDM(name string, file string, db *sql.DB) ExtractedData {
+// ExtractDBDM uses a datamap named from the database db to extract values
+// from the populated spreadsheet file file.
+func ExtractDBDM(name string, file string, db *sql.DB) (ExtractedData, error) {
 	xdata := ReadXLSX(file)
 	ddata, err := DMLFromDB(name, db) // this will need to return a []DatamapLine
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	names := getSheetNames(ddata)
@@ -203,7 +205,7 @@ func ExtractDBDM(name string, file string, db *sql.DB) ExtractedData {
 		}
 	}
 
-	return outer
+	return outer, nil
 }
 
 //Extract returns the file's data as a map,
