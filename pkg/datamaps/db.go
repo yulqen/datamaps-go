@@ -80,7 +80,14 @@ func DatamapToDB(opts *Options) error {
 	if err != nil {
 		return err
 	}
-	_, err = stmtDm.Exec(opts.DMName, time.Now())
+	res, err := stmtDm.Exec(opts.DMName, time.Now())
+	if err != nil {
+		return err
+	}
+	lastId, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
 
 	stmtDml, err := tx.Prepare("INSERT INTO datamap_line (dm_id, key, sheet, cellref) VALUES(?,?,?,?);")
 	if err != nil {
@@ -89,7 +96,7 @@ func DatamapToDB(opts *Options) error {
 	defer stmtDm.Close()
 	defer stmtDml.Close()
 	for _, dml := range data {
-		_, err = stmtDml.Exec(1, dml.Key, dml.Sheet, dml.Cellref)
+		_, err = stmtDml.Exec(lastId, dml.Key, dml.Sheet, dml.Cellref)
 		if err != nil {
 			return err
 		}
