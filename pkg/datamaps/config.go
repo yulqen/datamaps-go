@@ -30,9 +30,10 @@ type dbPathChecker struct {
 	getUserConfigDir GetUserConfigDir
 }
 
-// NewDBPathChecker creaes a DBPathChecker using whatever
-// func you want as the argument, as long as it produces
-// the user config directory.
+// NewDBPathChecker creates a DBPathChecker using whatever
+// func you want as the argument, as long as it matches the
+// type os.UserConfigDir. This makes it convenient for testing
+// and was done as an experiment here to practice mocking in Go.
 func NewDBPathChecker(h GetUserConfigDir) *dbPathChecker {
 	return &dbPathChecker{getUserConfigDir: h}
 }
@@ -76,7 +77,7 @@ func SetUp() (string, error) {
 			return "", err
 		}
 		log.Printf("Creating database file at %s\n", dbPath)
-		_, err := SetupDB(dbPath)
+		_, err := setupDB(dbPath)
 		if err != nil {
 			return "", err
 		}

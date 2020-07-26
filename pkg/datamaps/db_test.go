@@ -5,7 +5,7 @@ import (
 )
 
 func TestOpenSQLiteFile(t *testing.T) {
-	db, err := SetupDB("./testdata/test.db")
+	db, err := setupDB("./testdata/test.db")
 	defer db.Close()
 
 	if err != nil {
@@ -37,7 +37,7 @@ func TestOpenSQLiteFile(t *testing.T) {
 }
 
 func TestDatamapGoesIntoDB(t *testing.T) {
-	db, err := SetupDB("./testdata/test.db")
+	db, err := setupDB("./testdata/test.db")
 	defer db.Close()
 
 	if err != nil {

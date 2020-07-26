@@ -22,11 +22,13 @@ import (
 )
 
 type (
-	// SheetData is the data from the sheet
+	// SheetData is the data from the sheet.
 	SheetData map[string]ExtractedCell
+
 	// FileData is the data from the file.
 	FileData map[string]SheetData
-	// ExtractedData is the Extraced data from the file, filtered by a Datamap.
+
+	// ExtractedData is the Extracted data from the file, filtered by a Datamap.
 	ExtractedData map[string]map[string]xlsx.Cell
 )
 
@@ -111,12 +113,12 @@ func ReadDML(path string) (ExtractedDatamapFile, error) {
 	return s, nil
 }
 
-// ReadXLSX returns the file's data as a map,
+// ReadXLSX returns a file at path's data as a map,
 // keyed on sheet name. All values are returned as strings.
 // Paths to a datamap and the spreadsheet file required.
-func ReadXLSX(ssheet string) FileData {
+func ReadXLSX(path string) FileData {
 	// open the files
-	data, err := xlsx.OpenFile(ssheet)
+	data, err := xlsx.OpenFile(path)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -186,9 +188,9 @@ func DatamapFromDB(name string, db *sql.DB) (ExtractedDatamapFile, error) {
 	return out, nil
 }
 
-// ExtractDBDM uses a datamap named from the database db to extract values
+// ExtractDBDatamap uses a datamap named from the database db to extract values
 // from the populated spreadsheet file file.
-func ExtractDBDM(name string, file string, db *sql.DB) (ExtractedData, error) {
+func ExtractDBDatamap(name string, file string, db *sql.DB) (ExtractedData, error) {
 	xdata := ReadXLSX(file)
 	ddata, err := DatamapFromDB(name, db) // this will need to return an ExtractedDatamapFile
 
@@ -213,12 +215,12 @@ func ExtractDBDM(name string, file string, db *sql.DB) (ExtractedData, error) {
 	return outer, nil
 }
 
-//Extract returns the file's data as a map,
+//Extract returns the file at path's data as a map,
 // using the datamap as a filter, keyed on sheet name. All values
 // are returned as strings.
 // Paths to a datamap and the spreadsheet file required.
-func Extract(dm string, ssheet string) ExtractedData {
-	xdata := ReadXLSX(ssheet)
+func Extract(dm string, path string) ExtractedData {
+	xdata := ReadXLSX(path)
 	ddata, err := ReadDML(dm)
 
 	if err != nil {

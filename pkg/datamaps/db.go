@@ -12,8 +12,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// SetupDB creates the intitial database
-func SetupDB(path string) (*sql.DB, error) {
+// setupDB creates the intitial database
+func setupDB(path string) (*sql.DB, error) {
 	stmtBase := `DROP TABLE IF EXISTS datamap;
 				  CREATE TABLE datamap(id INTEGER PRIMARY KEY, name TEXT, date_created TEXT);
 				  DROP TABLE IF EXISTS datamap_line;
