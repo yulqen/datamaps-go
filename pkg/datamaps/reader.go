@@ -150,8 +150,10 @@ func ReadXLSX(ssheet string) FileData {
 	return outer
 }
 
-// DatamapFromDB fetches an ExtractedDatamapFile from the database given
-// the name of a datamap.
+// DatamapFromDB creates an ExtractedDatamapFile from the database given
+// the name of a datamap. Of course, in this instance, the data is not
+// coming from a datamap file (such as datamap.csv) but from datamap data
+// previous stored in the database by DatamapToDB or similar.
 func DatamapFromDB(name string, db *sql.DB) (ExtractedDatamapFile, error) {
 
 	var out ExtractedDatamapFile
