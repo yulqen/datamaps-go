@@ -14,34 +14,34 @@ const (
 // mocking funcs in go https://stackoverflow.com/questions/19167970/mock-functions-in-go
 // we only need the func signature to create the type. This is pretty weird, we're want to mock
 // os.UserHomeDir so that we can set it to something like /tmp in our tests. Here we are creating
-// two types: GetUserConfigDir to represent the os.UserConfigDir function, dbPathChecker as a wrapper
+// two types: getUserConfigDir to represent the os.UserConfigDir function, dbPathChecker as a wrapper
 // which which we can assign methods to that holds the value of the func os.UserConfigDir and the
 // method, check(), which does the work, using the passed in func to determine the user $HOME/.config
 // directory.
 // Which is a lot of work for what it is, but it does make this testable and serves as an example
 // of how things could be done in Go.
 
-// GetUserConfigDir allows replaces os.UserConfigDir
+// getUserConfigDir allows replaces os.UserConfigDir
 // for testing purposes.
-type GetUserConfigDir func() (string, error)
+type getUserConfigDir func() (string, error)
 
 // dbPathChecker contains the func used to create the user config dir.
 type dbPathChecker struct {
-	getUserConfigDir GetUserConfigDir
+	userConfig getUserConfigDir
 }
 
 // NewDBPathChecker creates a DBPathChecker using whatever
 // func you want as the argument, as long as it matches the
 // type os.UserConfigDir. This makes it convenient for testing
 // and was done as an experiment here to practice mocking in Go.
-func NewDBPathChecker(h GetUserConfigDir) *dbPathChecker {
-	return &dbPathChecker{getUserConfigDir: h}
+func NewDBPathChecker(h getUserConfigDir) *dbPathChecker {
+	return &dbPathChecker{userConfig: h}
 }
 
 // Check returns true if the necessary config files (including
 // the database) are in place - false if not
 func (db *dbPathChecker) Check() bool {
-	userConfig, err := db.getUserConfigDir()
+	userConfig, err := db.userConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -87,7 +87,7 @@ func SetUp() (string, error) {
 	return dir, nil
 }
 
-func getUserConfigDir() (string, error) {
+func userConfigDir() (string, error) {
 	dir, err := os.UserConfigDir()
 	if err != nil {
 		return "", err
@@ -118,7 +118,7 @@ type Options struct {
 }
 
 func defaultOptions() *Options {
-	dbpath, err := getUserConfigDir()
+	dbpath, err := userConfigDir()
 	if err != nil {
 		log.Fatalf("Unable to get user config directory %v", err)
 	}
