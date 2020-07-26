@@ -111,7 +111,9 @@ func TestDMLSliceFromDatabase(t *testing.T) {
 		t.Errorf("Unable to write datamap to database file because %v.", err)
 	}
 	data := DMLFromDB("First Datamap", db)
-	t.Log(data)
+	if data[0].Key != "Project/Programme Name" {
+		t.Errorf("expected to see Project/Programme Name and got %q\n", data[0])
+	}
 }
 
 func TestExtract(t *testing.T) {

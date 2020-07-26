@@ -149,6 +149,8 @@ func ReadXLSX(ssheet string) FileData {
 
 func DMLFromDB(name string, db *sql.DB) []DatamapLine {
 
+	var out []DatamapLine
+
 	query := `
 	select
 		key, sheet, cellref
@@ -170,9 +172,12 @@ func DMLFromDB(name string, db *sql.DB) []DatamapLine {
 		if err := rows.Scan(&key, &sheet, &cellref); err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("key %s\nsheet %s\ncellref %v", key, sheet, cellref)
+
+		// log.Printf("key %s\nsheet %s\ncellref %v", key, sheet, cellref)
+		out = append(out, DatamapLine{Key: key, Sheet: sheet, Cellref: cellref})
 	}
-	return make([]DatamapLine, 0)
+
+	return out
 }
 
 // func ExtractDBDM(name string, file string) ExtractedData {
