@@ -110,7 +110,30 @@ func TestDMLSliceFromDatabase(t *testing.T) {
 	if err := DatamapToDB(&opts); err != nil {
 		t.Errorf("Unable to write datamap to database file because %v.", err)
 	}
+
+	cases := []struct {
+		index int
+		key   string
+	}{
+		{0, "Project/Programme Name"},
+		{1, "Department"},
+		{2, "Delivery Body"},
+		{3, "Stoogge value"},
+		{4, "DRRDD - IPA ID Number"},
+		{5, "Controls Project ID number"},
+		{6, "Jokey Entry"},
+		{7, "Parrots Name"},
+	}
+
 	data := DMLFromDB("First Datamap", db)
+
+	for _, c := range cases {
+		got := data[c.index].Key
+		if got != c.key {
+			t.Errorf("The test expected %s but got %s\n", c.key, data[c.index].Key)
+		}
+	}
+
 	if data[0].Key != "Project/Programme Name" {
 		t.Errorf("expected to see Project/Programme Name and got %q\n", data[0])
 	}
