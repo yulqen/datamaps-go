@@ -125,7 +125,7 @@ func TestDMLSliceFromDatabase(t *testing.T) {
 		{7, "Parrots Name"},
 	}
 
-	data, _ := DMLFromDB("First Datamap", db)
+	data, _ := DatamapFromDB("First Datamap", db)
 
 	for _, c := range cases {
 		got := data[c.index].Key

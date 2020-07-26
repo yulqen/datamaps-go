@@ -147,9 +147,9 @@ func ReadXLSX(ssheet string) FileData {
 	return outer
 }
 
-// DMLFromDB fetches a slice of DatamapLine from the database given
+// DatamapFromDB fetches a slice of DatamapLine from the database given
 // the name of a datamap.
-func DMLFromDB(name string, db *sql.DB) ([]DatamapLine, error) {
+func DatamapFromDB(name string, db *sql.DB) ([]DatamapLine, error) {
 
 	var out []DatamapLine
 
@@ -185,7 +185,7 @@ func DMLFromDB(name string, db *sql.DB) ([]DatamapLine, error) {
 // from the populated spreadsheet file file.
 func ExtractDBDM(name string, file string, db *sql.DB) (ExtractedData, error) {
 	xdata := ReadXLSX(file)
-	ddata, err := DMLFromDB(name, db) // this will need to return a []DatamapLine
+	ddata, err := DatamapFromDB(name, db) // this will need to return a []DatamapLine
 
 	if err != nil {
 		return nil, err
