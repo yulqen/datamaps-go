@@ -147,7 +147,9 @@ func ReadXLSX(ssheet string) FileData {
 	return outer
 }
 
-func DMLFromDB(name string, db *sql.DB) []DatamapLine {
+// DMLFromDB fetches a slice of DatamapLine from the database given
+// the name of a datamap.
+func DMLFromDB(name string, db *sql.DB) ([]DatamapLine, error) {
 
 	var out []DatamapLine
 
@@ -159,7 +161,7 @@ func DMLFromDB(name string, db *sql.DB) []DatamapLine {
 	`
 	rows, err := db.Query(query, name)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -170,20 +172,39 @@ func DMLFromDB(name string, db *sql.DB) []DatamapLine {
 			cellref string
 		)
 		if err := rows.Scan(&key, &sheet, &cellref); err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
-		// log.Printf("key %s\nsheet %s\ncellref %v", key, sheet, cellref)
 		out = append(out, DatamapLine{Key: key, Sheet: sheet, Cellref: cellref})
 	}
 
-	return out
+	return out, nil
 }
 
-// func ExtractDBDM(name string, file string) ExtractedData {
-// 	xdata := ReadXLSX(file)
-// 	// ddata, err := DMLFromDB(name) // this will need to return a []DatamapLine
-// }
+func ExtractDBDM(name string, file string, db *sql.DB) ExtractedData {
+	xdata := ReadXLSX(file)
+	ddata, err := DMLFromDB(name, db) // this will need to return a []DatamapLine
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	names := getSheetNames(ddata)
+	outer := make(ExtractedData, len(names))
+	inner := make(map[string]xlsx.Cell)
+
+	for _, i := range ddata {
+		sheet := i.Sheet
+		cellref := i.Cellref
+
+		if val, ok := xdata[sheet][cellref]; ok {
+			inner[cellref] = *val.Cell
+			outer[sheet] = inner
+		}
+	}
+
+	return outer
+}
 
 //Extract returns the file's data as a map,
 // using the datamap as a filter, keyed on sheet name. All values

@@ -125,7 +125,7 @@ func TestDMLSliceFromDatabase(t *testing.T) {
 		{7, "Parrots Name"},
 	}
 
-	data := DMLFromDB("First Datamap", db)
+	data, _ := DMLFromDB("First Datamap", db)
 
 	for _, c := range cases {
 		got := data[c.index].Key
@@ -136,6 +136,49 @@ func TestDMLSliceFromDatabase(t *testing.T) {
 
 	if data[0].Key != "Project/Programme Name" {
 		t.Errorf("expected to see Project/Programme Name and got %q\n", data[0])
+	}
+}
+
+func TestExtractUsingDBDM(t *testing.T) {
+	// setup - we need the datamap in the test database
+	db, err := SetupDB("./testdata/test.db")
+	defer db.Close()
+
+	if err != nil {
+		t.Fatal("Expected to be able to set up the database.")
+	}
+
+	opts := Options{
+		DBPath: "./testdata/test.db",
+		DMName: "First Datamap",
+		DMPath: "./testdata/datamap.csv",
+	}
+
+	if err := DatamapToDB(&opts); err != nil {
+		t.Errorf("Unable to write datamap to database file because %v.", err)
+	}
+
+	d := ExtractDBDM("First Datamap", "testdata/test_template.xlsx", db)
+	cases := []struct {
+		sheet, cellref, val string
+	}{
+		{"Introduction", "C9", "Test Department"},
+		{"Introduction", "J9", "Greedy Parrots"},
+		{"Introduction", "A1", "10"},
+		{"Introduction", "C22", "VUNT"},
+	}
+
+	for _, c := range cases {
+		got := d[c.sheet][c.cellref].Value
+		if got != c.val {
+			t.Errorf("The test expected %s in %s sheet to be %s "+
+				"- instead it is %s.", c.sheet, c.cellref, c.val,
+				d[c.sheet][c.cellref].Value)
+		}
+	}
+
+	if d["Another Sheet"]["E26"].Value != "Integer:" {
+		t.Errorf("Expected E26 in Another Sheet sheet to be Integer: - instead it is %s", d["Another Sheet"]["E26"].Value)
 	}
 }
 
