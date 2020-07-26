@@ -4,6 +4,7 @@
 package datamaps
 
 import (
+	"database/sql"
 	"encoding/csv"
 	"errors"
 	"fmt"
@@ -145,6 +146,39 @@ func ReadXLSX(ssheet string) FileData {
 
 	return outer
 }
+
+func DMLFromDB(name string, db *sql.DB) []DatamapLine {
+
+	query := `
+	select
+		key, sheet, cellref
+	from datamap_line
+		join datamap on datamap_line.dm_id = datamap.id where datamap.name = ?;
+	`
+	rows, err := db.Query(query, name)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			key     string
+			sheet   string
+			cellref string
+		)
+		if err := rows.Scan(&key, &sheet, &cellref); err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("key %s\nsheet %s\ncellref %v", key, sheet, cellref)
+	}
+	return make([]DatamapLine, 0)
+}
+
+// func ExtractDBDM(name string, file string) ExtractedData {
+// 	xdata := ReadXLSX(file)
+// 	// ddata, err := DMLFromDB(name) // this will need to return a []DatamapLine
+// }
 
 //Extract returns the file's data as a map,
 // using the datamap as a filter, keyed on sheet name. All values

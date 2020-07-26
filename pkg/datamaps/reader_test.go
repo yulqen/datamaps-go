@@ -70,6 +70,50 @@ func TestReadXLSX(t *testing.T) {
 	}
 }
 
+// func TestExtractWithDBDatamap(t *testing.T) {
+// 	// setup - we need the datamap in the test database
+// 	db, err := SetupDB("./testdata/test.db")
+// 	defer db.Close()
+
+// 	if err != nil {
+// 		t.Fatal("Expected to be able to set up the database.")
+// 	}
+
+// 	opts := Options{
+// 		DBPath: "./testdata/test.db",
+// 		DMName: "First Datamap",
+// 		DMPath: "./testdata/datamap.csv",
+// 	}
+
+// 	if err := DatamapToDB(&opts); err != nil {
+// 		t.Errorf("Unable to write datamap to database file because %v.", err)
+// 	}
+
+// 	d := ExtractDBDM("First Datamap", "testdata/test_template.xlsx")
+// }
+
+func TestDMLSliceFromDatabase(t *testing.T) {
+	// setup - we need the datamap in the test database
+	db, err := SetupDB("./testdata/test.db")
+	defer db.Close()
+
+	if err != nil {
+		t.Fatal("Expected to be able to set up the database.")
+	}
+
+	opts := Options{
+		DBPath: "./testdata/test.db",
+		DMName: "First Datamap",
+		DMPath: "./testdata/datamap.csv",
+	}
+
+	if err := DatamapToDB(&opts); err != nil {
+		t.Errorf("Unable to write datamap to database file because %v.", err)
+	}
+	data := DMLFromDB("First Datamap", db)
+	t.Log(data)
+}
+
 func TestExtract(t *testing.T) {
 	d := Extract("testdata/datamap.csv", "testdata/test_template.xlsx")
 	cases := []struct {
