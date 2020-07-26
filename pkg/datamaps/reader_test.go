@@ -89,7 +89,7 @@ func TestReadXLSX(t *testing.T) {
 // 		t.Errorf("Unable to write datamap to database file because %v.", err)
 // 	}
 
-// 	d := ExtractDBDatamap("First Datamap", "testdata/test_template.xlsx")
+// 	d := extractDBDatamap("First Datamap", "testdata/test_template.xlsx")
 // }
 
 func TestDMLSliceFromDatabase(t *testing.T) {
@@ -183,7 +183,7 @@ func TestExtractUsingDBDM(t *testing.T) {
 }
 
 func TestExtract(t *testing.T) {
-	d := Extract("testdata/datamap.csv", "testdata/test_template.xlsx")
+	d := extract("testdata/datamap.csv", "testdata/test_template.xlsx")
 	cases := []struct {
 		sheet, cellref, val string
 	}{
@@ -207,7 +207,7 @@ func TestExtract(t *testing.T) {
 	}
 }
 
-// func TestGetTargetFiles(t *testing.T) {
+// func TestgetTargetFiles(t *testing.T) {
 // 	// This is not a suitable test for parameterisation, but doing it this way anyway.
 // 	type args struct {
 // 		path string
@@ -218,7 +218,7 @@ func TestExtract(t *testing.T) {
 // 		want    []string
 // 		wantErr bool
 // 	}{
-// 		{"TestGetTargetFiles",
+// 		{"TestgetTargetFiles",
 // 			args{"/home/lemon/go/src/github.com/hammerheadlemon/datamaps-go/reader/testdata/"},
 // 			[]string{"/home/lemon/go/src/github.com/hammerheadlemon/datamaps-go/reader/testdata/test_template.xlsx"},
 // 			false,
@@ -226,13 +226,13 @@ func TestExtract(t *testing.T) {
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.name, func(t *testing.T) {
-// 			got, err := GetTargetFiles(tt.args.path)
+// 			got, err := getTargetFiles(tt.args.path)
 // 			if (err != nil) != tt.wantErr {
-// 				t.Errorf("GetTargetFiles() error = %v, wantErr %v", err, tt.wantErr)
+// 				t.Errorf("getTargetFiles() error = %v, wantErr %v", err, tt.wantErr)
 // 				return
 // 			}
 // 			if !reflect.DeepEqual(got, tt.want) {
-// 				t.Errorf("GetTargetFiles() = %v, want %v", got, tt.want)
+// 				t.Errorf("getTargetFiles() = %v, want %v", got, tt.want)
 // 			}
 // 		})
 // 	}
