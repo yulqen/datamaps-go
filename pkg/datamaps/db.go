@@ -53,7 +53,7 @@ func SetupDB(path string) (*sql.DB, error) {
 }
 
 // DatamapToDB takes a slice of DatamapLine and writes it to a sqlite3 db file.
-// func DatafmapToDB(d_path string, data []DatamapLine, dm_name string, dm_path string) error {
+// func DatafmapToDB(d_path string, data ExtractedDatamapFile, dm_name string, dm_path string) error {
 func DatamapToDB(opts *Options) error {
 	fmt.Printf("Importing datamap file %s and naming it %s.\n", opts.DMPath, opts.DMName)
 

@@ -14,7 +14,7 @@ const (
 // mocking funcs in go https://stackoverflow.com/questions/19167970/mock-functions-in-go
 // we only need the func signature to create the type. This is pretty weird, we're want to mock
 // os.UserHomeDir so that we can set it to something like /tmp in our tests. Here we are creating
-// two types: GetUserConfigDir to represent the os.UserConfigDir function, DBPathChecker as a wrapper
+// two types: GetUserConfigDir to represent the os.UserConfigDir function, dbPathChecker as a wrapper
 // which which we can assign methods to that holds the value of the func os.UserConfigDir and the
 // method, check(), which does the work, using the passed in func to determine the user $HOME/.config
 // directory.
@@ -25,21 +25,21 @@ const (
 // for testing purposes.
 type GetUserConfigDir func() (string, error)
 
-// DBPathChecker contains the func used to create the user config dir.
-type DBPathChecker struct {
+// dbPathChecker contains the func used to create the user config dir.
+type dbPathChecker struct {
 	getUserConfigDir GetUserConfigDir
 }
 
 // NewDBPathChecker creaes a DBPathChecker using whatever
 // func you want as the argument, as long as it produces
 // the user config directory.
-func NewDBPathChecker(h GetUserConfigDir) *DBPathChecker {
-	return &DBPathChecker{getUserConfigDir: h}
+func NewDBPathChecker(h GetUserConfigDir) *dbPathChecker {
+	return &dbPathChecker{getUserConfigDir: h}
 }
 
 // Check returns true if the necessary config files (including
 // the database) are in place - false if not
-func (db *DBPathChecker) Check() bool {
+func (db *dbPathChecker) Check() bool {
 	userConfig, err := db.getUserConfigDir()
 	if err != nil {
 		log.Fatal(err)

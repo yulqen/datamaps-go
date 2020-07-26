@@ -45,6 +45,8 @@ type ExtractedCell struct {
 	Value string
 }
 
+type ExtractedDatamapFile []DatamapLine
+
 //sheetInSlice is a helper which returns true
 // if a string is in a slice of strings.
 func sheetInSlice(list []string, key string) bool {
@@ -59,7 +61,7 @@ func sheetInSlice(list []string, key string) bool {
 
 //getSheetNames returns the number of Sheet field entries
 // in a slice of DatamapLine structs.
-func getSheetNames(dmls []DatamapLine) []string {
+func getSheetNames(dmls ExtractedDatamapFile) []string {
 	var sheetNames []string
 
 	for _, dml := range dmls {
@@ -71,9 +73,10 @@ func getSheetNames(dmls []DatamapLine) []string {
 	return sheetNames
 }
 
-//ReadDML returns a slice of DatamapLine structs.
-func ReadDML(path string) ([]DatamapLine, error) {
-	var s []DatamapLine
+// ReadDML returns a slice of DatamapLine structs given a
+// path to a datamap file.
+func ReadDML(path string) (ExtractedDatamapFile, error) {
+	var s ExtractedDatamapFile
 
 	data, err := ioutil.ReadFile(path)
 
@@ -147,11 +150,11 @@ func ReadXLSX(ssheet string) FileData {
 	return outer
 }
 
-// DatamapFromDB fetches a slice of DatamapLine from the database given
+// DatamapFromDB fetches an ExtractedDatamapFile from the database given
 // the name of a datamap.
-func DatamapFromDB(name string, db *sql.DB) ([]DatamapLine, error) {
+func DatamapFromDB(name string, db *sql.DB) (ExtractedDatamapFile, error) {
 
-	var out []DatamapLine
+	var out ExtractedDatamapFile
 
 	query := `
 	select
@@ -185,7 +188,7 @@ func DatamapFromDB(name string, db *sql.DB) ([]DatamapLine, error) {
 // from the populated spreadsheet file file.
 func ExtractDBDM(name string, file string, db *sql.DB) (ExtractedData, error) {
 	xdata := ReadXLSX(file)
-	ddata, err := DatamapFromDB(name, db) // this will need to return a []DatamapLine
+	ddata, err := DatamapFromDB(name, db) // this will need to return an ExtractedDatamapFile
 
 	if err != nil {
 		return nil, err
