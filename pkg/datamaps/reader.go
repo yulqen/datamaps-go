@@ -1,4 +1,5 @@
-// Pack datmamaps handles datamap files and populated spreadsheets.
+/* datmamaps packages handles datamap files and populated spreadsheets.
+ */
 
 package datamaps
 
