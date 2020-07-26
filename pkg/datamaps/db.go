@@ -66,24 +66,29 @@ func DatamapToDB(opts *Options) error {
 	if err != nil {
 		return errors.New("Cannot open that damn database file")
 	}
+
 	tx, err := d.Begin()
 	if err != nil {
 		return err
 	}
+
 	pragma := "PRAGMA foreign_keys = ON;"
 	_, err = d.Exec(pragma)
 	if err != nil {
 		log.Printf("%q: %s\n", err, pragma)
 		return err
 	}
+
 	stmtDm, err := tx.Prepare("INSERT INTO datamap (name, date_created) VALUES(?,?)")
 	if err != nil {
 		return err
 	}
+
 	res, err := stmtDm.Exec(opts.DMName, time.Now())
 	if err != nil {
 		return err
 	}
+
 	lastId, err := res.LastInsertId()
 	if err != nil {
 		return err
@@ -93,8 +98,10 @@ func DatamapToDB(opts *Options) error {
 	if err != nil {
 		return err
 	}
+
 	defer stmtDm.Close()
 	defer stmtDml.Close()
+
 	for _, dml := range data {
 		_, err = stmtDml.Exec(lastId, dml.Key, dml.Sheet, dml.Cellref)
 		if err != nil {
@@ -105,5 +112,6 @@ func DatamapToDB(opts *Options) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
