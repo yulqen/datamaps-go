@@ -250,7 +250,7 @@ func getTargetFiles(path string) ([]string, error) {
 		return nil, fmt.Errorf("path must end in a %s character", string(filepath.Separator))
 	}
 
-	fullpath := strings.Join([]string{path, "*.xlsx"}, "")
+	fullpath := strings.Join([]string{path, "*.xls[xm]"}, "")
 	output, err := filepath.Glob(fullpath)
 
 	if err != nil {

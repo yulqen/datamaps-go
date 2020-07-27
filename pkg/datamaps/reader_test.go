@@ -231,9 +231,12 @@ func TestGetTargetFiles(t *testing.T) {
 	}{
 		{"Get files in testdata",
 			args{"./testdata/"},
-			[]string{"testdata/test_template.xlsx",
+			[]string{
+				"testdata/test_template.xlsm",
+				"testdata/test_template.xlsx",
 				"testdata/test_template2.xlsx",
-				"testdata/test_template3.xlsx"},
+				"testdata/test_template3.xlsx",
+			},
 			false,
 		},
 	}
