@@ -40,6 +40,7 @@ func setupDB(path string) (*sql.DB, error) {
 					 name TEXT,
 					 date_created TEXT
 					);
+
 				 CREATE TABLE return_data(
 					 id INTEGER PRIMARY KEY,
 					 dml_id INTEGER,
@@ -70,6 +71,18 @@ func setupDB(path string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+// Import a directory of xlsx files to the database, using the datamap
+// to filter the data.
+func ImportToDB(opts *Options) error {
+	fmt.Printf("Import files in %s\n\tas return named %s\n\tusing datamap named %s\n", opts.XLSXPath, opts.ReturnName, opts.DMName)
+	target, err := getTargetFiles(opts.XLSXPath)
+	if err != nil {
+		return err
+	}
+	fmt.Println(target)
+	return nil
 }
 
 // DatamapToDB takes a slice of datamapLine and writes it to a sqlite3 db file.

@@ -19,6 +19,10 @@ func main() {
 	opts := datamaps.ParseOptions()
 
 	switch opts.Command {
+	case "import":
+		if err := datamaps.ImportToDB(opts); err != nil {
+			log.Fatal(err)
+		}
 	case "datamap":
 		if err := datamaps.DatamapToDB(opts); err != nil {
 			log.Fatal(err)

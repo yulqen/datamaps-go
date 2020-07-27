@@ -107,14 +107,42 @@ func defaultDMPath() (string, error) {
 	return filepath.Join(dir, "Documents", "datamaps"), nil
 }
 
+func defaultXLSXPath() (string, error) {
+	dir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(dir, "Documents", "datamaps", "import"), nil
+}
+
 // Options for the whole CLI application.
 type Options struct {
-	Command     string
-	DBPath      string
-	DMPath      string
-	DMName      string
+	// Command is the main CLI sub-command (e.g. "datamap" handles all datamap
+	// operations and the flags that follow pertain only to that operation.
+	Command string
+
+	// DBPath is the path to the database file.
+	DBPath string
+
+	// DMPath is the path to a datamap file.
+	DMPath string
+
+	// DMNane is the name of a datamap, whether setting or querying.
+	DMName string
+
+	// XLSXPath is the path to a directory containing ".xlsx" files for
+	// importing.
+	XLSXPath string
+
+	// ReturnName is the name of a Return, whether setting or querying.
+	ReturnName string
+
+	// DMOverwrite is currently not used.
 	DMOverwrite bool
-	DMInitial   bool
+
+	// DMInitial is currently not used.
+	DMInitial bool
 }
 
 func defaultOptions() *Options {
@@ -123,7 +151,8 @@ func defaultOptions() *Options {
 		log.Fatalf("Unable to get user config directory %v", err)
 	}
 
-	dmpath, err := defaultDMPath()
+	dmPath, err := defaultDMPath()
+	xlsxPath, err := defaultXLSXPath()
 
 	if err != nil {
 		log.Fatalf("Unable to get default datamaps directory %v", err)
@@ -132,8 +161,10 @@ func defaultOptions() *Options {
 	return &Options{
 		Command:     "help",
 		DBPath:      filepath.Join(dbpath, dbName),
-		DMPath:      dmpath,
+		DMPath:      dmPath,
 		DMName:      "Unnamed Datamap",
+		XLSXPath:    xlsxPath,
+		ReturnName:  "Unnamed Return",
 		DMOverwrite: false,
 		DMInitial:   false,
 	}
@@ -152,12 +183,14 @@ func nextString(args []string, i *int, message string) string {
 
 func processOptions(opts *Options, allArgs []string) {
 	switch allArgs[0] {
-	case "server":
-		opts.Command = "server"
+	case "import":
+		opts.Command = "import"
 	case "datamap":
 		opts.Command = "datamap"
 	case "setup":
 		opts.Command = "setup"
+	case "server":
+		opts.Command = "server"
 	default:
 		log.Fatal("No relevant command provided.")
 	}
@@ -167,9 +200,13 @@ func processOptions(opts *Options, allArgs []string) {
 	for i := 0; i < len(allArgs[1:]); i++ {
 		arg := restArgs[i]
 		switch arg {
-		case "-i", "--import":
+		case "--xlsxpath":
+			opts.XLSXPath = nextString(restArgs, &i, "xlsx directory path required")
+		case "--returnname":
+			opts.ReturnName = nextString(restArgs, &i, "return name required")
+		case "--import":
 			opts.DMPath = nextString(restArgs, &i, "import path required")
-		case "-n", "--name":
+		case "--datamapname":
 			opts.DMName = nextString(restArgs, &i, "datamap name required")
 		case "--overwrite":
 			opts.DMOverwrite = true
