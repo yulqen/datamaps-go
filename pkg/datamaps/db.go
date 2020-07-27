@@ -18,8 +18,11 @@ func setupDB(path string) (*sql.DB, error) {
 				 DROP TABLE IF EXISTS datamap_line;
 				 DROP TABLE IF EXISTS return;
 				 DROP TABLE IF EXISTS return_data;
-				  CREATE TABLE datamap(id INTEGER PRIMARY KEY, name TEXT, date_created TEXT);
-				  DROP TABLE IF EXISTS datamap_line;
+
+				  CREATE TABLE datamap(
+					  id INTEGER PRIMARY KEY,
+					  name TEXT,
+					  date_created TEXT);
 
 				  CREATE TABLE datamap_line(
 					id INTEGER PRIMARY KEY,   
@@ -31,10 +34,11 @@ func setupDB(path string) (*sql.DB, error) {
 					REFERENCES datamap(id) 
 					ON DELETE CASCADE      
 				  );                        
+
 				 CREATE TABLE return(
 					 id INTEGER PRIMARY KEY,
 					 name TEXT,
-					 data_created TEXT
+					 date_created TEXT
 					);
 				 CREATE TABLE return_data(
 					 id INTEGER PRIMARY KEY,
