@@ -15,6 +15,9 @@ import (
 // setupDB creates the intitial database
 func setupDB(path string) (*sql.DB, error) {
 	stmtBase := `DROP TABLE IF EXISTS datamap;
+				 DROP TABLE IF EXISTS datamap_line;
+				 DROP TABLE IF EXISTS return;
+				 DROP TABLE IF EXISTS return_data;
 				  CREATE TABLE datamap(id INTEGER PRIMARY KEY, name TEXT, date_created TEXT);
 				  DROP TABLE IF EXISTS datamap_line;
 
@@ -28,6 +31,19 @@ func setupDB(path string) (*sql.DB, error) {
 					REFERENCES datamap(id) 
 					ON DELETE CASCADE      
 				  );                        
+				 CREATE TABLE return(
+					 id INTEGER PRIMARY KEY,
+					 name TEXT,
+					 data_created TEXT
+					);
+				 CREATE TABLE return_data(
+					 id INTEGER PRIMARY KEY,
+					 dml_id INTEGER,
+					 value TEXT,
+					 FOREIGN KEY (dml_id)
+					 REFERENCES datamap_line(id) 
+					 ON DELETE CASCADE
+				 );
 				 `
 	os.Create(path)
 	db, err := sql.Open("sqlite3", path)

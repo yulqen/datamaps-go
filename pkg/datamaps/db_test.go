@@ -1,12 +1,16 @@
 package datamaps
 
 import (
+	"os"
 	"testing"
 )
 
 func TestOpenSQLiteFile(t *testing.T) {
 	db, err := setupDB("./testdata/test.db")
-	defer db.Close()
+	defer func() {
+		db.Close()
+		os.Remove("./testdata/test.db")
+	}()
 
 	if err != nil {
 		t.Fatal("Expected to be able to set up the database.")
@@ -38,7 +42,10 @@ func TestOpenSQLiteFile(t *testing.T) {
 
 func TestDatamapGoesIntoDB(t *testing.T) {
 	db, err := setupDB("./testdata/test.db")
-	defer db.Close()
+	defer func() {
+		db.Close()
+		os.Remove("./testdata/test.db")
+	}()
 
 	if err != nil {
 		t.Fatal("Expected to be able to set up the database.")

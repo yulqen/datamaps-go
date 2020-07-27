@@ -1,6 +1,7 @@
 package datamaps
 
 import (
+	"os"
 	"testing"
 )
 
@@ -73,7 +74,10 @@ func TestReadXLSX(t *testing.T) {
 // func TestExtractWithDBDatamap(t *testing.T) {
 // 	// setup - we need the datamap in the test database
 // 	db, err := setupDB("./testdata/test.db")
-// 	defer db.Close()
+// defer func() {
+// 	db.Close()
+// 	os.Remove("./testdata/test.db")
+// }()
 
 // 	if err != nil {
 // 		t.Fatal("Expected to be able to set up the database.")
@@ -95,7 +99,10 @@ func TestReadXLSX(t *testing.T) {
 func TestDMLSliceFromDatabase(t *testing.T) {
 	// setup - we need the datamap in the test database
 	db, err := setupDB("./testdata/test.db")
-	defer db.Close()
+	defer func() {
+		db.Close()
+		os.Remove("./testdata/test.db")
+	}()
 
 	if err != nil {
 		t.Fatal("Expected to be able to set up the database.")
@@ -142,7 +149,10 @@ func TestDMLSliceFromDatabase(t *testing.T) {
 func TestExtractUsingDBDM(t *testing.T) {
 	// setup - we need the datamap in the test database
 	db, err := setupDB("./testdata/test.db")
-	defer db.Close()
+	defer func() {
+		db.Close()
+		os.Remove("./testdata/test.db")
+	}()
 
 	if err != nil {
 		t.Fatal("Expected to be able to set up the database.")
