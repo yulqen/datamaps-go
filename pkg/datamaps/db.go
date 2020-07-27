@@ -167,6 +167,35 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 		return err
 	}
 	fmt.Printf("Extracting from %s\n", file)
-	fmt.Printf("Data is: %#v\n", d["Introduction"]["C17"].Value)
+	// fmt.Printf("Data is: %#v\n", d["Introduction"]["C17"].Value)
+
+	stmtReturn, err := db.Prepare("insert into return(name, date_created) values(?,?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer stmtReturn.Close()
+
+	res, err := stmtReturn.Exec(return_name, time.Now())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rId, err := res.LastInsertId()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// We're going to need a transaction for the big stuff
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
+	stmtValues, err := tx.Prepare("INSERT INTO return_data (name, date_created) VALUES(?,?)")
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
