@@ -81,7 +81,11 @@ func ImportToDB(opts *Options) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(target)
+	for _, vv := range target {
+		// TODO: Do the work!
+
+		// fmt.Println(vv)
+	}
 	return nil
 }
 
