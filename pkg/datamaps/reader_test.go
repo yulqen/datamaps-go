@@ -2,6 +2,7 @@ package datamaps
 
 import (
 	"os"
+	"reflect"
 	"testing"
 )
 
@@ -217,33 +218,36 @@ func TestExtract(t *testing.T) {
 	}
 }
 
-// func TestgetTargetFiles(t *testing.T) {
-// 	// This is not a suitable test for parameterisation, but doing it this way anyway.
-// 	type args struct {
-// 		path string
-// 	}
-// 	tests := []struct {
-// 		name    string
-// 		args    args
-// 		want    []string
-// 		wantErr bool
-// 	}{
-// 		{"TestgetTargetFiles",
-// 			args{"/home/lemon/go/src/github.com/hammerheadlemon/datamaps-go/reader/testdata/"},
-// 			[]string{"/home/lemon/go/src/github.com/hammerheadlemon/datamaps-go/reader/testdata/test_template.xlsx"},
-// 			false,
-// 		},
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			got, err := getTargetFiles(tt.args.path)
-// 			if (err != nil) != tt.wantErr {
-// 				t.Errorf("getTargetFiles() error = %v, wantErr %v", err, tt.wantErr)
-// 				return
-// 			}
-// 			if !reflect.DeepEqual(got, tt.want) {
-// 				t.Errorf("getTargetFiles() = %v, want %v", got, tt.want)
-// 			}
-// 		})
-// 	}
-// }
+func TestGetTargetFiles(t *testing.T) {
+	// This is not a suitable test for parameterisation, but doing it this way anyway.
+	type args struct {
+		path string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []string
+		wantErr bool
+	}{
+		{"Get files in testdata",
+			args{"./testdata/"},
+			[]string{"testdata/test_template.xlsx",
+				"testdata/test_template2.xlsx",
+				"testdata/test_template3.xlsx"},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Log("Running the test")
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := getTargetFiles(tt.args.path)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("getTargetFiles() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getTargetFiles() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
