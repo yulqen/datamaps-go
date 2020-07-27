@@ -44,9 +44,13 @@ func setupDB(path string) (*sql.DB, error) {
 				 CREATE TABLE return_data(
 					 id INTEGER PRIMARY KEY,
 					 dml_id INTEGER,
+					 ret_id INTEGER,
 					 value TEXT,
 					 FOREIGN KEY (dml_id)
 					 REFERENCES datamap_line(id) 
+					 ON DELETE CASCADE
+					 FOREIGN KEY (ret_id)
+					 REFERENCES return(id) 
 					 ON DELETE CASCADE
 				 );
 				 `
@@ -162,6 +166,7 @@ func DatamapToDB(opts *Options) error {
 }
 
 func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB) error {
+	// d, err := ExtractDBDatamap(dm_name, file, db)
 	d, err := ExtractDBDatamap(dm_name, file, db)
 	if err != nil {
 		return err
@@ -181,7 +186,8 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 		log.Fatal(err)
 	}
 
-	rId, err := res.LastInsertId()
+	retId, err := res.LastInsertId()
+	fmt.Println(retId)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -192,10 +198,41 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 		return err
 	}
 
-	stmtValues, err := tx.Prepare("INSERT INTO return_data (name, date_created) VALUES(?,?)")
+	for sheetName, sheetData := range d {
+
+		for cellRef, cellData := range sheetData {
+			// fmt.Printf("Getting %s from sheet %s\n", cellRef, sheetName)
+
+			dmlQuery, err := db.Prepare("select id from datamap_line where (sheet=? and cellref=?)")
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer dmlQuery.Close()
+			dmlIdRow := dmlQuery.QueryRow(sheetName, cellRef)
+			fmt.Println(dmlIdRow)
+
+			var dmlId *int
+
+			if err := dmlIdRow.Scan(&dmlId); err != nil {
+				log.Fatal(err)
+			}
+
+			insertStmt, err := db.Prepare("insert into return_data (dml_id, value) values(?,?)")
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer insertStmt.Close()
+
+			res, err = insertStmt.Exec(dmlId, cellData.Value)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+	}
+
+	err = tx.Commit()
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
