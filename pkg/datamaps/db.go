@@ -77,14 +77,23 @@ func setupDB(path string) (*sql.DB, error) {
 // to filter the data.
 func ImportToDB(opts *Options) error {
 	fmt.Printf("Import files in %s\n\tas return named %s\n\tusing datamap named %s\n", opts.XLSXPath, opts.ReturnName, opts.DMName)
+
 	target, err := getTargetFiles(opts.XLSXPath)
 	if err != nil {
 		return err
 	}
+
+	db, err := sql.Open("sqlite3", opts.DBPath)
+	if err != nil {
+		return err
+	}
+
 	for _, vv := range target {
 		// TODO: Do the work!
 
-		// fmt.Println(vv)
+		if err := importXLSXtoDB(opts.DMName, opts.ReturnName, vv, db); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -149,5 +158,15 @@ func DatamapToDB(opts *Options) error {
 		return err
 	}
 
+	return nil
+}
+
+func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB) error {
+	d, err := ExtractDBDatamap(dm_name, file, db)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Extracting from %s\n", file)
+	fmt.Printf("Data is: %#v\n", d["Introduction"]["C17"].Value)
 	return nil
 }
