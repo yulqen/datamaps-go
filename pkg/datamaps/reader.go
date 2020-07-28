@@ -202,13 +202,13 @@ func ExtractDBDatamap(name string, file string, db *sql.DB) (extractedData, erro
 	outer := make(extractedData, len(names))
 	var inner map[string]xlsx.Cell
 
-	seen := make(map[string]bool)
+	seen := make(map[string]bool) // using this as a set to distinguish sheet names
 
 	for _, i := range ddata {
 		sheet := i.Sheet
 		if !seen[sheet] {
 			seen[sheet] = true
-			inner = make(map[string]xlsx.Cell)
+			inner = make(map[string]xlsx.Cell) // we create a new inner when we get a new sheet
 		}
 		cellref := i.Cellref
 

@@ -214,7 +214,7 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 			var dmlId *int
 
 			if err := dmlIdRow.Scan(&dmlId); err != nil {
-				log.Fatal(err)
+				fmt.Errorf("cannot find a datamap_line row for %s and %s: %s\n", sheetName, cellRef, err)
 			}
 
 			insertStmt, err := db.Prepare("insert into return_data (dml_id, value) values(?,?)")
