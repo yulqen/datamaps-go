@@ -84,7 +84,7 @@ func setupDB(path string) (*sql.DB, error) {
 // Import a directory of xlsx files to the database, using the datamap
 // to filter the data.
 func ImportToDB(opts *Options) error {
-	fmt.Printf("Import files in %s\n\tas return named %s\n\tusing datamap named %s\n", opts.XLSXPath, opts.ReturnName, opts.DMName)
+	log.Printf("Importing files in %s as return named %s using datamap named %s.", opts.XLSXPath, opts.ReturnName, opts.DMName)
 
 	target, err := getTargetFiles(opts.XLSXPath)
 	if err != nil {
@@ -108,7 +108,7 @@ func ImportToDB(opts *Options) error {
 
 // DatamapToDB takes a slice of datamapLine and writes it to a sqlite3 db file.
 func DatamapToDB(opts *Options) error {
-	fmt.Printf("Importing datamap file %s and naming it %s.\n", opts.DMPath, opts.DMName)
+	log.Printf("Importing datamap file %s and naming it %s.\n", opts.DMPath, opts.DMName)
 
 	data, err := ReadDML(opts.DMPath)
 	if err != nil {
@@ -176,7 +176,7 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Extracting from %s\n", file)
+	log.Printf("Extracting from %s.\n", file)
 
 	// If there is already a return with a matching name, use that.
 	rtnQuery, err := db.Prepare("select id from return where (return.name=?)")
@@ -188,7 +188,7 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 	var retId int64
 	err = rtnQuery.QueryRow(return_name).Scan(&retId)
 	if err != nil {
-		fmt.Printf("Couldn't find an existing return named %s\n", return_name)
+		log.Printf("Couldn't find an existing return named '%s' so let's create it.\n", return_name)
 	}
 
 	if retId == 0 {
@@ -201,7 +201,7 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 		res, err := stmtReturn.Exec(return_name, time.Now())
 		if err != nil {
 			err := fmt.Errorf("%v\nCannot create %s", err, return_name)
-			fmt.Println(err.Error())
+			log.Println(err.Error())
 			os.Exit(1)
 		}
 
@@ -220,7 +220,6 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 	for sheetName, sheetData := range d {
 
 		for cellRef, cellData := range sheetData {
-			// fmt.Printf("Getting %s from sheet %s\n", cellRef, sheetName)
 
 			dmlQuery, err := db.Prepare("select id from datamap_line where (sheet=? and cellref=?)")
 			if err != nil {
@@ -232,8 +231,8 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 			var dmlId *int
 
 			if err := dmlIdRow.Scan(&dmlId); err != nil {
-				err := fmt.Errorf("cannot find a datamap_line row for %s and %s: %s\n", sheetName, cellRef, err)
-				fmt.Println(err.Error())
+				err := fmt.Errorf("cannot find a datamap_line row for %s and %s: %s.\n", sheetName, cellRef, err)
+				log.Println(err.Error())
 			}
 
 			insertStmt, err := db.Prepare("insert into return_data (dml_id, ret_id, filename, value) values(?,?,?,?)")

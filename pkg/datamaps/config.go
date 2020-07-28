@@ -63,7 +63,7 @@ func SetUp() (string, error) {
 	dbPath := filepath.Join(configPath, dbName)
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Println("Config directory does not exist.")
-		log.Printf("Creating config directory %s\n", configPath)
+		log.Printf("Creating config directory %s.\n", configPath)
 		if err := os.Mkdir(filepath.Join(dir, "datamaps"), 0700); err != nil {
 			return "", err
 		}
@@ -76,7 +76,7 @@ func SetUp() (string, error) {
 		if err != nil {
 			return "", err
 		}
-		log.Printf("Creating database file at %s\n", dbPath)
+		log.Printf("Creating database file at %s.\n", dbPath)
 		_, err := setupDB(dbPath)
 		if err != nil {
 			return "", err

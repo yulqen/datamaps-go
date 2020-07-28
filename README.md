@@ -21,3 +21,10 @@ return_data.ret_id=return.id;`
 `select datamap.name, datamap_line.key, datamap_line.sheet, return.name,
 return_data.filename, return_data.value from datamap, datamap_line, return,
 return_data where datamap_line.dm_id=datamap.id;`
+
+### Simple output to spreadsheet from sqlite3:
+`.excel`
+`select return.name, datamap_line.key, return_data.filename,
+datamap_line.sheet, datamap_line.cellref, return_data.value from datamap_line,
+return, return_data where (return_data.dml_id=datamap_line.id AND
+datamap_line.key like '%MM6%');`
