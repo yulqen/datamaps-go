@@ -81,7 +81,7 @@ func setupDB(path string) (*sql.DB, error) {
 	return db, nil
 }
 
-// Import a directory of xlsx files to the database, using the datamap
+// ImportToDB imports a directory of xlsx files to the database, using the datamap
 // to filter the data.
 func ImportToDB(opts *Options) error {
 	log.Printf("Importing files in %s as return named %s using datamap named %s.", opts.XLSXPath, opts.ReturnName, opts.DMName)
@@ -142,7 +142,7 @@ func DatamapToDB(opts *Options) error {
 		return err
 	}
 
-	lastId, err := res.LastInsertId()
+	lastID, err := res.LastInsertId()
 	if err != nil {
 		return err
 	}
@@ -156,7 +156,7 @@ func DatamapToDB(opts *Options) error {
 	defer stmtDml.Close()
 
 	for _, dml := range data {
-		_, err = stmtDml.Exec(lastId, dml.Key, dml.Sheet, dml.Cellref)
+		_, err = stmtDml.Exec(lastID, dml.Key, dml.Sheet, dml.Cellref)
 		if err != nil {
 			return err
 		}
@@ -169,10 +169,10 @@ func DatamapToDB(opts *Options) error {
 	return nil
 }
 
-func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB) error {
-	// d, err := ExtractDBDatamap(dm_name, file, db)
+func importXLSXtoDB(dmName string, returnName string, file string, db *sql.DB) error {
+	// d, err := ExtractDBDatamap(dmName, file, db)
 	_, filename := path.Split(file)
-	d, err := ExtractDBDatamap(dm_name, file, db)
+	d, err := ExtractDBDatamap(dmName, file, db)
 	if err != nil {
 		return err
 	}
@@ -185,27 +185,27 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 	}
 	defer rtnQuery.Close()
 
-	var retId int64
-	err = rtnQuery.QueryRow(return_name).Scan(&retId)
+	var retID int64
+	err = rtnQuery.QueryRow(returnName).Scan(&retID)
 	if err != nil {
-		log.Printf("Couldn't find an existing return named '%s' so let's create it.\n", return_name)
+		log.Printf("Couldn't find an existing return named '%s' so let's create it.\n", returnName)
 	}
 
-	if retId == 0 {
+	if retID == 0 {
 		stmtReturn, err := db.Prepare("insert into return(name, date_created) values(?,?)")
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer stmtReturn.Close()
 
-		res, err := stmtReturn.Exec(return_name, time.Now())
+		res, err := stmtReturn.Exec(returnName, time.Now())
 		if err != nil {
-			err := fmt.Errorf("%v\nCannot create %s", err, return_name)
+			err := fmt.Errorf("%v\nCannot create %s", err, returnName)
 			log.Println(err.Error())
 			os.Exit(1)
 		}
 
-		retId, err = res.LastInsertId()
+		retID, err = res.LastInsertId()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -226,11 +226,11 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 				log.Fatal(err)
 			}
 			defer dmlQuery.Close()
-			dmlIdRow := dmlQuery.QueryRow(sheetName, cellRef)
+			dmlIDRow := dmlQuery.QueryRow(sheetName, cellRef)
 
-			var dmlId *int
+			var dmlID *int
 
-			if err := dmlIdRow.Scan(&dmlId); err != nil {
+			if err := dmlIDRow.Scan(&dmlID); err != nil {
 				err := fmt.Errorf("cannot find a datamap_line row for %s and %s: %s.\n", sheetName, cellRef, err)
 				log.Println(err.Error())
 			}
@@ -241,7 +241,7 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 			}
 			defer insertStmt.Close()
 
-			_, err = insertStmt.Exec(dmlId, retId, filename, cellData.Value)
+			_, err = insertStmt.Exec(dmlID, retID, filename, cellData.Value)
 			if err != nil {
 				log.Fatal(err)
 			}

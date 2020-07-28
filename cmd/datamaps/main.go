@@ -1,4 +1,4 @@
-/* datamaps is a simple tool to extract from and send data to spreadsheets.
+/*datamaps is a simple tool to extract from and send data to spreadsheets.
  */
 package main
 
