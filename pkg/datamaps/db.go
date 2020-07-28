@@ -55,7 +55,9 @@ func setupDB(path string) (*sql.DB, error) {
 					 ON DELETE CASCADE
 				 );
 				 `
-	os.Create(path)
+	if _, err := os.Create(path); err != nil {
+		return nil, err
+	}
 	db, err := sql.Open("sqlite3", path)
 	if err != nil {
 		return db, errors.New("Cannot open that damn database file")

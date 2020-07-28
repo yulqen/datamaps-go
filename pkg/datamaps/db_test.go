@@ -13,7 +13,7 @@ func TestOpenSQLiteFile(t *testing.T) {
 	}()
 
 	if err != nil {
-		t.Fatal("Expected to be able to set up the database.")
+		t.Fatalf("%v\ndatamaps-log: Expected to be able to set up the database.", err)
 	}
 
 	stmt := `insert into datamap(id, name) values(1,'cock')`

@@ -162,7 +162,7 @@ func TestExtractUsingDBDM(t *testing.T) {
 	opts := Options{
 		DBPath: "./testdata/test.db",
 		DMName: "First Datamap",
-		DMPath: "./testdata/datamap.csv",
+		DMPath: "./testdata/short/datamap_matches_test_template.csv",
 	}
 
 	if err := DatamapToDB(&opts); err != nil {
@@ -182,7 +182,7 @@ func TestExtractUsingDBDM(t *testing.T) {
 	for _, c := range cases {
 		got := d[c.sheet][c.cellref].Value
 		if got != c.val {
-			t.Errorf("The test expected %s in %s sheet to be %s "+
+			t.Errorf("test_template.xlsx: The test expected %s in %s sheet to be %s "+
 				"- instead it is %s.", c.sheet, c.cellref, c.val,
 				d[c.sheet][c.cellref].Value)
 		}
