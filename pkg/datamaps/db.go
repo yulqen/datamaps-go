@@ -175,23 +175,37 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 	}
 	fmt.Printf("Extracting from %s\n", file)
 
-	stmtReturn, err := db.Prepare("insert into return(name, date_created) values(?,?)")
+	// If there is already a return with a matching name, use that.
+	rtnQuery, err := db.Prepare("select id from return where (return.name=?)")
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer rtnQuery.Close()
 
-	defer stmtReturn.Close()
-
-	res, err := stmtReturn.Exec(return_name, time.Now())
+	var retId int64
+	err = rtnQuery.QueryRow(return_name).Scan(&retId)
 	if err != nil {
-		err := fmt.Errorf("%v\nCannot create %s", err, return_name)
-		fmt.Println(err.Error())
-		os.Exit(1)
+		fmt.Printf("Couldn't find an existing return named %s\n", return_name)
 	}
 
-	retId, err := res.LastInsertId()
-	if err != nil {
-		log.Fatal(err)
+	if retId == 0 {
+		stmtReturn, err := db.Prepare("insert into return(name, date_created) values(?,?)")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer stmtReturn.Close()
+
+		res, err := stmtReturn.Exec(return_name, time.Now())
+		if err != nil {
+			err := fmt.Errorf("%v\nCannot create %s", err, return_name)
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+
+		retId, err = res.LastInsertId()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	// We're going to need a transaction for the big stuff
@@ -225,7 +239,7 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 			}
 			defer insertStmt.Close()
 
-			res, err = insertStmt.Exec(dmlId, retId, cellData.Value)
+			_, err = insertStmt.Exec(dmlId, retId, cellData.Value)
 			if err != nil {
 				log.Fatal(err)
 			}
