@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"time"
 
 	// Needed for the sqlite3 driver
@@ -45,6 +46,7 @@ func setupDB(path string) (*sql.DB, error) {
 					 id INTEGER PRIMARY KEY,
 					 dml_id INTEGER,
 					 ret_id INTEGER,
+					 filename TEXT,
 					 value TEXT,
 					 FOREIGN KEY (dml_id)
 					 REFERENCES datamap_line(id) 
@@ -169,6 +171,7 @@ func DatamapToDB(opts *Options) error {
 
 func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB) error {
 	// d, err := ExtractDBDatamap(dm_name, file, db)
+	_, filename := path.Split(file)
 	d, err := ExtractDBDatamap(dm_name, file, db)
 	if err != nil {
 		return err
@@ -233,13 +236,13 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 				fmt.Println(err.Error())
 			}
 
-			insertStmt, err := db.Prepare("insert into return_data (dml_id, ret_id, value) values(?,?,?)")
+			insertStmt, err := db.Prepare("insert into return_data (dml_id, ret_id, filename, value) values(?,?,?,?)")
 			if err != nil {
 				log.Fatal(err)
 			}
 			defer insertStmt.Close()
 
-			_, err = insertStmt.Exec(dmlId, retId, cellData.Value)
+			_, err = insertStmt.Exec(dmlId, retId, filename, cellData.Value)
 			if err != nil {
 				log.Fatal(err)
 			}

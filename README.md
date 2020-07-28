@@ -16,3 +16,8 @@ CREATE TABLE return_data(id INTEGER PRIMARY KEY, dml_id INTEGER, value TEXT, FOR
 datamap as dm inner join datamap_line as dml on dml.dm_id=dm.id inner join
 return on return_data.ret_id=return.id inner join return_data on
 return_data.ret_id=return.id;`
+
+### More accurate SQL to test all data at this stage:
+`select datamap.name, datamap_line.key, datamap_line.sheet, return.name,
+return_data.filename, return_data.value from datamap, datamap_line, return,
+return_data where datamap_line.dm_id=datamap.id;`
