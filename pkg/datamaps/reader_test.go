@@ -187,10 +187,6 @@ func TestExtractUsingDBDM(t *testing.T) {
 				d[c.sheet][c.cellref].Value)
 		}
 	}
-
-	if d["Another Sheet"]["E26"].Value != "Integer:" {
-		t.Errorf("Expected E26 in Another Sheet sheet to be Integer: - instead it is %s", d["Another Sheet"]["E26"].Value)
-	}
 }
 
 func TestExtract(t *testing.T) {
