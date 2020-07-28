@@ -25,8 +25,8 @@ const (
 // for testing purposes.
 type getUserConfigDir func() (string, error)
 
-// dbPathChecker contains the func used to create the user config dir.
-type dbPathChecker struct {
+// DBPathChecker contains the func used to create the user config dir.
+type DBPathChecker struct {
 	userConfig getUserConfigDir
 }
 
@@ -34,13 +34,13 @@ type dbPathChecker struct {
 // func you want as the argument, as long as it matches the
 // type os.UserConfigDir. This makes it convenient for testing
 // and was done as an experiment here to practice mocking in Go.
-func NewDBPathChecker(h getUserConfigDir) *dbPathChecker {
-	return &dbPathChecker{userConfig: h}
+func NewDBPathChecker(h getUserConfigDir) *DBPathChecker {
+	return &DBPathChecker{userConfig: h}
 }
 
 // Check returns true if the necessary config files (including
 // the database) are in place - false if not
-func (db *dbPathChecker) Check() bool {
+func (db *DBPathChecker) Check() bool {
 	userConfig, err := db.userConfig()
 	if err != nil {
 		log.Fatal(err)

@@ -25,11 +25,11 @@ type (
 	// sheetData is the data from the sheet.
 	sheetData map[string]extractedCell
 
-	// fileData is the data from the file.
-	fileData map[string]sheetData
+	// FileData is the data from the file.
+	FileData map[string]sheetData
 
-	// extractedData is the Extracted data from the file, filtered by a Datamap.
-	extractedData map[string]map[string]xlsx.Cell
+	// ExtractedData is the Extracted data from the file, filtered by a Datamap.
+	ExtractedData map[string]map[string]xlsx.Cell
 )
 
 //datamapLine - a line from the datamap.
@@ -47,7 +47,9 @@ type extractedCell struct {
 	Value string
 }
 
-type extractedDatamapFile []datamapLine
+// ExtractedDatamapFile is a slice of datamapLine structs, each of which encodes a single line
+// in the datamap file/database table.
+type ExtractedDatamapFile []datamapLine
 
 //sheetInSlice is a helper which returns true
 // if a string is in a slice of strings.
@@ -63,7 +65,7 @@ func sheetInSlice(list []string, key string) bool {
 
 //getSheetNames returns the number of Sheet field entries
 // in a slice of datamapLine structs.
-func getSheetNames(dmls extractedDatamapFile) []string {
+func getSheetNames(dmls ExtractedDatamapFile) []string {
 	var sheetNames []string
 
 	for _, dml := range dmls {
@@ -77,8 +79,8 @@ func getSheetNames(dmls extractedDatamapFile) []string {
 
 // ReadDML returns a slice of datamapLine structs given a
 // path to a datamap file.
-func ReadDML(path string) (extractedDatamapFile, error) {
-	var s extractedDatamapFile
+func ReadDML(path string) (ExtractedDatamapFile, error) {
+	var s ExtractedDatamapFile
 
 	data, err := ioutil.ReadFile(path)
 
@@ -116,14 +118,14 @@ func ReadDML(path string) (extractedDatamapFile, error) {
 // ReadXLSX returns a file at path's data as a map,
 // keyed on sheet name. All values are returned as strings.
 // Paths to a datamap and the spreadsheet file required.
-func ReadXLSX(path string) fileData {
+func ReadXLSX(path string) FileData {
 	// open the files
 	data, err := xlsx.OpenFile(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	outer := make(fileData, 1)
+	outer := make(FileData, 1)
 
 	// get the data
 	for _, sheet := range data.Sheets {
@@ -152,13 +154,13 @@ func ReadXLSX(path string) fileData {
 	return outer
 }
 
-// DatamapFromDB creates an extractedDatamapFile from the database given
+// DatamapFromDB creates an ExtractedDatamapFile from the database given
 // the name of a datamap. Of course, in this instance, the data is not
 // coming from a datamap file (such as datamap.csv) but from datamap data
 // previous stored in the database by DatamapToDB or similar.
-func DatamapFromDB(name string, db *sql.DB) (extractedDatamapFile, error) {
+func DatamapFromDB(name string, db *sql.DB) (ExtractedDatamapFile, error) {
 
-	var out extractedDatamapFile
+	var out ExtractedDatamapFile
 
 	query := `
 	select
@@ -190,18 +192,18 @@ func DatamapFromDB(name string, db *sql.DB) (extractedDatamapFile, error) {
 
 // ExtractDBDatamap uses a datamap named from the database db to extract values
 // from the populated spreadsheet file file.
-func ExtractDBDatamap(name string, file string, db *sql.DB) (extractedData, error) {
-	ddata, err := DatamapFromDB(name, db) // this will need to return an extractedDatamapFile
+func ExtractDBDatamap(name string, file string, db *sql.DB) (ExtractedData, error) {
+	ddata, err := DatamapFromDB(name, db) // this will need to return an ExtractedDatamapFile
 	if err != nil {
 		return nil, err
 	}
 	if len(ddata) == 0 {
-		return nil, fmt.Errorf("There is no datamap in the database matching name '%s'. Try running 'datamaps datamap --import...'.", name)
+		return nil, fmt.Errorf("there is no datamap in the database matching name '%s'. Try running 'datamaps datamap --import...'", name)
 	}
 	xdata := ReadXLSX(file)
 
 	names := getSheetNames(ddata)
-	outer := make(extractedData, len(names))
+	outer := make(ExtractedData, len(names))
 	// var inner map[string]xlsx.Cell
 
 	for _, s := range names {
@@ -224,7 +226,7 @@ func ExtractDBDatamap(name string, file string, db *sql.DB) (extractedData, erro
 // using the datamap as a filter, keyed on sheet name. All values
 // are returned as strings. (Currently deprecated in favour of
 // ExtractDBDatamap.
-func extract(dm string, path string) extractedData {
+func extract(dm string, path string) ExtractedData {
 	xdata := ReadXLSX(path)
 	ddata, err := ReadDML(dm)
 
@@ -233,7 +235,7 @@ func extract(dm string, path string) extractedData {
 	}
 
 	names := getSheetNames(ddata)
-	outer := make(extractedData, len(names))
+	outer := make(ExtractedData, len(names))
 	inner := make(map[string]xlsx.Cell)
 
 	for _, i := range ddata {
