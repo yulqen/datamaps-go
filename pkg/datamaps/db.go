@@ -38,7 +38,8 @@ func setupDB(path string) (*sql.DB, error) {
 				 CREATE TABLE return(
 					 id INTEGER PRIMARY KEY,
 					 name TEXT,
-					 date_created TEXT
+					 date_created TEXT,
+					 UNIQUE(name)
 					);
 
 				 CREATE TABLE return_data(
@@ -172,7 +173,6 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 		return err
 	}
 	fmt.Printf("Extracting from %s\n", file)
-	// fmt.Printf("Data is: %#v\n", d["Introduction"]["C17"].Value)
 
 	stmtReturn, err := db.Prepare("insert into return(name, date_created) values(?,?)")
 	if err != nil {
@@ -183,11 +183,12 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 
 	res, err := stmtReturn.Exec(return_name, time.Now())
 	if err != nil {
-		log.Fatal(err)
+		err := fmt.Errorf("%v\nReturn '%s' already in database. Use a different name.", err, return_name)
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 
 	retId, err := res.LastInsertId()
-	fmt.Println(retId)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -209,12 +210,12 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 			}
 			defer dmlQuery.Close()
 			dmlIdRow := dmlQuery.QueryRow(sheetName, cellRef)
-			fmt.Println(dmlIdRow)
 
 			var dmlId *int
 
 			if err := dmlIdRow.Scan(&dmlId); err != nil {
-				fmt.Errorf("cannot find a datamap_line row for %s and %s: %s\n", sheetName, cellRef, err)
+				err := fmt.Errorf("cannot find a datamap_line row for %s and %s: %s\n", sheetName, cellRef, err)
+				fmt.Println(err.Error())
 			}
 
 			insertStmt, err := db.Prepare("insert into return_data (dml_id, ret_id, value) values(?,?,?)")
