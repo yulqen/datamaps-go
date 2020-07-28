@@ -191,12 +191,14 @@ func DatamapFromDB(name string, db *sql.DB) (extractedDatamapFile, error) {
 // ExtractDBDatamap uses a datamap named from the database db to extract values
 // from the populated spreadsheet file file.
 func ExtractDBDatamap(name string, file string, db *sql.DB) (extractedData, error) {
-	xdata := ReadXLSX(file)
 	ddata, err := DatamapFromDB(name, db) // this will need to return an extractedDatamapFile
-
 	if err != nil {
 		return nil, err
 	}
+	if len(ddata) == 0 {
+		return nil, fmt.Errorf("There is no datamap in the database matching name '%s'. Try running 'datamaps datamap --import...'.", name)
+	}
+	xdata := ReadXLSX(file)
 
 	names := getSheetNames(ddata)
 	outer := make(extractedData, len(names))
