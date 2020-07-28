@@ -15,3 +15,6 @@ test-all:
 
 clean-config:
 	rm -r ~/.config/datamaps/
+
+godoc:
+	godoc -http :6060 -goroot /usr/share/go-1.14/
