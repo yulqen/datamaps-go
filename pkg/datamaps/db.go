@@ -38,8 +38,7 @@ func setupDB(path string) (*sql.DB, error) {
 				 CREATE TABLE return(
 					 id INTEGER PRIMARY KEY,
 					 name TEXT,
-					 date_created TEXT,
-					 UNIQUE(name)
+					 date_created TEXT
 					);
 
 				 CREATE TABLE return_data(
@@ -185,7 +184,7 @@ func importXLSXtoDB(dm_name string, return_name string, file string, db *sql.DB)
 
 	res, err := stmtReturn.Exec(return_name, time.Now())
 	if err != nil {
-		err := fmt.Errorf("%v\nReturn '%s' already in database. Use a different name.", err, return_name)
+		err := fmt.Errorf("%v\nCannot create %s", err, return_name)
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
