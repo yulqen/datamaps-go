@@ -75,6 +75,10 @@ func TestDatamapGoesIntoDB(t *testing.T) {
 	}
 }
 
+// TestImportSimpleTemplate uses importXLSXtoDB() to import data from a
+// populated template and then uses the sqlite3 executible to test the
+// contents of the database. This does not test datamaps functionality
+// in querying data in the database.
 func TestImportSimpleTemplate(t *testing.T) {
 
 	var tests = []struct {
@@ -125,6 +129,10 @@ func TestImportSimpleTemplate(t *testing.T) {
 	}
 }
 
+// TestImportToDB uses ImportToDB() to import data from a
+// directory of populated templates and then uses the sqlite3 executible to test the
+// contents of the database. This does not test datamaps functionality
+// in querying data in the database.
 func TestImportToDB(t *testing.T) {
 	var tests = []struct {
 		filename string
