@@ -2,6 +2,7 @@ package datamaps
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -75,12 +76,20 @@ func TestDatamapGoesIntoDB(t *testing.T) {
 
 func TestImportSimpleTemplate(t *testing.T) {
 
-	const sql = `
-		SELECT return_data.value
-		FROM return_data, datamap_line
-		WHERE (return_data.filename='test_template.xlsm' AND
-			datamap_line.cellref="C9" AND
-			return_data.dml_id=datamap_line.id);`
+	var tests = []struct {
+		sheet   string
+		cellref string
+		value   string
+	}{
+		{"Introduction", "A1", "10"},
+		{"Introduction", "C9", "Test Department"},
+		{"Introduction", "C22", "VUNT"},
+		{"Introduction", "J9", "Greedy Parrots"},
+		{"Summary", "B3", "This is a string"},
+		{"Summary", "B4", "2.2"},
+		{"Another Sheet", "N34", "23"},
+		{"Another Sheet", "DI15", "Rabbit Helga"},
+	}
 
 	db, err := dbSetup()
 	if err != nil {
@@ -92,18 +101,46 @@ func TestImportSimpleTemplate(t *testing.T) {
 	if err := DatamapToDB(&opts); err != nil {
 		t.Fatalf("cannot open %s", opts.DMPath)
 	}
-
 	if err := importXLSXtoDB(opts.DMName, "TEST RETURN", singleTarget, db); err != nil {
-		t.Fatal(err)
+		t.Fatalf("Something wrong: %v", err)
 	}
-	got, err := exec.Command("sqlite3", opts.DBPath, sql).Output()
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("%q", string(got))
-	got_s := string(got)
-	got_s = strings.TrimSuffix(got_s, "\n")
-	if strings.Compare(got_s, "Test Department") != 0 {
-		t.Errorf("we wanted 'Test Department' but got %s", got_s)
+
+	for _, test := range tests {
+		sql := fmt.Sprintf(`SELECT return_data.value FROM return_data, datamap_line 
+		WHERE 
+			(return_data.filename='test_template.xlsm' 
+				AND datamap_line.cellref=%q 
+				AND datamap_line.sheet=%q
+				AND return_data.dml_id=datamap_line.id);`, test.cellref, test.sheet)
+
+		got, err := exec.Command("sqlite3", opts.DBPath, sql).Output()
+		if err != nil {
+			t.Fatalf("something wrong %v", err)
+		}
+		got_s := strings.TrimSuffix(string(got), "\n")
+		if strings.Compare(got_s, test.value) != 0 {
+			t.Errorf("we wanted %s but got %s", test.value, got_s)
+		}
 	}
 }
+
+// TODO:
+
+// USING THE INDEX TO tests STRUCT WE COULD DO ALL THESE IN TEST ABOVE
+
+// Returns useful error messages when querying for stuff not in datamap
+// func TestImportSimpleQueryValueNotInDatamap(t *testing.T) {
+// 	var tests = []struct {
+// 		sheet   string
+// 		cellref string
+// 		value   string
+// 	}{
+// {"Summary", "B2", "20/10/19"}, // this is not referenced in datamap
+// 	}
+// }
+
+// TODO:
+// When a date is returned from the spreadsheet it is an integer and needs
+// to be handled appropriately.
+// func TestValuesReturnedAsDates(t *testing.T) {
+// }
