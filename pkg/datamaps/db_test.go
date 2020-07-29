@@ -3,8 +3,12 @@ package datamaps
 import (
 	"database/sql"
 	"os"
+	"os/exec"
+	"strings"
 	"testing"
 )
+
+var singleTarget string = "./testdata/test_template.xlsm"
 
 var opts = Options{
 	DBPath: "./testdata/test.db",
@@ -65,19 +69,41 @@ func TestDatamapGoesIntoDB(t *testing.T) {
 	defer dbTeardown(db)
 
 	if err := DatamapToDB(&opts); err != nil {
-		t.Errorf("Unable to write datamap to database file because %v.", err)
+		t.Errorf("unable to write datamap to database file because %v", err)
 	}
 }
 
 func TestImportSimpleTemplate(t *testing.T) {
-	db, err := setupDB("./testdata/test.db")
-	defer func() {
-		db.Close()
-		os.Remove("./testdata/test.db")
-	}()
 
+	const sql = `
+		SELECT return_data.value
+		FROM return_data, datamap_line
+		WHERE (return_data.filename='test_template.xlsm' AND
+			datamap_line.cellref="C9" AND
+			return_data.dml_id=datamap_line.id);`
+
+	db, err := dbSetup()
 	if err != nil {
-		t.Fatal("Expected to be able to set up the database.")
+		t.Fatal(err)
+	}
+	defer dbTeardown(db)
+
+	// We need a datamap in there.
+	if err := DatamapToDB(&opts); err != nil {
+		t.Fatalf("cannot open %s", opts.DMPath)
 	}
 
+	if err := importXLSXtoDB(opts.DMName, "TEST RETURN", singleTarget, db); err != nil {
+		t.Fatal(err)
+	}
+	got, err := exec.Command("sqlite3", opts.DBPath, sql).Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("%q", string(got))
+	got_s := string(got)
+	got_s = strings.TrimSuffix(got_s, "\n")
+	if strings.Compare(got_s, "Test Department") != 0 {
+		t.Errorf("we wanted 'Test Department' but got %s", got_s)
+	}
 }
