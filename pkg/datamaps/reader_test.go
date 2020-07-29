@@ -162,7 +162,7 @@ func TestExtractUsingDBDM(t *testing.T) {
 	opts := Options{
 		DBPath: "./testdata/test.db",
 		DMName: "First Datamap",
-		DMPath: "./testdata/short/datamap_matches_test_template.csv",
+		DMPath: "./testdata/datamap_matches_test_template.csv",
 	}
 
 	if err := DatamapToDB(&opts); err != nil {

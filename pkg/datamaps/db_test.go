@@ -14,7 +14,7 @@ var singleTarget string = "./testdata/test_template.xlsm"
 var opts = Options{
 	DBPath: "./testdata/test.db",
 	DMName: "First Datamap",
-	DMPath: "./testdata/short/datamap_matches_test_template.csv",
+	DMPath: "./testdata/datamap_matches_test_template.csv",
 }
 
 func dbSetup() (*sql.DB, error) {
