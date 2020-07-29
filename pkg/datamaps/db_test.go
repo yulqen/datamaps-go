@@ -1,20 +1,37 @@
 package datamaps
 
 import (
+	"database/sql"
 	"os"
 	"testing"
 )
 
-func TestOpenSQLiteFile(t *testing.T) {
-	db, err := setupDB("./testdata/test.db")
-	defer func() {
-		db.Close()
-		os.Remove("./testdata/test.db")
-	}()
+var opts = Options{
+	DBPath: "./testdata/test.db",
+	DMName: "First Datamap",
+	DMPath: "./testdata/short/datamap_matches_test_template.csv",
+}
 
+func dbSetup() (*sql.DB, error) {
+	db, err := setupDB("./testdata/test.db")
 	if err != nil {
-		t.Fatalf("%v\ndatamaps-log: Expected to be able to set up the database.", err)
+		return nil, err
 	}
+	return db, nil
+}
+
+func dbTeardown(db *sql.DB) {
+	db.Close()
+	os.Remove("./testdata/test.db")
+}
+
+func TestOpenSQLiteFile(t *testing.T) {
+
+	db, err := dbSetup()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer dbTeardown(db)
 
 	stmt := `insert into datamap(id, name) values(1,'cock')`
 	_, err = db.Exec(stmt)
@@ -41,6 +58,18 @@ func TestOpenSQLiteFile(t *testing.T) {
 }
 
 func TestDatamapGoesIntoDB(t *testing.T) {
+	db, err := dbSetup()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer dbTeardown(db)
+
+	if err := DatamapToDB(&opts); err != nil {
+		t.Errorf("Unable to write datamap to database file because %v.", err)
+	}
+}
+
+func TestImportSimpleTemplate(t *testing.T) {
 	db, err := setupDB("./testdata/test.db")
 	defer func() {
 		db.Close()
@@ -51,13 +80,4 @@ func TestDatamapGoesIntoDB(t *testing.T) {
 		t.Fatal("Expected to be able to set up the database.")
 	}
 
-	opts := Options{
-		DBPath: "./testdata/test.db",
-		DMName: "First Datamap",
-		DMPath: "./testdata/datamap.csv",
-	}
-
-	if err := DatamapToDB(&opts); err != nil {
-		t.Errorf("Unable to write datamap to database file because %v.", err)
-	}
 }
