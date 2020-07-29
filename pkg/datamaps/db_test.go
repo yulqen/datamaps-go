@@ -127,18 +127,47 @@ func TestImportSimpleTemplate(t *testing.T) {
 
 func TestImportToDB(t *testing.T) {
 	var tests = []struct {
-		sheet   string
-		cellref string
-		value   string
+		filename string
+		sheet    string
+		cellref  string
+		value    string
 	}{
-		{"Introduction", "A1", "10"},
-		{"Introduction", "C9", "Test Department"},
-		{"Introduction", "C22", "VUNT"},
-		{"Introduction", "J9", "Greedy Parrots"},
-		{"Summary", "B3", "This is a string"},
-		{"Summary", "B4", "2.2"},
-		{"Another Sheet", "N34", "23"},
-		{"Another Sheet", "DI15", "Rabbit Helga"},
+		{"test_template.xlsm", "Introduction", "A1", "10"},
+		{"test_template.xlsm", "Introduction", "C9", "Test Department"},
+		{"test_template.xlsm", "Introduction", "C22", "VUNT"},
+		{"test_template.xlsm", "Introduction", "J9", "Greedy Parrots"},
+		{"test_template.xlsm", "Summary", "B3", "This is a string"},
+		{"test_template.xlsm", "Summary", "B4", "2.2"},
+		{"test_template.xlsm", "Another Sheet", "N34", "23"},
+		{"test_template.xlsm", "Another Sheet", "DI15", "Rabbit Helga"},
+
+		{"test_template.xlsx", "Introduction", "A1", "10"},
+		{"test_template.xlsx", "Introduction", "C9", "Test Department"},
+		{"test_template.xlsx", "Introduction", "C22", "VUNT"},
+		{"test_template.xlsx", "Introduction", "J9", "Greedy Parrots"},
+		{"test_template.xlsx", "Summary", "B3", "This is a string"},
+		{"test_template.xlsx", "Summary", "B4", "2.2"},
+		{"test_template.xlsx", "Another Sheet", "N34", "23"},
+		{"test_template.xlsx", "Another Sheet", "DI15", "Rabbit Helga"},
+
+		{"test_template2.xlsx", "Introduction", "A1", "10"},
+		{"test_template2.xlsx", "Introduction", "C9", "Test Department"},
+		{"test_template2.xlsx", "Introduction", "C22", "VUNT"},
+		{"test_template2.xlsx", "Introduction", "J9", "Greedy Parrots"},
+		{"test_template2.xlsx", "Summary", "B3", "This is a string"},
+		{"test_template2.xlsx", "Summary", "B4", "2.2"},
+		{"test_template2.xlsx", "Another Sheet", "N34", "23"},
+		{"test_template2.xlsx", "Another Sheet", "DI15", "Rabbit Helga"},
+
+		{"test_template3.xlsx", "Introduction", "A1", "10"},
+		{"test_template3.xlsx", "Introduction", "C9", "Test Department"},
+		{"test_template3.xlsx", "Introduction", "C22", "VUNT"},
+		{"test_template3.xlsx", "Introduction", "J9", "Greedy Parrots"},
+		{"test_template3.xlsx", "Summary", "B3", "This is a string"},
+		{"test_template3.xlsx", "Summary", "B4", "2.2"},
+		{"test_template3.xlsx", "Another Sheet", "N34", "23"},
+		{"test_template3.xlsx", "Another Sheet", "DI15",
+			"Printers run amok in the land of carnivores when bacchus rings 1009.ff    faiioif  !!!]=-=-1290909"},
 	}
 
 	db, err := dbSetup()
@@ -159,10 +188,10 @@ func TestImportToDB(t *testing.T) {
 	for _, test := range tests {
 		sql := fmt.Sprintf(`SELECT return_data.value FROM return_data, datamap_line 
 		WHERE 
-			(return_data.filename='test_template.xlsm' 
+			(return_data.filename=%q 
 				AND datamap_line.cellref=%q 
 				AND datamap_line.sheet=%q
-				AND return_data.dml_id=datamap_line.id);`, test.cellref, test.sheet)
+				AND return_data.dml_id=datamap_line.id);`, test.filename, test.cellref, test.sheet)
 
 		got, err := exec.Command("sqlite3", opts.DBPath, sql).Output()
 		if err != nil {
@@ -170,7 +199,8 @@ func TestImportToDB(t *testing.T) {
 		}
 		got_s := strings.TrimSuffix(string(got), "\n")
 		if strings.Compare(got_s, test.value) != 0 {
-			t.Errorf("we wanted %s but got %s", test.value, got_s)
+			t.Errorf("we wanted value %q in file %s sheet %s %s but got %s",
+				test.value, test.filename, test.sheet, test.cellref, got_s)
 		}
 	}
 }
