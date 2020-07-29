@@ -12,9 +12,10 @@ import (
 var singleTarget string = "./testdata/test_template.xlsm"
 
 var opts = Options{
-	DBPath: "./testdata/test.db",
-	DMName: "First Datamap",
-	DMPath: "./testdata/datamap_matches_test_template.csv",
+	DBPath:   "./testdata/test.db",
+	DMName:   "First Datamap",
+	DMPath:   "./testdata/datamap_matches_test_template.csv",
+	XLSXPath: "./testdata/",
 }
 
 func dbSetup() (*sql.DB, error) {
@@ -103,6 +104,56 @@ func TestImportSimpleTemplate(t *testing.T) {
 	}
 	if err := importXLSXtoDB(opts.DMName, "TEST RETURN", singleTarget, db); err != nil {
 		t.Fatalf("Something wrong: %v", err)
+	}
+
+	for _, test := range tests {
+		sql := fmt.Sprintf(`SELECT return_data.value FROM return_data, datamap_line 
+		WHERE 
+			(return_data.filename='test_template.xlsm' 
+				AND datamap_line.cellref=%q 
+				AND datamap_line.sheet=%q
+				AND return_data.dml_id=datamap_line.id);`, test.cellref, test.sheet)
+
+		got, err := exec.Command("sqlite3", opts.DBPath, sql).Output()
+		if err != nil {
+			t.Fatalf("something wrong %v", err)
+		}
+		got_s := strings.TrimSuffix(string(got), "\n")
+		if strings.Compare(got_s, test.value) != 0 {
+			t.Errorf("we wanted %s but got %s", test.value, got_s)
+		}
+	}
+}
+
+func TestImportToDB(t *testing.T) {
+	var tests = []struct {
+		sheet   string
+		cellref string
+		value   string
+	}{
+		{"Introduction", "A1", "10"},
+		{"Introduction", "C9", "Test Department"},
+		{"Introduction", "C22", "VUNT"},
+		{"Introduction", "J9", "Greedy Parrots"},
+		{"Summary", "B3", "This is a string"},
+		{"Summary", "B4", "2.2"},
+		{"Another Sheet", "N34", "23"},
+		{"Another Sheet", "DI15", "Rabbit Helga"},
+	}
+
+	db, err := dbSetup()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// We need a datamap in there.
+	if err := DatamapToDB(&opts); err != nil {
+		t.Fatalf("cannot open %s", opts.DMPath)
+	}
+	defer dbTeardown(db)
+
+	if err := ImportToDB(&opts); err != nil {
+		t.Fatal(err)
 	}
 
 	for _, test := range tests {
