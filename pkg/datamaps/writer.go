@@ -1,10 +1,15 @@
 package datamaps
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 	"path/filepath"
 
 	"github.com/tealeg/xlsx/v3"
+
+	// Needed for the sqlite3 driver
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func ExportMaster(opts *Options) error {
@@ -18,11 +23,19 @@ func ExportMaster(opts *Options) error {
 	//		...
 	// Could be represented as a slice or a map[string][]string
 	// SQL statement:
-	//		SELECT datamap_line.key , return_data.value, return_data.filename
-	//		FROM return_data INNER JOIN datamap_line on return_data.dml_id=datamap_line.id
-	//		WHERE "key";
+	//
+	// SELECT datamap_line.key, return_data.value, return_data.filename
+	//                                    FROM (((return_data
+	//                                    INNER JOIN datamap_line ON return_data.dml_id=datamap_line.id)
+	//                                    INNER JOIN datamap ON datamap_line.dm_id=datamap.id)
+	//                                    INNER JOIN return on return_data.ret_id=return.id)
+	//                                    WHERE datamap.name="Tonk 1" AND return.name="Hunkers";
 
 	// filename := filepath.Join(opts.MasterOutPutPath, "master.xlsx")
+
+	// a test key
+	targetKey := "A Rabbit"
+
 	wb := xlsx.NewFile()
 	sh, err := wb.AddSheet("Master Data")
 
@@ -30,6 +43,37 @@ func ExportMaster(opts *Options) error {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// SQLITE CODE
+
+	db, err := sql.Open("sqlite3", opts.DBPath)
+
+	sqlCount := `SELECT count(return_data.id)
+                                          FROM (((return_data
+                                          INNER JOIN datamap_line ON return_data.dml_id=datamap_line.id)
+                                          INNER JOIN datamap ON datamap_line.dm_id=datamap.id)
+                                          INNER JOIN return on return_data.ret_id=return.id)
+                                          WHERE datamap.name=? AND return.name=? AND datamap_line.key=?
+                                          GROUP BY datamap_line.key;`
+
+	rowCountStmt, err := db.Prepare(sqlCount)
+	if err != nil {
+		return err
+	}
+	defer rowCountStmt.Close()
+
+	var rowCount int64
+
+	_ = rowCountStmt.QueryRow(opts.DMName, opts.ReturnName, targetKey).Scan(&rowCount)
+	fmt.Println(rowCount)
+
+	_ = `SELECT datamap_line.key, return_data.value, return_data.filename
+                                          FROM (((return_data
+                                          INNER JOIN datamap_line ON return_data.dml_id=datamap_line.id) 
+                                          INNER JOIN datamap ON datamap_line.dm_id=datamap.id) 
+                                          INNER JOIN return on return_data.ret_id=return.id) 
+                                          WHERE datamap.name=? AND return.name=? AND datamap_line.key=?;`
+
 	if sl := testRow.WriteSlice([]string{"Hello", "Bollocks", "Knackers", "Bottyies"}, -1); sl == -1 {
 		log.Printf("not a slice type")
 	}
