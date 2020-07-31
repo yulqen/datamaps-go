@@ -143,6 +143,9 @@ type Options struct {
 
 	// DMInitial is currently not used.
 	DMInitial bool
+
+	// MasterOutPutPath is where the master.xlsx file is to be saved
+	MasterOutPutPath string
 }
 
 func defaultOptions() *Options {
@@ -158,15 +161,21 @@ func defaultOptions() *Options {
 		log.Fatalf("Unable to get default datamaps directory %v", err)
 	}
 
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal("unable to get user home directory")
+	}
+
 	return &Options{
-		Command:     "help",
-		DBPath:      filepath.Join(dbpath, dbName),
-		DMPath:      dmPath,
-		DMName:      "Unnamed Datamap",
-		XLSXPath:    xlsxPath,
-		ReturnName:  "Unnamed Return",
-		DMOverwrite: false,
-		DMInitial:   false,
+		Command:          "help",
+		DBPath:           filepath.Join(dbpath, dbName),
+		DMPath:           dmPath,
+		DMName:           "Unnamed Datamap",
+		XLSXPath:         xlsxPath,
+		ReturnName:       "Unnamed Return",
+		DMOverwrite:      false,
+		DMInitial:        false,
+		MasterOutPutPath: filepath.Join(homeDir, "Desktop"),
 	}
 }
 
