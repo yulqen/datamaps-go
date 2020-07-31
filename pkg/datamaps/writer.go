@@ -17,6 +17,10 @@ func ExportMaster(opts *Options) error {
 	//		Key 3 | Key_3_Value_for_FD_1 | Key_3_Value_for_FD_2 | Key_3_Value_for_FD_3 | ... etc
 	//		...
 	// Could be represented as a slice or a map[string][]string
+	// SQL statement:
+	//		SELECT datamap_line.key , return_data.value, return_data.filename
+	//		FROM return_data INNER JOIN datamap_line on return_data.dml_id=datamap_line.id
+	//		WHERE "key";
 
 	// filename := filepath.Join(opts.MasterOutPutPath, "master.xlsx")
 	wb := xlsx.NewFile()
