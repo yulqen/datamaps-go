@@ -17,8 +17,7 @@ import (
 	// Required for the sqlite3 driver
 	_ "github.com/mattn/go-sqlite3"
 
-	"github.com/tealeg/xlsx"
-	"github.com/yulqen/coords"
+	"github.com/tealeg/xlsx/v3"
 )
 
 type (
@@ -46,6 +45,11 @@ type extractedCell struct {
 	Row   int
 	Value string
 }
+
+var (
+	inner = make(sheetData)
+	exc   extractedCell
+)
 
 // ExtractedDatamapFile is a slice of datamapLine structs, each of which encodes a single line
 // in the datamap file/database table.
@@ -115,12 +119,37 @@ func ReadDML(path string) (ExtractedDatamapFile, error) {
 	return s, nil
 }
 
+// cellVisitor is used by datamaps.rowVisitor() and is called
+// on every cell in the target xlsx file in order to extract
+// the data.
+func cellVisitor(c *xlsx.Cell) error {
+	x, y := c.GetCoordinates()
+	cellref := xlsx.GetCellIDStringFromCoords(x, y)
+
+	ex := extractedCell{
+		Cell:  c,
+		Value: c.Value,
+	}
+
+	inner[cellref] = ex
+
+	return nil
+}
+
+// rowVisitor is used as a callback by xlsx.sheet.ForEachRow(). It wraps
+// a call to xlsx.Row.ForEachCell() which actually extracts the data.
+func rowVisitor(r *xlsx.Row) error {
+	if err := r.ForEachCell(cellVisitor, xlsx.SkipEmptyCells); err != nil {
+		return err
+	}
+	return nil
+}
+
 // ReadXLSX returns a file at path's data as a map,
 // keyed on sheet name. All values are returned as strings.
 // Paths to a datamap and the spreadsheet file required.
 func ReadXLSX(path string) FileData {
-	// open the files
-	data, err := xlsx.OpenFile(path)
+	wb, err := xlsx.OpenFile(path)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -128,27 +157,13 @@ func ReadXLSX(path string) FileData {
 	outer := make(FileData, 1)
 
 	// get the data
-	for _, sheet := range data.Sheets {
-		inner := make(sheetData)
+	for _, sheet := range wb.Sheets {
 
-		for rowLidx, row := range sheet.Rows {
-			for colLidx, cell := range row.Cells {
-				colStr, err := coords.ColIndexToAlpha(colLidx)
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				ex := extractedCell{
-					Cell:  cell,
-					Col:   colStr,
-					Row:   rowLidx + 1,
-					Value: cell.Value}
-				cellref := fmt.Sprintf("%s%d", ex.Col, ex.Row)
-				inner[cellref] = ex
-			}
-
-			outer[sheet.Name] = inner
+		if err := sheet.ForEachRow(rowVisitor); err != nil {
+			log.Fatal(err)
 		}
+		outer[sheet.Name] = inner
+		inner = make(sheetData)
 	}
 
 	return outer
