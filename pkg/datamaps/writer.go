@@ -74,34 +74,48 @@ func ExportMaster(opts *Options) error {
                                           INNER JOIN datamap_line ON return_data.dml_id=datamap_line.id) 
                                           INNER JOIN datamap ON datamap_line.dm_id=datamap.id) 
                                           INNER JOIN return on return_data.ret_id=return.id) 
-                                          WHERE datamap.name=? AND return.name=? AND datamap_line.key=?;`
+                                          WHERE datamap.name=? AND return.name=? AND datamap_line.key=?
+										  ORDER BY return_data.filename;`
+
+	seen := make(map[string]struct{}) // homemade set https://emersion.fr/blog/2017/sets-in-go/
 
 	var values = make(map[string][]string)
+	headerSlice := make([]string, 0)
 	for _, k := range datamapKeys {
 		masterData, err := db.Query(getDataSQL, opts.DMName, opts.ReturnName, k)
 		if err != nil {
 			return err
 		}
-		var x int64
-		for x = 0; x < rowCount; x++ {
+		for masterData.Next() {
 			var key, filename, value string
-			if b := masterData.Next(); b {
-				if err := masterData.Scan(&key, &value, &filename); err != nil {
-					return err
-				}
-				values, err = appendValueMap(key, value, values)
-				if err != nil {
-					return err
-				}
+			if err := masterData.Scan(&key, &value, &filename); err != nil {
+				return err
+			}
+			values, err = appendValueMap(key, value, values)
+			if _, ok := seen[filename]; !ok {
+				headerSlice = append(headerSlice, filename)
+				seen[filename] = struct{}{}
+			}
+			if err != nil {
+				return err
 			}
 		}
 	}
 
-	var masterRow int64
-	for masterRow = 1; masterRow <= datamapKeysNumber; masterRow++ {
+	hdrRow, err := sh.Row(0)
+	if err != nil {
+		return fmt.Errorf("cannot create header row in output spreadsheet: %v", err)
+	}
+
+	log.Printf("Writing slice of %#v to top row\n", headerSlice)
+	if hdr := hdrRow.WriteSlice(headerSlice, -1); hdr == -1 {
+		return fmt.Errorf("cannot write header values into header row: %v", err)
+	}
+
+	for masterRow := 1; masterRow <= int(datamapKeysNumber); masterRow++ {
 		r, err := sh.Row(int(masterRow))
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("cannot create row %d in output spreadsheet: %v", masterRow, err)
 		}
 		dmlKey := datamapKeys[masterRow-1]
 		if sl := r.WriteSlice(append([]string{dmlKey}, values[dmlKey]...), -1); sl == -1 {
