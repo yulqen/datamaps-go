@@ -2,7 +2,6 @@ package datamaps
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"path/filepath"
 
@@ -56,18 +55,17 @@ func ExportMaster(opts *Options) error {
                                           WHERE datamap.name=? AND return.name=? AND datamap_line.key=?
                                           GROUP BY datamap_line.key;`
 
-	rowCountStmt, err := db.Prepare(sqlCount)
+	var rowCount int64
+	rowCountRes := db.QueryRow(sqlCount, opts.DMName, opts.ReturnName, targetKey)
 	if err != nil {
 		return err
 	}
-	defer rowCountStmt.Close()
 
-	var rowCount int64
+	if err := rowCountRes.Scan(&rowCount); err != nil {
+		return err
+	}
 
-	_ = rowCountStmt.QueryRow(opts.DMName, opts.ReturnName, targetKey).Scan(&rowCount)
-	fmt.Println(rowCount)
-
-	_ = `SELECT datamap_line.key, return_data.value, return_data.filename
+	getDataSQL := `SELECT datamap_line.key, return_data.value, return_data.filename
                                           FROM (((return_data
                                           INNER JOIN datamap_line ON return_data.dml_id=datamap_line.id) 
                                           INNER JOIN datamap ON datamap_line.dm_id=datamap.id) 
