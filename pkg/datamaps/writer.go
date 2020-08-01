@@ -124,7 +124,6 @@ func ExportMaster(opts *Options) error {
 		if sl := r.WriteSlice(append([]string{dmlKey}, values[dmlKey]...), -1); sl == -1 {
 			log.Printf("not a slice type")
 		}
-		log.Printf("writing slice to row\n")
 	}
 
 	log.Printf("saving master at %s", opts.MasterOutPutPath)
