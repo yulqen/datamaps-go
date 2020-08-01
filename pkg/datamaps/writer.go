@@ -121,7 +121,7 @@ func ExportMaster(opts *Options) error {
 			log.Fatal(err)
 		}
 		dmlKey := datamapKeys[masterRow-1]
-		if sl := r.WriteSlice(values[dmlKey], -1); sl == -1 {
+		if sl := r.WriteSlice(append([]string{dmlKey}, values[dmlKey]...), -1); sl == -1 {
 			log.Printf("not a slice type")
 		}
 		log.Printf("writing slice to row\n")
