@@ -42,12 +42,12 @@ func ExportMaster(opts *Options) error {
 	// SQLITE CODE
 
 	db, err := sql.Open("sqlite3", opts.DBPath)
+	if err != nil {
+		return fmt.Errorf("cannot open database %v", err)
+	}
 
 	// Get number amount of datamap keys in target datamap
 	keyCountRows := db.QueryRow("SELECT count(key) FROM datamap_line, datamap WHERE datamap.name=?;", opts.DMName)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	var datamapKeysNumber int64
 	if err := keyCountRows.Scan(&datamapKeysNumber); err != nil {
@@ -56,7 +56,7 @@ func ExportMaster(opts *Options) error {
 
 	datamapKeysRows, err := db.Query("SELECT key FROM datamap_line, datamap WHERE datamap.name=?;", opts.DMName)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("cannot query for keys in database - %v", err)
 	}
 
 	var datamapKeys []string
@@ -66,7 +66,7 @@ func ExportMaster(opts *Options) error {
 		if k := datamapKeysRows.Next(); k {
 			var key string
 			if err := datamapKeysRows.Scan(&key); err != nil {
-				return err
+				return fmt.Errorf("cannot Scan for key %s - %v", key, err)
 			}
 			datamapKeys = append(datamapKeys, key)
 		}
@@ -81,9 +81,9 @@ func ExportMaster(opts *Options) error {
                                           GROUP BY datamap_line.key;`
 
 	var rowCount int64
-	rowCountRes := db.QueryRow(sqlCount, opts.DMName, opts.ReturnName, targetKey)
+	rowCountRes := db.QueryRow(sqlCount, opts.DMName, opts.ReturnName, targetKey) // TODO: fix this
 	if err != nil {
-		return err
+		return fmt.Errorf("cannot query for row count of return data - %v", err)
 	}
 
 	if err := rowCountRes.Scan(&rowCount); err != nil {
