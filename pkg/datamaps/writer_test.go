@@ -2,7 +2,6 @@ package datamaps
 
 import (
 	"os"
-	"path/filepath"
 	"testing"
 )
 
@@ -28,9 +27,9 @@ func TestWriteMaster(t *testing.T) {
 		XLSXPath:         "./testdata/",
 	}
 
-	defer func() {
-		os.Remove(filepath.Join(opts.MasterOutPutPath, "master.xlsx"))
-	}()
+	// defer func() {
+	// 	os.Remove(filepath.Join(opts.MasterOutPutPath, "master.xlsx"))
+	// }()
 
 	if err := DatamapToDB(&opts); err != nil {
 		t.Errorf("Unable to write datamap to database file because %v.", err)

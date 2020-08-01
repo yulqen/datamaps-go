@@ -47,6 +47,35 @@ func ExportMaster(opts *Options) error {
 
 	db, err := sql.Open("sqlite3", opts.DBPath)
 
+	// Get number amount of datamap keys in target datamap
+	keyCountRows := db.QueryRow("SELECT count(key) FROM datamap_line, datamap WHERE datamap.name=?;", opts.DMName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var datamapKeysNumber int64
+	if err := keyCountRows.Scan(&datamapKeysNumber); err != nil {
+		return err
+	}
+
+	datamapKeysRows, err := db.Query("SELECT key FROM datamap_line, datamap WHERE datamap.name=?;", opts.DMName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var datamapKeys []string
+
+	var i int64
+	for i = 0; i < datamapKeysNumber; i++ {
+		if k := datamapKeysRows.Next(); k {
+			var key string
+			if err := datamapKeysRows.Scan(&key); err != nil {
+				return err
+			}
+			datamapKeys = append(datamapKeys, key)
+		}
+	}
+
 	sqlCount := `SELECT count(return_data.id)
                                           FROM (((return_data
                                           INNER JOIN datamap_line ON return_data.dml_id=datamap_line.id)
@@ -72,7 +101,25 @@ func ExportMaster(opts *Options) error {
                                           INNER JOIN return on return_data.ret_id=return.id) 
                                           WHERE datamap.name=? AND return.name=? AND datamap_line.key=?;`
 
-	if sl := testRow.WriteSlice([]string{"Hello", "Bollocks", "Knackers", "Bottyies"}, -1); sl == -1 {
+	var values = make([]string, rowCount+1)
+	for _, k := range datamapKeys {
+		masterData, err := db.Query(getDataSQL, opts.DMName, opts.ReturnName, k)
+		if err != nil {
+			return err
+		}
+		var x int64
+		for x = 0; x < rowCount; x++ {
+			var key, filename, value string
+			if b := masterData.Next(); b {
+				if err := masterData.Scan(&key, &value, &filename); err != nil {
+					return err
+				}
+				values = append(values, value)
+			}
+		}
+	}
+
+	if sl := testRow.WriteSlice(values, -1); sl == -1 {
 		log.Printf("not a slice type")
 	}
 	log.Printf("writing slice to row\n")
