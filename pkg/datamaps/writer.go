@@ -2,6 +2,7 @@ package datamaps
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"path/filepath"
 
@@ -109,7 +110,10 @@ func ExportMaster(opts *Options) error {
 				if err := masterData.Scan(&key, &value, &filename); err != nil {
 					return err
 				}
-				values = appendValueMap(key, value, values)
+				values, err = appendValueMap(key, value, values)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -134,7 +138,7 @@ func ExportMaster(opts *Options) error {
 	return nil
 }
 
-func appendValueMap(k, v string, values map[string][]string) map[string][]string {
+func appendValueMap(k, v string, values map[string][]string) (map[string][]string, error) {
 
 	var keyIn bool
 	for kv, _ := range values {
@@ -147,13 +151,13 @@ func appendValueMap(k, v string, values map[string][]string) map[string][]string
 	if keyIn {
 		slice, ok := values[k]
 		if !ok {
-			log.Fatalf("%s is not a key in this map", k)
+			return nil, fmt.Errorf("%s is not a key in this map", k)
 		}
 		slice = append(slice, v)
 		values[k] = slice
-		return values
+		return values, nil
 	} else {
 		values[k] = []string{v}
-		return values
+		return values, nil
 	}
 }
