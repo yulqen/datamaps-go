@@ -20,7 +20,9 @@ func TestDBDetect(t *testing.T) {
 		t.Fatalf("cannot create temporary directory - %v", err)
 	}
 
-	os.Create(filepath.Join("/tmp", "CONFIG", "datamaps", "datamaps.db"))
+	if _, err := os.Create(filepath.Join("/tmp", "CONFIG", "datamaps", "datamaps.db")); err != nil {
+		t.Fatalf("cannot open '/tmp/CONFIG/datamaps/databamps.db': %v", err)
+	}
 	defer func() {
 		os.RemoveAll(filepath.Join("/tmp", "CONFIG"))
 	}()

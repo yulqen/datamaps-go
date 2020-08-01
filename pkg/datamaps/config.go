@@ -155,10 +155,13 @@ func defaultOptions() *Options {
 	}
 
 	dmPath, err := defaultDMPath()
-	xlsxPath, err := defaultXLSXPath()
-
 	if err != nil {
-		log.Fatalf("Unable to get default datamaps directory %v", err)
+		log.Fatalf("unable to get default datamaps directory path: %v", err)
+	}
+
+	xlsxPath, err := defaultXLSXPath()
+	if err != nil {
+		log.Fatalf("unable to get default XLSX directory path: %v", err)
 	}
 
 	homeDir, err := os.UserHomeDir()

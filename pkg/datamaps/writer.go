@@ -15,6 +15,9 @@ import (
 func ExportMaster(opts *Options) error {
 	wb := xlsx.NewFile()
 	sh, err := wb.AddSheet("Master Data")
+	if err != nil {
+		return fmt.Errorf("cannot add 'Master Data' sheet to new XLSX file: %v", err)
+	}
 
 	// SQLITE CODE
 
@@ -117,7 +120,7 @@ func ExportMaster(opts *Options) error {
 func appendValueMap(k, v string, values map[string][]string) (map[string][]string, error) {
 
 	var keyIn bool
-	for kv, _ := range values {
+	for kv := range values {
 		if kv == k {
 			keyIn = true
 			break

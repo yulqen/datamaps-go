@@ -33,7 +33,7 @@ func TestWriteMaster(t *testing.T) {
 	}()
 
 	if err := DatamapToDB(&opts); err != nil {
-		t.Errorf("Unable to write datamap to database file because %v.", err)
+		t.Fatalf("Unable to write datamap to database file because %v.", err)
 	}
 
 	if err := ImportToDB(&opts); err != nil {

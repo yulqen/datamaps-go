@@ -48,7 +48,6 @@ type extractedCell struct {
 
 var (
 	inner = make(sheetData)
-	exc   extractedCell
 )
 
 // ExtractedDatamapFile is a slice of datamapLine structs, each of which encodes a single line
