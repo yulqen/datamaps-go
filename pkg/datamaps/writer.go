@@ -38,11 +38,6 @@ func ExportMaster(opts *Options) error {
 	wb := xlsx.NewFile()
 	sh, err := wb.AddSheet("Master Data")
 
-	testRow, err := sh.Row(1)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// SQLITE CODE
 
 	db, err := sql.Open("sqlite3", opts.DBPath)
@@ -101,7 +96,7 @@ func ExportMaster(opts *Options) error {
                                           INNER JOIN return on return_data.ret_id=return.id) 
                                           WHERE datamap.name=? AND return.name=? AND datamap_line.key=?;`
 
-	var values = make([]string, rowCount+1)
+	var values = make(map[string][]string)
 	for _, k := range datamapKeys {
 		masterData, err := db.Query(getDataSQL, opts.DMName, opts.ReturnName, k)
 		if err != nil {
@@ -114,15 +109,23 @@ func ExportMaster(opts *Options) error {
 				if err := masterData.Scan(&key, &value, &filename); err != nil {
 					return err
 				}
-				values = append(values, value)
+				values = appendValueMap(key, value, values)
 			}
 		}
 	}
 
-	if sl := testRow.WriteSlice(values, -1); sl == -1 {
-		log.Printf("not a slice type")
+	var masterRow int64
+	for masterRow = 1; masterRow <= datamapKeysNumber; masterRow++ {
+		r, err := sh.Row(int(masterRow))
+		if err != nil {
+			log.Fatal(err)
+		}
+		dmlKey := datamapKeys[masterRow-1]
+		if sl := r.WriteSlice(values[dmlKey], -1); sl == -1 {
+			log.Printf("not a slice type")
+		}
+		log.Printf("writing slice to row\n")
 	}
-	log.Printf("writing slice to row\n")
 
 	log.Printf("saving master at %s", opts.MasterOutPutPath)
 	if err := wb.Save(filepath.Join(opts.MasterOutPutPath, "master.xlsx")); err != nil {
@@ -130,4 +133,28 @@ func ExportMaster(opts *Options) error {
 	}
 	sh.Close()
 	return nil
+}
+
+func appendValueMap(k, v string, values map[string][]string) map[string][]string {
+
+	var keyIn bool
+	for kv, _ := range values {
+		if kv == k {
+			keyIn = true
+			break
+		}
+	}
+
+	if keyIn {
+		slice, ok := values[k]
+		if !ok {
+			log.Fatalf("%s is not a key in this map", k)
+		}
+		slice = append(slice, v)
+		values[k] = slice
+		return values
+	} else {
+		values[k] = []string{v}
+		return values
+	}
 }
