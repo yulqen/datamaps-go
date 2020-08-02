@@ -77,7 +77,7 @@ func ExportMaster(opts *Options) error {
                                           WHERE datamap.name=? AND return.name=? AND datamap_line.key=?
 										  ORDER BY return_data.filename;`
 
-	seen := make(map[string]struct{}) // homemade set https://emersion.fr/blog/2017/sets-in-go/
+	seen := make(map[string]struct{}) // homemade Set https://emersion.fr/blog/2017/sets-in-go/
 
 	var values = make(map[string][]string)
 	headerSlice := make([]string, 0)
@@ -102,22 +102,29 @@ func ExportMaster(opts *Options) error {
 		}
 	}
 
-	hdrRow, err := sh.Row(0)
-	if err != nil {
-		return fmt.Errorf("cannot create header row in output spreadsheet: %v", err)
-	}
+	// hdrRow, err := sh.Row(0)
+	// if err != nil {
+	// 	return fmt.Errorf("cannot create header row in output spreadsheet: %v", err)
+	// }
 
-	log.Printf("Writing slice of %#v to top row\n", headerSlice)
-	if hdr := hdrRow.WriteSlice(headerSlice, -1); hdr == -1 {
-		return fmt.Errorf("cannot write header values into header row: %v", err)
-	}
+	// log.Printf("Writing slice of %#v to top row\n", headerSlice)
+	// if hdr := hdrRow.WriteSlice(headerSlice, -1); hdr == -1 {
+	// 	return fmt.Errorf("cannot write header values into header row: %v", err)
+	// }
 
-	for masterRow := 1; masterRow <= int(datamapKeysNumber); masterRow++ {
-		r, err := sh.Row(int(masterRow))
+	for masterRow := 0; masterRow < len(datamapKeys); masterRow++ {
+		log.Printf("Writing to masterRow which is %d", masterRow)
+		r, err := sh.Row(masterRow)
 		if err != nil {
 			return fmt.Errorf("cannot create row %d in output spreadsheet: %v", masterRow, err)
 		}
-		dmlKey := datamapKeys[masterRow-1]
+		if masterRow == 0 {
+			if hdr := r.WriteSlice(headerSlice, -1); hdr == -1 {
+				return fmt.Errorf("cannot write header values into header row: %v", err)
+			}
+			continue
+		}
+		dmlKey := datamapKeys[masterRow]
 		if sl := r.WriteSlice(append([]string{dmlKey}, values[dmlKey]...), -1); sl == -1 {
 			log.Printf("not a slice type")
 		}
