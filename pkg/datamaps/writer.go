@@ -102,16 +102,6 @@ func ExportMaster(opts *Options) error {
 		}
 	}
 
-	// hdrRow, err := sh.Row(0)
-	// if err != nil {
-	// 	return fmt.Errorf("cannot create header row in output spreadsheet: %v", err)
-	// }
-
-	// log.Printf("Writing slice of %#v to top row\n", headerSlice)
-	// if hdr := hdrRow.WriteSlice(headerSlice, -1); hdr == -1 {
-	// 	return fmt.Errorf("cannot write header values into header row: %v", err)
-	// }
-
 	for masterRow := 0; masterRow < len(datamapKeys); masterRow++ {
 		log.Printf("Writing to masterRow which is %d", masterRow)
 		r, err := sh.AddRowAtIndex(masterRow)
