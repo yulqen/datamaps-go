@@ -32,6 +32,10 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+	case "createmaster":
+		if err := datamaps.CreateMaster(opts); err != nil {
+			log.Fatal(err)
+		}
 	case "server":
 		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path != "/" {

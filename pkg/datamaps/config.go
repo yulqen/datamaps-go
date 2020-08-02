@@ -203,6 +203,8 @@ func processOptions(opts *Options, allArgs []string) {
 		opts.Command = "setup"
 	case "server":
 		opts.Command = "server"
+	case "createmaster":
+		opts.Command = "createmaster"
 	default:
 		log.Fatal("No relevant command provided.")
 	}
@@ -224,6 +226,8 @@ func processOptions(opts *Options, allArgs []string) {
 			opts.DMOverwrite = true
 		case "--initial":
 			opts.DMInitial = true
+		case "--masteroutputdir":
+			opts.MasterOutPutPath = nextString(restArgs, &i, "master output directory required")
 		}
 	}
 }

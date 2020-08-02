@@ -40,7 +40,7 @@ func TestWriteMaster(t *testing.T) {
 		t.Fatalf("cannot read test XLSX files needed before exporting to master - %v", err)
 	}
 
-	if err := ExportMaster(&opts); err != nil {
+	if err := CreateMaster(&opts); err != nil {
 		t.Error(err)
 	}
 }

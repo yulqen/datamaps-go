@@ -12,14 +12,16 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func ExportMaster(opts *Options) error {
+// CreateMaster creates a master spreadsheet for a specific return given,
+// based on a datamap name - both of which already need to be in the database,
+// along with the data associated with the return. The datamap and return data
+// must already have been imported.
+func CreateMaster(opts *Options) error {
 	wb := xlsx.NewFile()
 	sh, err := wb.AddSheet("Master Data")
 	if err != nil {
 		return fmt.Errorf("cannot add 'Master Data' sheet to new XLSX file: %v", err)
 	}
-
-	// SQLITE CODE
 
 	db, err := sql.Open("sqlite3", opts.DBPath)
 	if err != nil {
@@ -103,7 +105,6 @@ func ExportMaster(opts *Options) error {
 	}
 
 	for masterRow := 0; masterRow < len(datamapKeys); masterRow++ {
-		log.Printf("Writing to masterRow which is %d", masterRow)
 		r, err := sh.AddRowAtIndex(masterRow)
 		if err != nil {
 			return fmt.Errorf("cannot create row %d in output spreadsheet: %v", masterRow, err)
