@@ -114,12 +114,12 @@ func ExportMaster(opts *Options) error {
 
 	for masterRow := 0; masterRow < len(datamapKeys); masterRow++ {
 		log.Printf("Writing to masterRow which is %d", masterRow)
-		r, err := sh.Row(masterRow)
+		r, err := sh.AddRowAtIndex(masterRow)
 		if err != nil {
 			return fmt.Errorf("cannot create row %d in output spreadsheet: %v", masterRow, err)
 		}
 		if masterRow == 0 {
-			if hdr := r.WriteSlice(headerSlice, -1); hdr == -1 {
+			if hdr := r.WriteSlice(append([]string{""}, headerSlice...), -1); hdr == -1 {
 				return fmt.Errorf("cannot write header values into header row: %v", err)
 			}
 			continue
