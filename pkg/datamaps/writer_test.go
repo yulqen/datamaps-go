@@ -97,7 +97,8 @@ func TestWriteMaster(t *testing.T) {
 		}
 		got_s := strings.TrimSuffix(string(got), "\n")
 		if strings.Compare(got_s, test.value) != 0 {
-			t.Errorf("when testing the database, we expected %s but got %s", test.value, got_s)
+			t.Errorf("when testing the database, for key %s in file %s we expected %s but got %s", test.key,
+				test.filename, test.value, got_s)
 		}
 	}
 
