@@ -1,19 +1,10 @@
 cell_key,template_sheet,cellreference
-A Date,Summary,B2
+A Ten,Introduction,A1
+A Test,Introduction,C9
+A Vunt,Introduction,C22
+Floaty,Another Sheet,D5
+A Parrot,Introduction,J9
 A String,Summary,B3
-A String2,Summary,C3
-A String3,Summary,D3
 A Float,Summary,B4
-An Integer,Summary,B5
-A Date 1,Another Sheet,B3
-A String 1,Another Sheet,B4
-A Float 1,Another Sheet,B5
-An Integer 1,Another Sheet,B6
-A Date 2,Another Sheet,D3
-A String 2,Another Sheet,D4
-A Float 3,Another Sheet,D5
-An Integer 3,Another Sheet,D6
-A Ten Integer,Introduction,A1
-A Test String,Introduction,C9
-A Vunt String,Introduction,C22
-A Parrot String,Introduction,J9
+A Number,Another Sheet,N34
+A Rabbit,Another Sheet,DI15

@@ -124,7 +124,7 @@ func TestImportSimpleTemplate(t *testing.T) {
 		}
 		got_s := strings.TrimSuffix(string(got), "\n")
 		if strings.Compare(got_s, test.value) != 0 {
-			t.Errorf("we wanted %s but got %s", test.value, got_s)
+			t.Errorf("we wanted %s in test_template.xlsm but got %s", test.value, got_s)
 		}
 	}
 }

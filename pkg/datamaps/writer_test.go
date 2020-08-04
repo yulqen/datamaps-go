@@ -31,7 +31,7 @@ func TestWriteMaster(t *testing.T) {
 	opts := Options{
 		DBPath:           "./testdata/test.db",
 		DMName:           "First Datamap",
-		DMPath:           "./testdata/datamap_matches_test_template.csv",
+		DMPath:           "./testdata/datamap_for_master_test.csv",
 		ReturnName:       "Unnamed Return",
 		MasterOutPutPath: "./testdata/",
 		XLSXPath:         "./testdata/",
