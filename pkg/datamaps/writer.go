@@ -115,7 +115,7 @@ func CreateMaster(opts *Options) error {
 			}
 			continue
 		}
-		dmlKey := datamapKeys[masterRow]
+		dmlKey := datamapKeys[masterRow-1]
 		if sl := r.WriteSlice(append([]string{dmlKey}, values[dmlKey]...), -1); sl == -1 {
 			log.Printf("not a slice type")
 		}

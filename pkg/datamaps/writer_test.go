@@ -79,6 +79,25 @@ func TestWriteMaster(t *testing.T) {
 		{"A Test String", "test_template.xlsx", "Introduction", "C9", "Test Department"},
 		{"A Vunt String", "test_template.xlsx", "Introduction", "C22", "VUNT"},
 		{"A Parrot String", "test_template.xlsx", "Introduction", "J9", "Greedy Parrots"},
+
+		{"A Date", "test_template.xlsm", "Summary", "B2", "20/10/19"},
+		{"A String", "test_template.xlsm", "Summary", "B3", "This is a string"},
+		{"A String2", "test_template.xlsm", "Summary", "C3", "This is a string"},
+		{"A String3", "test_template.xlsm", "Summary", "D3", "This is a string"},
+		{"A Float", "test_template.xlsm", "Summary", "B4", "2.2"},
+		{"An Integer", "test_template.xlsm", "Summary", "B5", "10"},
+		{"A Date 1", "test_template.xlsm", "Another Sheet", "B3", "20/10/19"},
+		{"A String 1", "test_template.xlsm", "Another Sheet", "B4", "This is a string"},
+		{"A Float 1", "test_template.xlsm", "Another Sheet", "B5", "2.2"},
+		{"An Integer 1", "test_template.xlsm", "Another Sheet", "B6", "10"},
+		{"A Date 2", "test_template.xlsm", "Another Sheet", "D3", "20/10/19"},
+		{"A String 2", "test_template.xlsm", "Another Sheet", "D4", "This is a string"},
+		{"A Float 3", "test_template.xlsm", "Another Sheet", "D5", "3.2"},
+		{"An Integer 3", "test_template.xlsm", "Another Sheet", "D6", "11"},
+		{"A Ten Integer", "test_template.xlsm", "Introduction", "A1", "10"},
+		{"A Test String", "test_template.xlsm", "Introduction", "C9", "Test Department"},
+		{"A Vunt String", "test_template.xlsm", "Introduction", "C22", "VUNT"},
+		{"A Parrot String", "test_template.xlsm", "Introduction", "J9", "Greedy Parrots"},
 	}
 
 	// Regular testing of import
@@ -102,14 +121,6 @@ func TestWriteMaster(t *testing.T) {
 		}
 	}
 
-	// TODO: Testing master
-
-	// The algorthim for this is as follows:
-	// - get all the file names in a set from the header row
-	// - go through each row and map the key/value coordinates for each file
-	// - when going through each test struct, look up the map created in step
-	// above to get the value.
-
 	// Open the master and the target sheet
 	master, err := xlsx.OpenFile("./testdata/master.xlsx")
 	if err != nil {
@@ -130,8 +141,8 @@ func TestWriteMaster(t *testing.T) {
 			t.Fatal("Problem calling masterLookup()")
 		}
 		if got != tt.value {
-			t.Errorf("when testing the master, we expected value %s for key %s in col %s - got %s",
-				tt.value, tt.key, tt.filename, got)
+			t.Errorf("when testing the master, for key %s we expected value %s in col %s - got %s",
+				tt.key, tt.value, tt.filename, got)
 		}
 	}
 }
