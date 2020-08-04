@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	fileToColIdx  = make(map[string]int)
-	filesInMaster []string
+	// filesInMaster is a map of each filename from the header row of a master, mapped to its
+	// column number
+	filesInMaster = make(map[string]int)
 )
 
 func TestWriteMaster(t *testing.T) {
@@ -96,7 +97,7 @@ func TestWriteMaster(t *testing.T) {
 		}
 		got_s := strings.TrimSuffix(string(got), "\n")
 		if strings.Compare(got_s, test.value) != 0 {
-			t.Errorf("we wanted %s but got %s", test.value, got_s)
+			t.Errorf("when testing the database, we expected %s but got %s", test.value, got_s)
 		}
 	}
 
@@ -122,11 +123,42 @@ func TestWriteMaster(t *testing.T) {
 
 	err = sh.ForEachRow(rowVisitorTest)
 
+	for _, tt := range tests {
+		got, err := masterLookup(sh, tt.key, tt.filename)
+		if err != nil {
+			t.Fatal("Problem calling masterLookup()")
+		}
+		if got != tt.value {
+			t.Errorf("when testing the master, we expected value %s for key %s in col %s - got %s",
+				tt.value, tt.key, tt.filename, got)
+		}
+	}
+}
+
+func masterLookup(sheet *xlsx.Sheet, key string, filename string) (string, error) {
+	var out string
+	if err := sheet.ForEachRow(func(r *xlsx.Row) error {
+		if r.GetCell(0).Value == key {
+			out = r.GetCell(filesInMaster[filename]).Value
+			return nil
+		}
+		return nil
+	}); err != nil {
+		return "", err
+	}
+	return out, nil
 }
 
 func cellVisitorTest(c *xlsx.Cell) error {
-	filesInMaster = append(filesInMaster, c.Value)
-	fileToColIdx[c.Value] = c.Row.GetCoordinate() // NOT RIGHT - GETTING INDEX FOR ROW
+	seen := make(map[string]struct{})
+	if _, ok := seen[c.Value]; !ok {
+		if c.Value != "" {
+			x, _ := c.GetCoordinates()
+			filesInMaster[c.Value] = x
+		}
+		seen[c.Value] = struct{}{}
+	}
+
 	return nil
 }
 
@@ -138,11 +170,5 @@ func rowVisitorTest(r *xlsx.Row) error {
 		r.ForEachCell(cellVisitorTest)
 		return nil
 	}
-	// var key string
-	// key = r.GetCell(0).Value
-	// for idx, fn := range filesInMaster {
-	// 	// TODO
-	// }
-	fmt.Println(r)
 	return nil
 }
