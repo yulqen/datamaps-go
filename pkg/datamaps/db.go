@@ -235,6 +235,7 @@ func importXLSXtoDB(dmName string, returnName string, file string, db *sql.DB) e
 				log.Println(err.Error())
 			}
 
+			// TODO - here we need to store the c.NumFmt string value in a new field
 			insertStmt, err := db.Prepare("insert into return_data (dml_id, ret_id, filename, value) values(?,?,?,?)")
 			if err != nil {
 				log.Fatal(err)

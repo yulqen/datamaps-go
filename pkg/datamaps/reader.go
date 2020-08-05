@@ -125,6 +125,11 @@ func cellVisitor(c *xlsx.Cell) error {
 	x, y := c.GetCoordinates()
 	cellref := xlsx.GetCellIDStringFromCoords(x, y)
 
+	// TODO: we need to store the c.NumFmt value here in the
+	// database so we can reply it again when we write the values
+	// to the master or elsewhere. We should keep the value itself
+	// in its unformatted state - i.e a date being something like 488594.
+
 	ex := extractedCell{
 		Cell:  c,
 		Value: c.Value,
