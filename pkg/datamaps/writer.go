@@ -89,8 +89,8 @@ func CreateMaster(opts *Options) error {
 			return err
 		}
 		for masterData.Next() {
-			var key, filename, value string
-			if err := masterData.Scan(&key, &value, &filename); err != nil {
+			var key, filename, value, numFmt string
+			if err := masterData.Scan(&key, &value, &filename, &numFmt); err != nil {
 				return err
 			}
 			values, err = appendValueMap(key, value, values)
@@ -116,6 +116,7 @@ func CreateMaster(opts *Options) error {
 			continue
 		}
 		dmlKey := datamapKeys[masterRow-1]
+
 		// TODO - we need to format the cells here too, e.g. dates
 		if sl := r.WriteSlice(append([]string{dmlKey}, values[dmlKey]...), -1); sl == -1 {
 			log.Printf("not a slice type")
