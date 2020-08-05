@@ -104,7 +104,7 @@ func CreateMaster(opts *Options) error {
 		}
 	}
 
-	for masterRow := 0; masterRow < len(datamapKeys); masterRow++ {
+	for masterRow := 0; masterRow <= len(datamapKeys); masterRow++ {
 		r, err := sh.AddRowAtIndex(masterRow)
 		if err != nil {
 			return fmt.Errorf("cannot create row %d in output spreadsheet: %v", masterRow, err)
