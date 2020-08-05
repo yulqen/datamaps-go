@@ -49,6 +49,7 @@ func setupDB(path string) (*sql.DB, error) {
 					 filename TEXT,
 					 value TEXT,
 					 numfmt TEXT,
+					 vFormatted TEXT,
 					 FOREIGN KEY (dml_id)
 					 REFERENCES datamap_line(id) 
 					 ON DELETE CASCADE
@@ -236,14 +237,18 @@ func importXLSXtoDB(dmName string, returnName string, file string, db *sql.DB) e
 				log.Println(err.Error())
 			}
 
-			// TODO - here we need to store the c.NumFmt string value in a new field
-			insertStmt, err := db.Prepare("insert into return_data (dml_id, ret_id, filename, value, numfmt) values(?,?,?,?,?)")
+			insertStmt, err := db.Prepare("insert into return_data (dml_id, ret_id, filename, value, numfmt, vFormatted) values(?,?,?,?,?,?)")
 			if err != nil {
 				log.Fatal(err)
 			}
 			defer insertStmt.Close()
 
-			_, err = insertStmt.Exec(dmlID, retID, filename, cellData.Value, cellData.NumFmt)
+			fValue, err := cellData.FormattedValue()
+			if err != nil {
+				return err
+			}
+
+			_, err = insertStmt.Exec(dmlID, retID, filename, cellData.Value, cellData.NumFmt, fValue)
 			if err != nil {
 				log.Fatal(err)
 			}

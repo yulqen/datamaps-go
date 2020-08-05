@@ -71,7 +71,7 @@ func CreateMaster(opts *Options) error {
 		return err
 	}
 
-	getDataSQL := `SELECT datamap_line.key, return_data.value, return_data.filename
+	getDataSQL := `SELECT datamap_line.key, return_data.vFormatted, return_data.filename
                                           FROM (((return_data
                                           INNER JOIN datamap_line ON return_data.dml_id=datamap_line.id) 
                                           INNER JOIN datamap ON datamap_line.dm_id=datamap.id) 
@@ -89,11 +89,11 @@ func CreateMaster(opts *Options) error {
 			return err
 		}
 		for masterData.Next() {
-			var key, filename, value, numFmt string
-			if err := masterData.Scan(&key, &value, &filename, &numFmt); err != nil {
-				return err
+			var key, filename, fmttedValue string
+			if err := masterData.Scan(&key, &fmttedValue, &filename); err != nil {
+				fmt.Errorf("Problem scanning data from database for master: %v", err)
 			}
-			values, err = appendValueMap(key, value, values)
+			values, err = appendValueMap(key, fmttedValue, values)
 			if _, ok := seen[filename]; !ok {
 				headerSlice = append(headerSlice, filename)
 				seen[filename] = struct{}{}

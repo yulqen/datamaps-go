@@ -71,7 +71,7 @@ func TestWriteMaster(t *testing.T) {
 		{"A String 1", "test_template.xlsx", "Another Sheet", "B4", "This is a string"},
 		{"A Float 1", "test_template.xlsx", "Another Sheet", "B5", "2.2"},
 		{"An Integer 1", "test_template.xlsx", "Another Sheet", "B6", "10"},
-		{"A Date 2", "test_template.xlsx", "Another Sheet", "D3", "20/10/19"},
+		{"A Date 2", "test_template.xlsx", "Another Sheet", "D3", "21/10/19"},
 		{"A String 2", "test_template.xlsx", "Another Sheet", "D4", "This is a string"},
 		{"A Float 3", "test_template.xlsx", "Another Sheet", "D5", "3.2"},
 		{"An Integer 3", "test_template.xlsx", "Another Sheet", "D6", "11"},
@@ -90,7 +90,7 @@ func TestWriteMaster(t *testing.T) {
 		{"A String 1", "test_template.xlsm", "Another Sheet", "B4", "This is a string"},
 		{"A Float 1", "test_template.xlsm", "Another Sheet", "B5", "2.2"},
 		{"An Integer 1", "test_template.xlsm", "Another Sheet", "B6", "10"},
-		{"A Date 2", "test_template.xlsm", "Another Sheet", "D3", "20/10/19"},
+		{"A Date 2", "test_template.xlsm", "Another Sheet", "D3", "21/10/19"},
 		{"A String 2", "test_template.xlsm", "Another Sheet", "D4", "This is a string"},
 		{"A Float 3", "test_template.xlsm", "Another Sheet", "D5", "3.2"},
 		{"An Integer 3", "test_template.xlsm", "Another Sheet", "D6", "11"},
@@ -103,7 +103,7 @@ func TestWriteMaster(t *testing.T) {
 	// Regular testing of import
 	// TODO fix date formatting
 	for _, test := range tests {
-		sql := fmt.Sprintf(`SELECT return_data.value FROM return_data, datamap_line 
+		sql := fmt.Sprintf(`SELECT return_data.vFormatted FROM return_data, datamap_line 
 		WHERE 
 			(return_data.filename=%q 
 				AND datamap_line.cellref=%q 
