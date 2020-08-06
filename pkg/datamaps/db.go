@@ -183,7 +183,7 @@ func importXLSXtoDB(dmName string, returnName string, file string, db *sql.DB) e
 	// If there is already a return with a matching name, use that.
 	rtnQuery, err := db.Prepare("select id from return where (return.name=?)")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Errorf("cannot create a query to get the return - %v", err)
 	}
 	defer rtnQuery.Close()
 
@@ -196,7 +196,7 @@ func importXLSXtoDB(dmName string, returnName string, file string, db *sql.DB) e
 	if retID == 0 {
 		stmtReturn, err := db.Prepare("insert into return(name, date_created) values(?,?)")
 		if err != nil {
-			log.Fatal(err)
+			fmt.Errorf("cannot prepare a statement to create a new return - %v", err)
 		}
 		defer stmtReturn.Close()
 
@@ -209,14 +209,14 @@ func importXLSXtoDB(dmName string, returnName string, file string, db *sql.DB) e
 
 		retID, err = res.LastInsertId()
 		if err != nil {
-			log.Fatal(err)
+			fmt.Errorf("cannot get id of return - %v", err)
 		}
 	}
 
 	// We're going to need a transaction for the big stuff
 	tx, err := db.Begin()
 	if err != nil {
-		return err
+		fmt.Errorf("cannot start a database transaction - %v", err)
 	}
 
 	for sheetName, sheetData := range d {
@@ -225,7 +225,7 @@ func importXLSXtoDB(dmName string, returnName string, file string, db *sql.DB) e
 
 			dmlQuery, err := db.Prepare("select id from datamap_line where (sheet=? and cellref=?)")
 			if err != nil {
-				log.Fatal(err)
+				fmt.Errorf("cannot prepare a statement to get the datamap line - %v", err)
 			}
 			defer dmlQuery.Close()
 			dmlIDRow := dmlQuery.QueryRow(sheetName, cellRef)
@@ -239,7 +239,7 @@ func importXLSXtoDB(dmName string, returnName string, file string, db *sql.DB) e
 
 			insertStmt, err := db.Prepare("insert into return_data (dml_id, ret_id, filename, value, numfmt, vFormatted) values(?,?,?,?,?,?)")
 			if err != nil {
-				log.Fatal(err)
+				fmt.Errorf("cannot insert row into return_data - %v", err)
 			}
 			defer insertStmt.Close()
 
@@ -249,12 +249,12 @@ func importXLSXtoDB(dmName string, returnName string, file string, db *sql.DB) e
 			}
 			fValue, err := cellData.FormattedValue()
 			if err != nil {
-				return err
+				fmt.Errorf("cannot get the formatted value for %#v, %v", cellData, err)
 			}
 
 			_, err = insertStmt.Exec(dmlID, retID, filename, cellData.Value, cellData.NumFmt, fValue)
 			if err != nil {
-				log.Fatal(err)
+				fmt.Errorf("cannot execute statement to insert return data - %v", err)
 			}
 		}
 	}
