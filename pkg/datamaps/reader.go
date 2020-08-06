@@ -155,7 +155,7 @@ func rowVisitor(r *xlsx.Row) error {
 func ReadXLSX(path string) FileData {
 	wb, err := xlsx.OpenFile(path)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Errorf("cannot open file at %s - %v", path, err)
 	}
 
 	outer := make(FileData, 1)
@@ -164,7 +164,7 @@ func ReadXLSX(path string) FileData {
 	for _, sheet := range wb.Sheets {
 
 		if err := sheet.ForEachRow(rowVisitor); err != nil {
-			log.Fatal(err)
+			fmt.Errorf("cannot call ForEachRow() in sheet %s - %v", sheet.Name, err)
 		}
 		outer[sheet.Name] = inner
 		inner = make(sheetData)
@@ -189,7 +189,8 @@ func DatamapFromDB(name string, db *sql.DB) (ExtractedDatamapFile, error) {
 	`
 	rows, err := db.Query(query, name)
 	if err != nil {
-		return nil, err
+		erstr := fmt.Sprintf("cannot query for datamap key, sheet and cellref - %v", err)
+		return nil, errors.New(erstr)
 	}
 	defer rows.Close()
 
@@ -214,7 +215,8 @@ func DatamapFromDB(name string, db *sql.DB) (ExtractedDatamapFile, error) {
 func ExtractDBDatamap(name string, file string, db *sql.DB) (ExtractedData, error) {
 	ddata, err := DatamapFromDB(name, db) // this will need to return an ExtractedDatamapFile
 	if err != nil {
-		return nil, err
+		erstr := fmt.Sprintf("cannot call DatamapFromDB() - %v", err)
+		return nil, errors.New(erstr)
 	}
 	if len(ddata) == 0 {
 		return nil, fmt.Errorf("there is no datamap in the database matching name '%s'. Try running 'datamaps datamap --import...'", name)
