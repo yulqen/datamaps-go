@@ -17,17 +17,12 @@ var (
 	filesInMaster = make(map[string]int)
 )
 
-func TestWriteMaster(t *testing.T) {
-
+func testSetup() (*Options, error) {
 	// setup - we need the datamap in the test database
-	db, err := setupDB("./testdata/test.db")
-	defer func() {
-		db.Close()
-		os.Remove("./testdata/test.db")
-	}()
+	_, err := setupDB("./testdata/test.db")
 
 	if err != nil {
-		t.Fatal("Expected to be able to set up the database.")
+		fmt.Errorf("Expected to be able to set up the database.")
 	}
 
 	opts := Options{
@@ -39,20 +34,33 @@ func TestWriteMaster(t *testing.T) {
 		XLSXPath:         "./testdata/",
 	}
 
+	if err := DatamapToDB(&opts); err != nil {
+		fmt.Errorf("Unable to write datamap to database file because %v.", err)
+	}
+
+	if err := ImportToDB(&opts); err != nil {
+		fmt.Errorf("cannot read test XLSX files needed before exporting to master - %v", err)
+	}
+	return &opts, nil
+}
+
+func TestWriteMaster(t *testing.T) {
+
+	opts, err := testSetup()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	defer func() {
 		os.Remove(filepath.Join(opts.MasterOutPutPath, "master.xlsx"))
 	}()
 
-	if err := DatamapToDB(&opts); err != nil {
-		t.Fatalf("Unable to write datamap to database file because %v.", err)
-	}
+	defer func() {
+		os.Remove("./testdata/test.db")
+	}()
 
-	if err := ImportToDB(&opts); err != nil {
-		t.Fatalf("cannot read test XLSX files needed before exporting to master - %v", err)
-	}
-
-	if err := CreateMaster(&opts); err != nil {
-		t.Error(err)
+	if err := CreateMaster(opts); err != nil {
+		t.Fatal(err)
 	}
 
 	var tests = []struct {
