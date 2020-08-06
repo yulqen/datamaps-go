@@ -243,6 +243,10 @@ func importXLSXtoDB(dmName string, returnName string, file string, db *sql.DB) e
 			}
 			defer insertStmt.Close()
 
+			// Hack to fix bug in Libreoffice numformats for dates
+			if cellData.NumFmt == "DD/MM/YY" {
+				cellData.SetFormat("dd/mm/yy")
+			}
 			fValue, err := cellData.FormattedValue()
 			if err != nil {
 				return err
