@@ -5,3 +5,4 @@ go.sum
 /datamaps
 pkg/datamaps/testdata/test.db
 /main
+/bin/datamaps

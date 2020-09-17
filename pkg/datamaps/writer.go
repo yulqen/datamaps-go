@@ -63,9 +63,6 @@ func CreateMaster(opts *Options) error {
 
 	var rowCount int64
 	rowCountRes := db.QueryRow(sqlCount, opts.DMName, opts.ReturnName)
-	if err != nil {
-		return fmt.Errorf("cannot query for row count of return data - %v", err)
-	}
 
 	if err := rowCountRes.Scan(&rowCount); err != nil {
 		return err
