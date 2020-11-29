@@ -12,12 +12,15 @@ import (
 )
 
 func main() {
+	opts := datamaps.ParseOptions()
+	if opts.Command == "help" {
+		os.Stdout.WriteString(datamaps.Usage)
+		os.Exit(0)
+	}
 	dbpc := datamaps.NewDBPathChecker(os.UserConfigDir)
 	if !dbpc.Check() {
 		datamaps.SetUp()
 	}
-	opts := datamaps.ParseOptions()
-
 	switch opts.Command {
 	case "import":
 		if err := datamaps.ImportToDB(opts); err != nil {

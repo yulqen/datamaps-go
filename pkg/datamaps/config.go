@@ -11,6 +11,27 @@ const (
 	dbName        = "datamaps.db"
 )
 
+// Help text.
+const Usage = `
+usage: datamaps COMMAND [OPTIONS]
+
+-Managing datamap files-
+
+Command: datamap
+
+All datamap related actions. Before datamaps can do much, it must know about a datamap.
+A datamap starts life as a CSV file with the format:
+
+cell_key,template_sheet,cell_reference,type
+key1,sheet1,A10,TEXT
+key2,sheet1,A11,NUMBER
+...
+
+Options:
+	--import PATH		Import a datamap the csv datamap at PATH
+	--datamapname NAME	Name for imported datamap
+`
+
 // mocking funcs in go https://stackoverflow.com/questions/19167970/mock-functions-in-go
 // we only need the func signature to create the type. This is pretty weird, we're want to mock
 // os.UserHomeDir so that we can set it to something like /tmp in our tests. Here we are creating
@@ -194,9 +215,14 @@ func nextString(args []string, i *int, message string) string {
 }
 
 func processOptions(opts *Options, allArgs []string) {
+	if len(allArgs) == 0 {
+		allArgs = append(allArgs, "help")
+	}
 	switch allArgs[0] {
 	case "import":
 		opts.Command = "import"
+	case "help":
+		opts.Command = "help"
 	case "datamap":
 		opts.Command = "datamap"
 	case "setup":
