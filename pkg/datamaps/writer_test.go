@@ -22,7 +22,7 @@ func testSetup() (*Options, error) {
 	_, err := setupDB("./testdata/test.db")
 
 	if err != nil {
-		fmt.Errorf("Expected to be able to set up the database.")
+		fmt.Errorf("expected to be able to set up the database")
 	}
 
 	opts := Options{
@@ -35,7 +35,7 @@ func testSetup() (*Options, error) {
 	}
 
 	if err := DatamapToDB(&opts); err != nil {
-		fmt.Errorf("Unable to write datamap to database file because %v.", err)
+		fmt.Errorf("unable to write datamap to database file because %v", err)
 	}
 
 	if err := ImportToDB(&opts); err != nil {
@@ -123,10 +123,10 @@ func TestWriteMaster(t *testing.T) {
 		if err != nil {
 			t.Fatalf("something wrong %v", err)
 		}
-		got_s := strings.TrimSuffix(string(got), "\n")
-		if strings.Compare(got_s, test.value) != 0 {
+		gots := strings.TrimSuffix(string(got), "\n")
+		if strings.Compare(gots, test.value) != 0 {
 			t.Errorf("when testing the database, for key %s in file %s we expected %s but got %s", test.key,
-				test.filename, test.value, got_s)
+				test.filename, test.value, gots)
 		}
 	}
 
