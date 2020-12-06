@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/yulqen/datamaps-go/pkg/datamaps"
+	"github.com/yulqen/datamaps-go/datamaps"
 )
 
 func main() {

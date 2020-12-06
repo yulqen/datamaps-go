@@ -1,14 +1,14 @@
 debug-datamaps:
-	dlv test ./pkg/datamaps/ --wd ./pkg/datamaps/
+	dlv test ./datamaps/ --wd .`/datamaps/
 
 dummy-import:
-	./datamaps import --returnname "Hunkers" --datamapname "Tonk 1" --xlsxpath pkg/datamaps/testdata/
+	./build/datamaps import --returnname "Hunkers" --datamapname "Tonk 1" --xlsxpath datamaps/testdata/
 
 dummy-datamap-import:
-	./datamaps datamap --datamapname "Tonk 1" --import  pkg/datamaps/testdata/datamap_matches_test_template.csv
+	./build/datamaps datamap --datamapname "Tonk 1" --import  datamaps/testdata/datamap_matches_test_template.csv
 
 build:
-	go build -o datamaps ./cmd/datamaps/main.go
+	go build -o build/datamaps ./cmd/datamaps/main.go
 
 test-all:
 	go test ./...
