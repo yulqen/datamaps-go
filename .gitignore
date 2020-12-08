@@ -2,7 +2,6 @@
 .idea/*
 reader/testdata/test.db
 go.sum
-/datamaps
 pkg/datamaps/testdata/test.db
 /main
 /bin/datamaps
