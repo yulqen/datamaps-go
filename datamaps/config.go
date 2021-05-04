@@ -66,13 +66,13 @@ func NewDBPathChecker(h getUserConfigDir) *DBPathChecker {
 // Check returns true if the necessary config files (including
 // the database) are in place - false if not
 func (db *DBPathChecker) Check() bool {
-	println("In Check() method")
 	userConfig, err := db.userConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
-	dbPath := filepath.Join(userConfig, "datamaps.db")
+	dbPath := filepath.Join(userConfig, "datamaps", "datamaps.db")
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
+		println("Seems that " + dbPath + " not there")
 		return false
 	}
 	return true
@@ -221,9 +221,11 @@ func nextString(args []string, i *int, message string) string {
 
 func processOptions(opts *Options, allArgs []string) {
 	if len(allArgs) == 0 {
-		allArgs = append(allArgs, "checkdb")
+		allArgs = append(allArgs, "help")
 	}
 	switch allArgs[0] {
+	case "checkdb":
+		opts.Command = "checkdb"
 	case "import":
 		opts.Command = "import"
 	case "help":
