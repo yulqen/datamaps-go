@@ -15,6 +15,10 @@ const (
 const Usage = `
 usage: datamaps COMMAND [OPTIONS]
 
+datamaps will NOT create configuration files automatically. Ensure this is handled by
+calling: "datamaps setup". This will create the database file required to run the
+application.
+
 -Managing datamap files-
 
 Command: datamap
@@ -62,6 +66,7 @@ func NewDBPathChecker(h getUserConfigDir) *DBPathChecker {
 // Check returns true if the necessary config files (including
 // the database) are in place - false if not
 func (db *DBPathChecker) Check() bool {
+	println("In Check() method")
 	userConfig, err := db.userConfig()
 	if err != nil {
 		log.Fatal(err)
@@ -216,7 +221,7 @@ func nextString(args []string, i *int, message string) string {
 
 func processOptions(opts *Options, allArgs []string) {
 	if len(allArgs) == 0 {
-		allArgs = append(allArgs, "help")
+		allArgs = append(allArgs, "checkdb")
 	}
 	switch allArgs[0] {
 	case "import":

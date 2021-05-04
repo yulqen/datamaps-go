@@ -17,11 +17,18 @@ func main() {
 		os.Stdout.WriteString(datamaps.Usage)
 		os.Exit(0)
 	}
-	dbpc := datamaps.NewDBPathChecker(os.UserConfigDir)
-	if !dbpc.Check() {
-		datamaps.SetUp()
-	}
+	// TODO - removed this to handle "setup" bug below.
+	// Check that removing this has no consequences.
+	// dbpc := datamaps.NewDBPathChecker(os.UserConfigDir)
+	// if !dbpc.Check() {
+	// 	datamaps.SetUp()
+	// }
 	switch opts.Command {
+	case "checkdb":
+		dbpc := datamaps.NewDBPathChecker(os.UserConfigDir)
+		if !dbpc.Check() {
+			log.Println("No database file exists. Please run datamaps setup")
+		}
 	case "import":
 		if err := datamaps.ImportToDB(opts); err != nil {
 			log.Fatal(err)
@@ -31,6 +38,8 @@ func main() {
 			log.Fatal(err)
 		}
 	case "setup":
+		// BUG This gets called twice if the !dbpc.Check()
+		// call above reveals that the config dir is present
 		_, err := datamaps.SetUp()
 		if err != nil {
 			log.Fatal(err)
