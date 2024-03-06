@@ -11,8 +11,8 @@ then
 fi
 
 # Here is where we launch all the commands
-[[ $1 == "test" ]] && go test ./datamaps
-[[ $1 == "test-all" ]] && go test ./...
+[[ $1 == "test" ]] && go test -v ./datamaps
+[[ $1 == "test-all" ]] && go test -v ./...
 [[ $1 == "build" ]] &&  go build -o build/datamaps ./cmd/datamaps/main.go
 [[ $1 == "clean-config" ]] && rm -r ~/.config/datamaps/
 [[ $1 == "dummy-import" ]] && go run ./cmd/datamaps/main.go import --returnname "Hunkers" --datamapname "Tonk 1" --xlsxpath datamaps/testdata/
