@@ -14,9 +14,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	// Required for the sqlite3 driver
-	_ "github.com/mattn/go-sqlite3"
-
 	"github.com/tealeg/xlsx/v3"
 )
 
@@ -31,14 +28,14 @@ type (
 	ExtractedData map[string]map[string]xlsx.Cell
 )
 
-//datamapLine - a line from the datamap.
+// datamapLine - a line from the datamap.
 type datamapLine struct {
 	Key     string
 	Sheet   string
 	Cellref string
 }
 
-//extractedCell is data pulled from a cell.
+// extractedCell is data pulled from a cell.
 type extractedCell struct {
 	Cell  *xlsx.Cell
 	Col   string
@@ -54,7 +51,7 @@ var (
 // in the datamap file/database table.
 type ExtractedDatamapFile []datamapLine
 
-//sheetInSlice is a helper which returns true
+// sheetInSlice is a helper which returns true
 // if a string is in a slice of strings.
 func sheetInSlice(list []string, key string) bool {
 	for _, x := range list {
@@ -66,7 +63,7 @@ func sheetInSlice(list []string, key string) bool {
 	return false
 }
 
-//getSheetNames returns the number of Sheet field entries
+// getSheetNames returns the number of Sheet field entries
 // in a slice of datamapLine structs.
 func getSheetNames(dmls ExtractedDatamapFile) []string {
 	var sheetNames []string
@@ -272,7 +269,7 @@ func extract(dm string, path string) ExtractedData {
 	return outer
 }
 
-//getTargetFiles finds all xlsx and xlsm files in directory.
+// getTargetFiles finds all xlsx and xlsm files in directory.
 func getTargetFiles(path string) ([]string, error) {
 	if lastchar := path[len(path)-1:]; lastchar != string(filepath.Separator) {
 		return nil, fmt.Errorf("path must end in a %s character", string(filepath.Separator))

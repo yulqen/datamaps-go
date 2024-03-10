@@ -9,9 +9,25 @@ import (
 	"path"
 	"time"
 
-	// Needed for the sqlite3 driver
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
+
+// OpenDB wraps sql.Open() and returns a sql.DB connection pool
+// for a given DSN.
+func OpenDB(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("pgx", dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.Ping()
+	if err != nil {
+		db.Close()
+		return nil, err
+	}
+
+	return db, nil
+}
 
 // setupDB creates the intitial database
 func setupDB(path string) (*sql.DB, error) {

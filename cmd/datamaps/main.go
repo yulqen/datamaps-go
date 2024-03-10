@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/yulqen/datamaps-go/datamaps"
+	"git.yulqen.org/go/datamaps-go/datamaps"
 )
 
 func main() {
@@ -49,6 +49,13 @@ func main() {
 			log.Fatal(err)
 		}
 	case "server":
+		// Database connection
+		db, err := datamaps.OpenDB("postgres://postgres:example@localhost:5432/datamaps")
+		if err != nil {
+			log.Fatalf("cannot connect to database - %v", err)
+		}
+
+		defer db.Close()
 		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path != "/" {
 				http.NotFound(w, r)
