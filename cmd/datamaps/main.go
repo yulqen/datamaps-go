@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"git.yulqen.org/go/datamaps-go/internal/datamaps"
-	"git.yulqen.org/go/datamaps-go/internal/datamaps/models"
+	"git.yulqen.org/go/datamaps-go/internal/models"
 )
 
 type application struct {
@@ -61,15 +61,6 @@ func main() {
 		app := &application{
 			datamaps: &models.DatamapModel{DB: db},
 		}
-		// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// 	if r.URL.Path != "/" {
-		// 		http.NotFound(w, r)
-		// 		return
-		// 	}
-		// 	fmt.Fprintf(w, "Welcome to datamaps!")
-		// 	// or you could write it thus
-		// 	// w.Write([]byte("Hello from datamaps"))
-		// })
 		log.Println("Starting server on :8080")
 		log.Fatal(http.ListenAndServe(":8080", app.routes()))
 	}
