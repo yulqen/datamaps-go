@@ -265,7 +265,7 @@ func processOptions(opts *Options, allArgs []string) {
 	}
 }
 
-//ParseOptions for CLI.
+// ParseOptions for CLI.
 func ParseOptions() *Options {
 	opts := defaultOptions()
 	processOptions(opts, os.Args[1:])
