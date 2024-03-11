@@ -1,0 +1,18 @@
+openapi: 3.1.0
+info:
+  title: An API specification for datamaps-go
+  version: 0.0.1
+description: A simple API that facilitates the creation of datamaps which can be used to extract data from spreadsheets.
+contact:
+  name: Matthew Lemon
+  email: y@yulqen.org
+  url: https://git.yulqen.org/go/datamaps-go
+license:
+  name: AGPL
+paths:
+  /datamaps:
+    get:
+      summary: Get a datamap heading.
+      description: |
+        Returns all datamaps from the system that the user has access to.
+      operationId: findDatamaps
