@@ -1,6 +1,7 @@
 module git.yulqen.org/go/datamaps-go
 
 go 1.22.1
+toolchain go1.24.1
 
 require (
 	github.com/jackc/pgx/v5 v5.5.5
@@ -22,8 +23,8 @@ require (
 	github.com/rogpeppe/fastuuid v1.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.6.1 // indirect
 	github.com/shabbyrobe/xmlwriter v0.0.0-20200208144257-9fca06d00ffa // indirect
-	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/crypto v0.35.0 // indirect
+	golang.org/x/sync v0.11.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 // indirect
 )
